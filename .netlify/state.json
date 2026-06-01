@@ -1,0 +1,21 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Caracas",
+			"country": {
+				"code": "VE",
+				"name": "Venezuela"
+			},
+			"subdivision": {
+				"code": "A",
+				"name": "Distrito Federal"
+			},
+			"timezone": "America/Caracas",
+			"latitude": 10.4873,
+			"longitude": -66.8738,
+			"postalCode": "1020"
+		},
+		"timestamp": 1780275651728
+	},
+	"dbConnectionString": "postgres://localhost:43089/postgres"
+}
