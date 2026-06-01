@@ -1,0 +1,112 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+---
+
+<AdminLayout
+  title="Nuevo Usuario"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mx-auto max-w-lg">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <form id="user-form" class="space-y-5">
+        <div>
+          <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700">Nombre completo</label>
+          <input type="text" id="nombre" name="nombre" required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Nombre del usuario" />
+        </div>
+
+        <div>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Correo electrónico</label>
+          <input type="email" id="email" name="email" required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="usuario@colegio.com" />
+        </div>
+
+        <div>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Contraseña</label>
+          <input type="password" id="password" name="password" required minlength="6"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Mínimo 6 caracteres" />
+        </div>
+
+        <div>
+          <label for="rol" class="mb-1.5 block text-sm font-medium text-gray-700">Rol</label>
+          <select id="rol" name="rol"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <option value="editor">Editor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <div class="flex gap-3">
+          <button type="submit" id="submit-btn"
+            class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
+            Crear usuario
+          </button>
+          <a href="/admin/usuarios"
+            class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  const form = document.getElementById('user-form');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorMsg = document.getElementById('error-msg');
+      const submitBtn = document.getElementById('submit-btn');
+
+      errorMsg.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creando...';
+
+      const formData = new FormData(form);
+      const res = await fetch('/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: formData.get('nombre'),
+          email: formData.get('email'),
+          password: formData.get('password'),
+          rol: formData.get('rol'),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/admin/usuarios';
+      } else {
+        errorMsg.textContent = data.error || 'Error al crear usuario';
+        errorMsg.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Crear usuario';
+      }
+    });
+  }
+</script>

@@ -1,0 +1,38 @@
+-- Tabla de usuarios (registro con email propio)
+CREATE TABLE IF NOT EXISTS usuarios (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  nombre VARCHAR(100) NOT NULL,
+  rol VARCHAR(20) NOT NULL DEFAULT 'editor' CHECK (rol IN ('admin', 'editor')),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabla de sesiones
+CREATE TABLE IF NOT EXISTS sesiones (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+  token VARCHAR(64) UNIQUE NOT NULL,
+  ip_address VARCHAR(45),
+  user_agent TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  expires_at TIMESTAMP NOT NULL,
+  last_active TIMESTAMP DEFAULT NOW(),
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+-- Tabla de posts (blog + anuncios)
+CREATE TABLE IF NOT EXISTS posts (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  slug VARCHAR(200) UNIQUE NOT NULL,
+  content TEXT NOT NULL,
+  excerpt TEXT,
+  image_url TEXT,
+  type VARCHAR(20) NOT NULL DEFAULT 'blog' CHECK (type IN ('blog', 'anuncio')),
+  category VARCHAR(50),
+  published BOOLEAN DEFAULT false,
+  author_id INTEGER REFERENCES usuarios(id),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);

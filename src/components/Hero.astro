@@ -1,0 +1,52 @@
+---
+const heroBg = 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1920&q=80';
+---
+
+<section id="inicio" class="relative flex min-h-screen items-center justify-center overflow-hidden">
+  <div
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+    style={`background-image: url('${heroBg}');`}
+  >
+    <div class="absolute inset-0 bg-gradient-to-r from-primary/85 to-primary/70"></div>
+  </div>
+
+  <div class="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
+    <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm text-white backdrop-blur-sm">
+      <span class="flex h-2 w-2 rounded-full bg-accent"></span>
+      Hijas de la Caridad — Venezuela
+    </div>
+
+    <h1 class="mb-4 text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+      Colegio <span class="text-accent">Santa Luisa</span>
+    </h1>
+
+    <p class="mx-auto mb-10 max-w-2xl text-lg text-white/90 sm:text-xl">
+      Formando con excelencia académica y valores vicencianos desde 1950.
+      Educamos líderes con corazón solidario y compromiso social.
+    </p>
+
+    <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <a
+        href="#nosotros"
+        class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3.5 text-base font-bold text-white shadow-lg transition hover:bg-accent-light hover:shadow-xl"
+      >
+        Conócenos
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+      </a>
+      <a
+        href="#contacto"
+        class="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white/10 hover:border-white/50"
+      >
+        Contáctanos
+      </a>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+    <svg class="h-8 w-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7"/>
+    </svg>
+  </div>
+</section>

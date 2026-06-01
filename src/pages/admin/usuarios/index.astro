@@ -1,0 +1,111 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+---
+
+<AdminLayout
+  title="Usuarios"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mb-6 flex items-center justify-between">
+    <p class="text-sm text-gray-500">Gestiona los usuarios del sistema</p>
+    <a
+      href="/admin/usuarios/new"
+      class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90"
+    >
+      + Nuevo usuario
+    </a>
+  </div>
+
+  <div class="rounded-xl border bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b bg-gray-50">
+            <th class="px-5 py-3 font-semibold text-gray-600">Nombre</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Email</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Rol</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Registrado</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="usuarios-table-body">
+          <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  async function loadUsers() {
+    const res = await fetch('/api/usuarios');
+    if (!res.ok) {
+      document.getElementById('usuarios-table-body').innerHTML =
+        '<tr><td colspan="5" class="px-5 py-10 text-center text-red-500">Error al cargar usuarios</td></tr>';
+      return;
+    }
+
+    const users = await res.json();
+    const tbody = document.getElementById('usuarios-table-body');
+
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No hay usuarios</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.map((u) => {
+      const createdAt = u.created_at ? new Date(u.created_at).toLocaleDateString('es-VE') : '—';
+      const badgeClass = u.rol === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700';
+
+      return `
+        <tr class="border-b last:border-0 hover:bg-gray-50">
+          <td class="px-5 py-4 font-medium text-gray-900">${u.nombre}</td>
+          <td class="px-5 py-4 text-gray-600">${u.email}</td>
+          <td class="px-5 py-4">
+            <span class="rounded-full ${badgeClass} px-2.5 py-0.5 text-xs font-medium capitalize">${u.rol}</span>
+          </td>
+          <td class="px-5 py-4 text-gray-500 max-md:hidden">${createdAt}</td>
+          <td class="px-5 py-4">
+            ${u.rol === 'admin' && u.id === 1
+              ? '<span class="text-xs text-gray-400">—</span>'
+              : `
+                <button onclick="eliminarUser(${u.id}, '${u.nombre}')" class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100">
+                  Eliminar
+                </button>
+              `
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function eliminarUser(id, nombre) {
+    if (!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) return;
+
+    const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadUsers();
+    } else {
+      const data = await res.json();
+      alert(data.error || 'Error al eliminar usuario');
+    }
+  }
+
+  loadUsers();
+</script>

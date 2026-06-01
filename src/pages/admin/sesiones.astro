@@ -1,0 +1,103 @@
+---
+import AdminLayout from '../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+---
+
+<AdminLayout
+  title="Sesiones Activas"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="rounded-xl border bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b bg-gray-50">
+            <th class="px-5 py-3 font-semibold text-gray-600">Usuario</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Email</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">IP</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 max-lg:hidden">User-Agent</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Última actividad</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Expira</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="sesiones-table-body">
+          <tr>
+            <td colspan="7" class="px-5 py-10 text-center text-gray-400">Cargando sesiones...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  async function loadSesiones() {
+    const res = await fetch('/api/sesiones');
+    if (!res.ok) {
+      document.getElementById('sesiones-table-body').innerHTML =
+        '<tr><td colspan="7" class="px-5 py-10 text-center text-red-500">Error al cargar sesiones</td></tr>';
+      return;
+    }
+
+    const sesiones = await res.json();
+    const tbody = document.getElementById('sesiones-table-body');
+
+    if (sesiones.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">No hay sesiones activas</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = sesiones.map((s) => {
+      const expiresAt = new Date(s.expires_at);
+      const lastActive = new Date(s.last_active);
+      const isExpired = expiresAt < new Date();
+
+      return `
+        <tr class="border-b last:border-0 hover:bg-gray-50 ${isExpired ? 'opacity-50' : ''}">
+          <td class="px-5 py-4 font-medium text-gray-900">${s.usuarios?.nombre || '—'}</td>
+          <td class="px-5 py-4 text-gray-600">${s.usuarios?.email || '—'}</td>
+          <td class="px-5 py-4 font-mono text-xs text-gray-500 max-md:hidden">${s.ip_address || '—'}</td>
+          <td class="max-w-xs truncate px-5 py-4 text-xs text-gray-500 max-lg:hidden" title="${s.user_agent || ''}">${s.user_agent || '—'}</td>
+          <td class="px-5 py-4 text-gray-600">${lastActive.toLocaleString('es-VE')}</td>
+          <td class="px-5 py-4 text-gray-600">${expiresAt.toLocaleString('es-VE')}</td>
+          <td class="px-5 py-4">
+            <button
+              onclick="cerrarSesion(${s.id})"
+              class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
+            >
+              Cerrar
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function cerrarSesion(id) {
+    if (!confirm('¿Cerrar esta sesión?')) return;
+
+    const res = await fetch(`/api/sesiones/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadSesiones();
+    } else {
+      alert('Error al cerrar sesión');
+    }
+  }
+
+  loadSesiones();
+</script>

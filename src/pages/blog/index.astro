@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { supabase } from '../../lib/db';
+
+const { data: posts } = await supabase
+  .from('posts')
+  .select(`
+    id, title, slug, excerpt, image_url, category, created_at,
+    usuarios ( nombre )
+  `)
+  .eq('type', 'blog')
+  .eq('published', true)
+  .order('created_at', { ascending: false });
+---
+
+<Layout title="Blog — Colegio Santa Luisa">
+  <Header />
+  <main class="pt-20">
+    <section class="section-padding bg-gradient-to-b from-white to-stone-50">
+      <div class="container-custom">
+        <div class="mb-16 text-center">
+          <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Blog del <span class="text-primary">Colegio Santa Luisa</span>
+          </h1>
+          <p class="mx-auto mt-4 max-w-2xl text-gray-600">
+            Noticias, artículos y contenido educativo de nuestra comunidad
+          </p>
+          <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
+        </div>
+
+        {posts && posts.length > 0 ? (
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <a href={`/blog/${post.slug}`} class="group rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-lg overflow-hidden">
+                {post.image_url && (
+                  <div class="aspect-video overflow-hidden">
+                    <img src={post.image_url} alt={post.title} class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+                  </div>
+                )}
+                <div class="p-6">
+                  <div class="mb-3 flex items-center gap-2">
+                    {post.category && (
+                      <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">{post.category}</span>
+                    )}
+                    <span class="text-xs text-gray-400">{new Date(post.created_at).toLocaleDateString('es-VE')}</span>
+                  </div>
+                  <h3 class="mb-2 text-lg font-bold text-gray-900 group-hover:text-primary transition">{post.title}</h3>
+                  {post.excerpt && <p class="text-sm leading-relaxed text-gray-600 line-clamp-2">{post.excerpt}</p>}
+                  <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
+                    <span>{post.usuarios?.nombre || 'Colegio Santa Luisa'}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="py-20 text-center text-gray-400">
+            <p class="text-lg">Próximamente nuevos artículos</p>
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>

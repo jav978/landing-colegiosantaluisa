@@ -1,0 +1,66 @@
+---
+import AdminLayout from '../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const { supabase } = await import('../../lib/db');
+
+const { count: totalUsuarios } = await supabase.from('usuarios').select('*', { count: 'exact', head: true });
+const { count: totalPosts } = await supabase.from('posts').select('*', { count: 'exact', head: true });
+const { count: totalAnuncios } = await supabase.from('posts').select('*', { count: 'exact', head: true }).eq('type', 'anuncio');
+const { count: sesionesActivas } = await supabase.from('sesiones').select('*', { count: 'exact', head: true }).is('deleted_at', null).gt('expires_at', new Date().toISOString());
+
+const stats = [
+  { label: 'Usuarios', value: totalUsuarios ?? 0, icon: '👥', color: 'bg-blue-500' },
+  { label: 'Posts (Blog)', value: (totalPosts ?? 0) - (totalAnuncios ?? 0), icon: '📝', color: 'bg-emerald-500' },
+  { label: 'Anuncios', value: totalAnuncios ?? 0, icon: '📢', color: 'bg-amber-500' },
+  { label: 'Sesiones activas', value: sesionesActivas ?? 0, icon: '🔐', color: 'bg-purple-500' },
+];
+---
+
+<AdminLayout
+  title="Dashboard"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {stats.map((s) => (
+      <div class="rounded-xl border bg-white p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">{s.label}</p>
+            <p class="mt-1 text-3xl font-bold text-gray-900">{s.value}</p>
+          </div>
+          <div class={`flex h-12 w-12 items-center justify-center rounded-xl ${s.color} text-xl text-white shadow-sm`}>
+            {s.icon}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Bienvenido, {session.nombre}</h2>
+    <p class="text-sm leading-relaxed text-gray-600">
+      Este es el panel de administración del Colegio Santa Luisa.
+      Desde aquí puedes gestionar los posts del blog, los anuncios, los usuarios
+      y monitorear las sesiones activas.
+    </p>
+    <div class="mt-4 flex gap-3">
+      <a href="/admin/posts" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+        Gestionar Posts
+      </a>
+      <a href="/admin/usuarios" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+        Gestionar Usuarios
+      </a>
+    </div>
+  </div>
+</AdminLayout>

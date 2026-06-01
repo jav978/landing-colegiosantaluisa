@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { supabase } from '../../lib/db';
+
+const { slug } = Astro.params;
+
+const { data: post } = await supabase
+  .from('posts')
+  .select(`
+    id, title, content, excerpt, image_url, category, created_at, updated_at,
+    usuarios ( nombre )
+  `)
+  .eq('slug', slug)
+  .eq('published', true)
+  .single();
+
+if (!post) {
+  return Astro.redirect('/blog');
+}
+---
+
+<Layout title={`${post.title} — Blog Santa Luisa`}>
+  <Header />
+  <main class="pt-20">
+    <article class="section-padding">
+      <div class="container-custom max-w-3xl">
+        {post.image_url && (
+          <div class="mb-8 overflow-hidden rounded-2xl shadow-lg">
+            <img src={post.image_url} alt={post.title} class="w-full object-cover" />
+          </div>
+        )}
+
+        <div class="mb-6 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+          {post.category && (
+            <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">{post.category}</span>
+          )}
+          <span>{new Date(post.created_at).toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <span>—</span>
+          <span>{post.usuarios?.nombre || 'Colegio Santa Luisa'}</span>
+        </div>
+
+        <h1 class="mb-6 text-3xl font-bold text-gray-900 sm:text-4xl">{post.title}</h1>
+
+        {post.excerpt && (
+          <p class="mb-8 text-lg leading-relaxed text-gray-500 italic">{post.excerpt}</p>
+        )}
+
+        <div class="prose prose-gray max-w-none text-base leading-relaxed text-gray-700 whitespace-pre-line">
+          {post.content}
+        </div>
+
+        <div class="mt-12 border-t pt-8">
+          <a href="/blog" class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80">
+            ← Volver al blog
+          </a>
+        </div>
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Layout>

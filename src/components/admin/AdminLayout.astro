@@ -1,0 +1,94 @@
+---
+import '../../styles/global.css';
+import Sidebar from './Sidebar.astro';
+
+interface Props {
+  title: string;
+  userNombre: string;
+  userEmail: string;
+  userRol: string;
+  currentPath: string;
+}
+
+const { title, userNombre, userEmail, userRol, currentPath } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>{title} — Admin Santa Luisa</title>
+  </head>
+  <body class="flex min-h-screen bg-stone-100 font-sans antialiased">
+    <div id="sidebar-backdrop" class="fixed inset-0 z-30 hidden bg-black/50 md:hidden"></div>
+
+    <Sidebar {userNombre} {userEmail} {userRol} {currentPath} />
+
+    <div class="flex flex-1 flex-col md:ml-64">
+      <header class="sticky top-0 z-20 flex items-center justify-between border-b bg-white px-6 py-3 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button id="mobile-sidebar-toggle" class="rounded-lg p-1.5 text-xl hover:bg-gray-100 md:hidden">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <h1 class="text-lg font-semibold text-gray-900">{title}</h1>
+        </div>
+        <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary capitalize">{userRol}</span>
+      </header>
+
+      <main class="flex-1 p-6">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<script>
+  const sidebar = document.getElementById('admin-sidebar');
+  const toggleBtn = document.getElementById('mobile-sidebar-toggle');
+  const backdrop = document.getElementById('sidebar-backdrop');
+
+  function openSidebar() {
+    if (!sidebar || !backdrop) return;
+    sidebar.classList.remove('max-md:-translate-x-full');
+    backdrop.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    if (!sidebar || !backdrop) return;
+    sidebar.classList.add('max-md:-translate-x-full');
+    backdrop.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebar?.classList.contains('max-md:-translate-x-full')) {
+        openSidebar();
+      } else {
+        closeSidebar();
+      }
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeSidebar);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
+
+  sidebar?.addEventListener('click', (e) => {
+    if (window.innerWidth < 768 && e.target?.tagName === 'A') {
+      closeSidebar();
+    }
+  });
+</script>
