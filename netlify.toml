@@ -4,15 +4,3 @@
 
 [build.environment]
   NODE_VERSION = "22"
-
-[functions]
-  directory = "netlify/functions"
-  included_files = ["node_modules/.bin/**"]
-
-[dev]
-  framework = "#astro"
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/entry"
-  status = 200
