@@ -1,0 +1,149 @@
+---
+import AdminLayout from '../../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../../lib/auth';
+import { supabase } from '../../../../lib/db';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const id = Number(Astro.params.id);
+
+const { data: post } = await supabase
+  .from('posts')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (!post) {
+  return Astro.redirect('/admin/posts');
+}
+---
+
+<AdminLayout
+  title="Editar Post"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <form id="post-form" class="space-y-5">
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <label for="type" class="mb-1.5 block text-sm font-medium text-gray-700">Tipo</label>
+            <select id="type" name="type" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+              <option value="blog" {post.type === 'blog' ? 'selected' : ''}>Blog</option>
+              <option value="anuncio" {post.type === 'anuncio' ? 'selected' : ''}>Anuncio</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="category" class="mb-1.5 block text-sm font-medium text-gray-700">Categoría</label>
+            <input type="text" id="category" name="category" value={post.category || ''} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Ej: Académico, Evento" />
+          </div>
+        </div>
+
+        <div>
+          <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700">Título</label>
+          <input type="text" id="title" name="title" required value={post.title} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+        </div>
+
+        <div>
+          <label for="excerpt" class="mb-1.5 block text-sm font-medium text-gray-700">Extracto / Resumen</label>
+          <textarea id="excerpt" name="excerpt" rows="2" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">{post.excerpt || ''}</textarea>
+        </div>
+
+        <div>
+          <label for="content" class="mb-1.5 block text-sm font-medium text-gray-700">Contenido</label>
+          <textarea id="content" name="content" required rows="12" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono">{post.content}</textarea>
+        </div>
+
+        <div>
+          <label for="image_url" class="mb-1.5 block text-sm font-medium text-gray-700">URL de imagen destacada</label>
+          <input type="url" id="image_url" name="image_url" value={post.image_url || ''} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="https://ejemplo.com/imagen.jpg" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="published" name="published" value="true" {post.published ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+          <label for="published" class="text-sm text-gray-700">Publicado</label>
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
+            Guardar cambios
+          </button>
+          <a href="/admin/posts" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+          <button type="button" id="delete-btn" class="ml-auto rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100">
+            Eliminar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  const form = document.getElementById('post-form');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorMsg = document.getElementById('error-msg');
+      const submitBtn = document.getElementById('submit-btn');
+      const postId = window.location.pathname.split('/').filter(Boolean).pop();
+
+      errorMsg.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+
+      const formData = new FormData(form);
+
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.get('title'),
+          content: formData.get('content'),
+          excerpt: formData.get('excerpt'),
+          image_url: formData.get('image_url'),
+          type: formData.get('type'),
+          category: formData.get('category'),
+          published: formData.get('published') === 'true',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/admin/posts';
+      } else {
+        errorMsg.textContent = data.error || 'Error al guardar';
+        errorMsg.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar cambios';
+      }
+    });
+
+    document.getElementById('delete-btn')?.addEventListener('click', async () => {
+      if (!confirm('¿Eliminar este post definitivamente?')) return;
+
+      const postId = window.location.pathname.split('/').filter(Boolean).pop();
+      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+
+      if (res.ok) {
+        window.location.href = '/admin/posts';
+      } else {
+        alert('Error al eliminar');
+      }
+    });
+  }
+</script>

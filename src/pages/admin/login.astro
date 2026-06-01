@@ -1,0 +1,92 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Iniciar Sesión — Admin">
+  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary to-primary/80 px-4">
+    <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+      <div class="mb-8 text-center">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-white shadow-lg">
+          SL
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900">Colegio Santa Luisa</h1>
+        <p class="mt-1 text-sm text-gray-500">Panel de administración</p>
+      </div>
+
+      <form id="login-form" class="space-y-5">
+        <div>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Correo electrónico</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="admin@colegio.com"
+          />
+        </div>
+        <div>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <button
+          type="submit"
+          id="submit-btn"
+          class="w-full rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-primary/90"
+        >
+          Iniciar sesión
+        </button>
+
+        <p class="text-center text-xs text-gray-400">
+          Panel exclusivo para personal autorizado
+        </p>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('login-form');
+  const errorMsg = document.getElementById('error-msg');
+  const submitBtn = document.getElementById('submit-btn');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Ingresando...';
+
+      const formData = new FormData(form);
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/admin/dashboard';
+      } else {
+        errorMsg.textContent = data.error || 'Error al iniciar sesión';
+        errorMsg.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Iniciar sesión';
+      }
+    });
+  }
+</script>

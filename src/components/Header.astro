@@ -1,0 +1,55 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+  <div class="container-custom flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/logocolegio.png" alt="Logo Colegio Santa Luisa" class="h-10 w-auto" />
+      <span class="hidden text-lg font-bold text-primary sm:block">U.E Colegio Santa Luisa</span>
+    </a>
+
+    <nav class="hidden items-center gap-8 md:flex">
+      <a href="/#inicio" class="text-sm font-medium text-gray-700 transition hover:text-primary">Inicio</a>
+      <a href="/#nosotros" class="text-sm font-medium text-gray-700 transition hover:text-primary">Nosotros</a>
+      <a href="/#programas" class="text-sm font-medium text-gray-700 transition hover:text-primary">Programas</a>
+      <a href="/#galeria" class="text-sm font-medium text-gray-700 transition hover:text-primary">Galería</a>
+      <a href="/#testimonios" class="text-sm font-medium text-gray-700 transition hover:text-primary">Testimonios</a>
+      <a href="/blog" class="text-sm font-medium text-gray-700 transition hover:text-primary">Blog</a>
+      <a href="/#contacto" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+        Contacto
+      </a>
+    </nav>
+
+    <button id="menu-toggle" class="flex flex-col gap-1.5 md:hidden" aria-label="Abrir menú">
+      <span class="block h-0.5 w-6 bg-gray-700 transition"></span>
+      <span class="block h-0.5 w-6 bg-gray-700 transition"></span>
+      <span class="block h-0.5 w-6 bg-gray-700 transition"></span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-gray-100 bg-white px-4 pb-5 pt-3 md:hidden">
+    <nav class="flex flex-col gap-3">
+      <a href="/#inicio" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Inicio</a>
+      <a href="/#nosotros" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Nosotros</a>
+      <a href="/#programas" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Programas</a>
+      <a href="/#galeria" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Galería</a>
+      <a href="/#testimonios" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Testimonios</a>
+      <a href="/blog" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-primary">Blog</a>
+      <a href="/#contacto" class="rounded-lg bg-primary px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-primary/90">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        menu.classList.add('hidden');
+      });
+    });
+  }
+</script>

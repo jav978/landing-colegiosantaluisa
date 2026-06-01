@@ -1,0 +1,119 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout
+  title="Nuevo Post"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <form id="post-form" class="space-y-5">
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <label for="type" class="mb-1.5 block text-sm font-medium text-gray-700">Tipo</label>
+            <select id="type" name="type" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+              <option value="blog">Blog</option>
+              <option value="anuncio">Anuncio</option>
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="category" class="mb-1.5 block text-sm font-medium text-gray-700">Categoría</label>
+            <input type="text" id="category" name="category" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Ej: Académico, Evento" />
+          </div>
+        </div>
+
+        <div>
+          <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700">Título</label>
+          <input type="text" id="title" name="title" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Título del post" />
+        </div>
+
+        <div>
+          <label for="excerpt" class="mb-1.5 block text-sm font-medium text-gray-700">Extracto / Resumen</label>
+          <textarea id="excerpt" name="excerpt" rows="2" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Breve descripción que aparece en la tarjeta"></textarea>
+        </div>
+
+        <div>
+          <label for="content" class="mb-1.5 block text-sm font-medium text-gray-700">Contenido</label>
+          <textarea id="content" name="content" required rows="12" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono" placeholder="Escribe aquí el contenido del post..."></textarea>
+        </div>
+
+        <div>
+          <label for="image_url" class="mb-1.5 block text-sm font-medium text-gray-700">URL de imagen destacada</label>
+          <input type="url" id="image_url" name="image_url" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="https://ejemplo.com/imagen.jpg" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="published" name="published" value="true" class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+          <label for="published" class="text-sm text-gray-700">Publicar inmediatamente</label>
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <div class="flex gap-3">
+          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
+            Guardar
+          </button>
+          <a href="/admin/posts" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  const form = document.getElementById('post-form');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorMsg = document.getElementById('error-msg');
+      const submitBtn = document.getElementById('submit-btn');
+
+      errorMsg.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+
+      const formData = new FormData(form);
+
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.get('title'),
+          content: formData.get('content'),
+          excerpt: formData.get('excerpt'),
+          image_url: formData.get('image_url'),
+          type: formData.get('type'),
+          category: formData.get('category'),
+          published: formData.get('published') === 'true',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/admin/posts';
+      } else {
+        errorMsg.textContent = data.error || 'Error al guardar';
+        errorMsg.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar';
+      }
+    });
+  }
+</script>

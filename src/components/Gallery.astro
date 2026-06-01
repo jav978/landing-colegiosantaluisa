@@ -1,0 +1,42 @@
+---
+const imagenes = [
+  { src: '/images/gallery/01-fachada.jpg', alt: 'Fachada del colegio', label: 'Nuestra Institución' },
+  { src: '/images/gallery/02-biblioteca.jpg', alt: 'Biblioteca escolar', label: 'Biblioteca' },
+  { src: '/images/gallery/03-aulas.jpg', alt: 'Estudiantes en clase', label: 'Aulas' },
+  { src: '/images/gallery/04-estudiantes.jpg', alt: 'Estudiantes', label: 'Vida Estudiantil' },
+  { src: '/images/gallery/05-actividades.jpg', alt: 'Actividades educativas', label: 'Actividades' },
+  { src: '/images/gallery/06-deportes.jpg', alt: 'Deportes', label: 'Deportes' },
+];
+---
+
+<section id="galeria" class="section-padding bg-stone-50">
+  <div class="container-custom">
+    <div class="mb-16 text-center">
+      <span class="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+        Galería
+      </span>
+      <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+        Conoce <span class="text-primary">nuestro</span> Colegio
+      </h2>
+      <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {imagenes.map((img) => (
+        <div class="group relative overflow-hidden rounded-2xl shadow-sm">
+          <img
+            src={img.src}
+            alt={img.alt}
+            class="h-72 w-full object-cover transition duration-500 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition group-hover:opacity-100">
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+              <span class="text-sm font-semibold text-white">{img.label}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,109 @@
+---
+const contactoInfo = [
+  { icon: '📍', label: 'Dirección', value: 'Calle Real del Prado de María, junto a la Iglesia La Milagrosa, Caracas' },
+  { icon: '📞', label: 'Teléfono', value: '+58 (212) 555-1234' },
+  { icon: '✉️', label: 'Email', value: 'info@colegiosantaluisa.edu.ve' },
+  { icon: '🕐', label: 'Horario', value: 'Lunes a Viernes · 7:00 AM - 1:00 PM' },
+];
+---
+
+<section id="contacto" class="section-padding bg-gradient-to-b from-white to-stone-50">
+  <div class="container-custom">
+    <div class="mb-16 text-center">
+      <span class="mb-3 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
+        Contacto
+      </span>
+      <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+        Estemos en <span class="text-primary">contacto</span>
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-gray-600">
+        ¿Tienes preguntas? Escríbenos y con gusto te atenderemos
+      </p>
+      <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
+    </div>
+
+    <div class="grid gap-12 lg:grid-cols-5">
+      <div class="lg:col-span-3">
+        <form class="space-y-6" action="#" method="POST">
+          <div class="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700">Nombre completo</label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                placeholder="Tu nombre"
+              />
+            </div>
+            <div>
+              <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Correo electrónico</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                placeholder="tu@correo.com"
+              />
+            </div>
+          </div>
+          <div>
+            <label for="telefono" class="mb-1.5 block text-sm font-medium text-gray-700">Teléfono</label>
+            <input
+              type="tel"
+              id="telefono"
+              name="telefono"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="+58 412-..."
+            />
+          </div>
+          <div>
+            <label for="mensaje" class="mb-1.5 block text-sm font-medium text-gray-700">Mensaje</label>
+            <textarea
+              id="mensaje"
+              name="mensaje"
+              rows="4"
+              required
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="Escribe tu mensaje..."
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-primary/90 hover:shadow-xl sm:w-auto"
+          >
+            Enviar mensaje
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="lg:col-span-2">
+        <div class="rounded-2xl bg-primary p-8 text-white shadow-lg">
+          <h3 class="mb-6 text-lg font-bold">Información de contacto</h3>
+          <div class="space-y-6">
+            {contactoInfo.map((item) => (
+              <div class="flex items-start gap-4">
+                <span class="mt-0.5 text-xl">{item.icon}</span>
+                <div>
+                  <p class="text-xs font-medium uppercase tracking-wider text-white/70">{item.label}</p>
+                  <p class="text-sm font-medium">{item.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-8 flex gap-3">
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-sm transition hover:bg-white/25">📘</a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-sm transition hover:bg-white/25">📸</a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-sm transition hover:bg-white/25">🐦</a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-sm transition hover:bg-white/25">▶️</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
