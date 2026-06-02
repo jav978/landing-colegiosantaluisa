@@ -2,11 +2,11 @@
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "stitch": {
-      "type": "remote",
-      "url": "https://stitch.googleapis.com/mcp",
+      "type": "local",
+      "command": ["npx", "@_davideast/stitch-mcp", "proxy"],
       "enabled": true,
-      "headers": {
-        "X-Goog-Api-Key": "AAQ.Ab8RN6JQDrqGlampE2AQcQxsq4m_rFFEr0xrTJnPUHAyzJxilQ"
+      "environment": {
+        "STITCH_API_KEY": "{file:.secrets/stitch-key.md}"
       }
     }
   }
