@@ -19,6 +19,22 @@ const { data: post } = await supabase
 if (!post) {
   return Astro.redirect('/blog');
 }
+
+function getAllImages(imageUrl: string | null | undefined): string[] {
+  if (!imageUrl) return [];
+  if (imageUrl.startsWith('[')) {
+    try {
+      const arr = JSON.parse(imageUrl);
+      return Array.isArray(arr) ? arr : [imageUrl];
+    } catch (e) {
+      return [imageUrl];
+    }
+  }
+  return [imageUrl];
+}
+
+const images = getAllImages(post.image_url);
+const coverImg = images.length > 0 ? images[0] : null;
 ---
 
 <Layout title={`${post.title} — Blog Santa Luisa`}>
@@ -26,9 +42,9 @@ if (!post) {
   <main class="pt-20">
     <article class="section-padding">
       <div class="container-custom max-w-3xl">
-        {post.image_url && (
+        {coverImg && (
           <div class="mb-8 overflow-hidden rounded-2xl shadow-lg">
-            <img src={post.image_url} alt={post.title} class="w-full object-cover" />
+            <img src={coverImg} alt={post.title} class="w-full object-cover max-h-[450px] object-center cursor-pointer hover:opacity-95 transition" id="main-cover-image" />
           </div>
         )}
 
@@ -50,6 +66,146 @@ if (!post) {
         <div class="prose prose-gray dark:prose-invert max-w-none text-base leading-relaxed text-gray-700 dark:text-slate-300 whitespace-pre-line">
           {post.content}
         </div>
+
+        {images.length > 1 && (
+          <div class="mt-12 border-t border-gray-100 dark:border-slate-800 pt-10">
+            <h3 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">Galería de Imágenes</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="gallery-grid">
+              {images.map((src, idx) => (
+                <div class="relative overflow-hidden rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50 aspect-video group cursor-pointer shadow-sm hover:shadow-md transition duration-300">
+                  <img 
+                    src={src} 
+                    alt={`Imagen ${idx + 1} de ${post.title}`} 
+                    class="w-full h-full object-cover transition duration-500 group-hover:scale-105 gallery-thumb" 
+                    data-index={idx}
+                    loading="lazy" 
+                  />
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                    <span class="text-white text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition duration-300">
+                      Ampliar 🔍
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div id="lightbox" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8 opacity-0 pointer-events-none transition-all duration-300 select-none">
+          <button id="lightbox-close" class="absolute top-6 right-6 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 w-12 h-12 rounded-full flex items-center justify-center text-2xl transition duration-200" aria-label="Cerrar">
+            ✕
+          </button>
+          
+          <button id="lightbox-prev" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 w-12 h-12 rounded-full flex items-center justify-center text-2xl transition duration-200" aria-label="Anterior">
+            ‹
+          </button>
+          
+          <button id="lightbox-next" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 w-12 h-12 rounded-full flex items-center justify-center text-2xl transition duration-200" aria-label="Siguiente">
+            ›
+          </button>
+        
+          <div class="relative max-w-4xl max-h-[75vh] flex items-center justify-center">
+            <img id="lightbox-img" src="" alt="Vista ampliada" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl transform scale-95 transition-transform duration-300" />
+          </div>
+          
+          <div class="absolute bottom-6 text-white/60 text-sm font-medium">
+            <span id="lightbox-index">1</span> / <span id="lightbox-total">1</span>
+          </div>
+        </div>
+
+        <script define:vars={{ images }}>
+          let currentIdx = 0;
+          
+          const lightbox = document.getElementById('lightbox');
+          const lightboxImg = document.getElementById('lightbox-img');
+          const lightboxIndex = document.getElementById('lightbox-index');
+          const lightboxTotal = document.getElementById('lightbox-total');
+          
+          const closeBtn = document.getElementById('lightbox-close');
+          const prevBtn = document.getElementById('lightbox-prev');
+          const nextBtn = document.getElementById('lightbox-next');
+          
+          if (lightbox && lightboxImg && lightboxIndex && lightboxTotal) {
+            lightboxTotal.textContent = String(images.length);
+            
+            const openLightbox = (index) => {
+              currentIdx = index;
+              updateLightbox();
+              lightbox.classList.remove('opacity-0', 'pointer-events-none');
+              lightboxImg.classList.remove('scale-95');
+              lightboxImg.classList.add('scale-100');
+              document.body.style.overflow = 'hidden';
+            };
+            
+            const closeLightbox = () => {
+              lightbox.classList.add('opacity-0', 'pointer-events-none');
+              lightboxImg.classList.remove('scale-100');
+              lightboxImg.classList.add('scale-95');
+              document.body.style.overflow = '';
+            };
+            
+            const updateLightbox = () => {
+              if (!lightboxImg || !lightboxIndex) return;
+              lightboxImg.src = images[currentIdx];
+              lightboxIndex.textContent = String(currentIdx + 1);
+              
+              if (images.length <= 1) {
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
+              } else {
+                if (prevBtn) prevBtn.style.display = '';
+                if (nextBtn) nextBtn.style.display = '';
+              }
+            };
+            
+            const showNext = (e) => {
+              if (e) e.stopPropagation();
+              currentIdx = (currentIdx + 1) % images.length;
+              updateLightbox();
+            };
+            
+            const showPrev = (e) => {
+              if (e) e.stopPropagation();
+              currentIdx = (currentIdx - 1 + images.length) % images.length;
+              updateLightbox();
+            };
+            
+            // Eventos para abrir desde la galería
+            document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+              thumb.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(thumb.dataset.index || '0', 10);
+                openLightbox(idx);
+              });
+            });
+            
+            // Evento para abrir desde la portada principal
+            const mainCover = document.getElementById('main-cover-image');
+            if (mainCover) {
+              mainCover.addEventListener('click', () => {
+                openLightbox(0);
+              });
+            }
+            
+            closeBtn?.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', closeLightbox);
+            prevBtn?.addEventListener('click', showPrev);
+            nextBtn?.addEventListener('click', showNext);
+            
+            lightboxImg.addEventListener('click', (e) => {
+              e.stopPropagation();
+              showNext();
+            });
+            
+            document.addEventListener('keydown', (e) => {
+              if (lightbox.classList.contains('pointer-events-none')) return;
+              
+              if (e.key === 'Escape') closeLightbox();
+              if (e.key === 'ArrowRight') showNext();
+              if (e.key === 'ArrowLeft') showPrev();
+            });
+          }
+        </script>
 
         <div class="mt-12 border-t dark:border-slate-800 pt-8">
           <a href="/blog" class="inline-flex items-center gap-2 text-sm font-medium text-primary dark:text-accent hover:text-primary-light dark:hover:text-accent-light">

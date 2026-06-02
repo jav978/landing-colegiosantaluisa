@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
 import { getSessionToken, validateSession } from '../../../lib/auth';
+import { supabase } from '../../../lib/db';
 
 const token = getSessionToken(Astro.request);
 const session = token ? await validateSession(token) : null;
@@ -8,6 +9,17 @@ const session = token ? await validateSession(token) : null;
 if (!session) {
   return Astro.redirect('/admin/login');
 }
+
+// Obtener los posts directamente en el servidor
+const { data: postsData } = await supabase
+  .from('posts')
+  .select(`
+    id, title, slug, excerpt, image_url, type, category, published, created_at, updated_at,
+    usuarios ( email, nombre )
+  `)
+  .order('created_at', { ascending: false });
+
+const posts = postsData || [];
 ---
 
 <AdminLayout
@@ -19,11 +31,11 @@ if (!session) {
 >
   <div class="mb-6 flex items-center justify-between">
     <div class="flex gap-2">
-      <button onclick="filtrar('')" class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="">Todos</button>
-      <button onclick="filtrar('blog')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="blog">Blog</button>
-      <button onclick="filtrar('anuncio')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="anuncio">Anuncios</button>
+      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary" data-filter="">Todos</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="blog">Blog</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="anuncio">Anuncios</button>
     </div>
-    <a href="/admin/posts/new" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+    <a href="/admin/posts/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
       + Nuevo
     </a>
   </div>
@@ -42,7 +54,35 @@ if (!session) {
           </tr>
         </thead>
         <tbody id="posts-table-body">
-          <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">Cargando...</td></tr>
+          {posts.length === 0 ? (
+            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay contenido</td></tr>
+          ) : (
+            posts.map((p) => {
+              const typeLabel = p.type === 'anuncio' ? 'Anuncio' : 'Blog';
+              const typeClass = p.type === 'anuncio' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700';
+              const statusLabel = p.published ? 'Publicado' : 'Borrador';
+              const statusClass = p.published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600';
+              const date = p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE') : '—';
+              return (
+                <tr class="border-b last:border-0 hover:bg-gray-50 transition duration-150" data-type={p.type} data-post-row>
+                  <td class="max-w-xs truncate px-5 py-4 font-medium text-gray-900" title={p.title}>{p.title}</td>
+                  <td class="px-5 py-4">
+                    <span class={`rounded-full ${typeClass} px-2.5 py-0.5 text-xs font-medium`}>{typeLabel}</span>
+                  </td>
+                  <td class="px-5 py-4 text-gray-600 max-md:hidden">{p.usuarios?.nombre || '—'}</td>
+                  <td class="px-5 py-4">
+                    <span class={`rounded-full ${statusClass} px-2.5 py-0.5 text-xs font-medium`}>{statusLabel}</span>
+                  </td>
+                  <td class="px-5 py-4 text-gray-500 max-md:hidden">{date}</td>
+                  <td class="px-5 py-4">
+                    <a href={`/admin/posts/${p.id}/edit`} data-astro-prefetch class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100">
+                      Editar
+                    </a>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
@@ -50,66 +90,42 @@ if (!session) {
 </AdminLayout>
 
 <script>
-  let currentFilter = '';
+  function setupFiltering() {
+    const buttons = document.querySelectorAll('.filter-btn');
+    const rows = document.querySelectorAll('[data-post-row]');
 
-  async function loadPosts() {
-    const url = currentFilter ? `/api/posts?type=${currentFilter}` : '/api/posts';
-    const res = await fetch(url);
-    if (!res.ok) {
-      document.getElementById('posts-table-body').innerHTML =
-        '<tr><td colspan="6" class="px-5 py-10 text-center text-red-500">Error al cargar</td></tr>';
-      return;
-    }
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = (btn as HTMLButtonElement).dataset.filter || '';
 
-    const posts = await res.json();
-    const tbody = document.getElementById('posts-table-body');
+        // Actualizar estados visuales de los botones
+        buttons.forEach((b) => {
+          const isTarget = (b as HTMLButtonElement).dataset.filter === filter;
+          b.classList.toggle('active', isTarget);
+          b.classList.toggle('bg-primary', isTarget);
+          b.classList.toggle('text-white', isTarget);
+          b.classList.toggle('border-primary', isTarget);
+          b.classList.toggle('text-gray-600', !isTarget);
+          b.classList.toggle('border-gray-200', !isTarget);
+        });
 
-    if (posts.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay contenido</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = posts.map((p) => {
-      const typeLabel = p.type === 'anuncio' ? 'Anuncio' : 'Blog';
-      const typeClass = p.type === 'anuncio' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700';
-      const statusLabel = p.published ? 'Publicado' : 'Borrador';
-      const statusClass = p.published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600';
-      const date = p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE') : '—';
-
-      return `
-        <tr class="border-b last:border-0 hover:bg-gray-50">
-          <td class="max-w-xs truncate px-5 py-4 font-medium text-gray-900" title="${p.title}">${p.title}</td>
-          <td class="px-5 py-4">
-            <span class="rounded-full ${typeClass} px-2.5 py-0.5 text-xs font-medium">${typeLabel}</span>
-          </td>
-          <td class="px-5 py-4 text-gray-600 max-md:hidden">${p.usuarios?.nombre || '—'}</td>
-          <td class="px-5 py-4">
-            <span class="rounded-full ${statusClass} px-2.5 py-0.5 text-xs font-medium">${statusLabel}</span>
-          </td>
-          <td class="px-5 py-4 text-gray-500 max-md:hidden">${date}</td>
-          <td class="px-5 py-4">
-            <a href="/admin/posts/${p.id}/edit" class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100">
-              Editar
-            </a>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  function filtrar(tipo) {
-    currentFilter = tipo;
-    document.querySelectorAll('.filter-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.filter === tipo);
-      btn.classList.toggle('bg-primary', btn.dataset.filter === tipo);
-      btn.classList.toggle('text-white', btn.dataset.filter === tipo);
-      btn.classList.toggle('border-primary', btn.dataset.filter === tipo);
-      btn.classList.toggle('text-gray-600', btn.dataset.filter !== tipo);
-      btn.classList.toggle('border-gray-200', btn.dataset.filter !== tipo);
+        // Mostrar / Ocultar filas correspondientes
+        rows.forEach((row) => {
+          const type = (row as HTMLElement).dataset.type || '';
+          if (filter === '' || type === filter) {
+            row.classList.remove('hidden');
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+      });
     });
-    loadPosts();
   }
 
-  document.querySelector('.filter-btn')?.classList.add('bg-primary', 'text-white', 'border-primary');
-  loadPosts();
+  // Inicializar en la carga inicial y después de cada navegación SPA de Astro
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.filter-btn')) {
+      setupFiltering();
+    }
+  });
 </script>

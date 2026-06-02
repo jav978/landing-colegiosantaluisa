@@ -8,6 +8,18 @@ const { data: anuncios } = await supabase
   .eq('published', true)
   .order('created_at', { ascending: false })
   .limit(3);
+function getFirstImage(imageUrl: string | null | undefined): string | null {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('[')) {
+    try {
+      const arr = JSON.parse(imageUrl);
+      return Array.isArray(arr) && arr.length > 0 ? arr[0] : null;
+    } catch (e) {
+      return imageUrl;
+    }
+  }
+  return imageUrl;
+}
 ---
 
 {anuncios && anuncios.length > 0 && (
@@ -24,21 +36,23 @@ const { data: anuncios } = await supabase
       </div>
 
       <div class="grid gap-6 md:grid-cols-3">
-        {anuncios.map((a) => (
-          <a
-            href={`/blog/${a.slug}`}
-            class="group relative overflow-hidden rounded-2xl border border-amber-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg"
-          >
-            {a.image_url && (
-              <div class="aspect-video overflow-hidden">
-                <img
-                  src={a.image_url}
-                  alt={a.title}
-                  class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            )}
+        {anuncios.map((a) => {
+          const coverImg = getFirstImage(a.image_url);
+          return (
+            <a
+              href={`/blog/${a.slug}`}
+              class="group relative overflow-hidden rounded-2xl border border-amber-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg"
+            >
+              {coverImg && (
+                <div class="aspect-video overflow-hidden">
+                  <img
+                    src={coverImg}
+                    alt={a.title}
+                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </div>
+              )}
             <div class="p-5">
               <div class="mb-3 flex items-center gap-2">
                 <span class="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
@@ -59,7 +73,8 @@ const { data: anuncios } = await supabase
               </span>
             </div>
           </a>
-        ))}
+          );
+        })}
       </div>
     </div>
   </section>

@@ -46,8 +46,8 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const { title, content, excerpt, image_url, type, category, published } = body;
 
-    if (!title || !content) {
-      return new Response(JSON.stringify({ error: 'Título y contenido requeridos' }), { status: 400 });
+    if (!title || !content || !image_url) {
+      return new Response(JSON.stringify({ error: 'Título, contenido e imagen destacada son requeridos' }), { status: 400 });
     }
 
     let slug = slugify(title);

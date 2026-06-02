@@ -36,3 +36,9 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Desactivar RLS (Row Level Security) para que el backend de Astro pueda consultar/insertar usando la anon key
+ALTER TABLE usuarios DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sesiones DISABLE ROW LEVEL SECURITY;
+ALTER TABLE posts DISABLE ROW LEVEL SECURITY;
+

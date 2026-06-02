@@ -72,41 +72,53 @@ if (session.rol !== 'admin') {
 </AdminLayout>
 
 <script>
-  const form = document.getElementById('user-form');
+  import { navigate } from 'astro:transitions/client';
 
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  function setupNewUser() {
+    const form = document.getElementById('user-form') as HTMLFormElement | null;
 
-      const errorMsg = document.getElementById('error-msg');
-      const submitBtn = document.getElementById('submit-btn');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      errorMsg.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Creando...';
+        const errorMsg = document.getElementById('error-msg');
+        const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+        if (!errorMsg || !submitBtn) return;
 
-      const formData = new FormData(form);
-      const res = await fetch('/api/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: formData.get('nombre'),
-          email: formData.get('email'),
-          password: formData.get('password'),
-          rol: formData.get('rol'),
-        }),
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creando...';
+
+        const formData = new FormData(form);
+        const res = await fetch('/api/usuarios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nombre: formData.get('nombre'),
+            email: formData.get('email'),
+            password: formData.get('password'),
+            rol: formData.get('rol'),
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          navigate('/admin/usuarios');
+        } else {
+          errorMsg.textContent = data.error || 'Error al crear usuario';
+          errorMsg.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Crear usuario';
+        }
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        window.location.href = '/admin/usuarios';
-      } else {
-        errorMsg.textContent = data.error || 'Error al crear usuario';
-        errorMsg.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Crear usuario';
-      }
-    });
+    }
   }
+
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('user-form')) {
+      setupNewUser();
+    }
+  });
 </script>

@@ -35,6 +35,7 @@ function isActive(href: string) {
     {links.map((link) => (
       <a
         href={link.href}
+        data-astro-prefetch
         class={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
           isActive(link.href)
             ? 'bg-primary/20 text-primary-light'
