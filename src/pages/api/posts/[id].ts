@@ -20,10 +20,19 @@ export const PUT: APIRoute = async ({ request, params }) => {
       updated_at: new Date().toISOString(),
     };
 
-    if (body.title !== undefined) updates.title = body.title;
-    if (body.content !== undefined) updates.content = body.content;
+    if (body.title !== undefined) {
+      if (!body.title) return new Response(JSON.stringify({ error: 'Título requerido' }), { status: 400 });
+      updates.title = body.title;
+    }
+    if (body.content !== undefined) {
+      if (!body.content) return new Response(JSON.stringify({ error: 'Contenido requerido' }), { status: 400 });
+      updates.content = body.content;
+    }
     if (body.excerpt !== undefined) updates.excerpt = body.excerpt;
-    if (body.image_url !== undefined) updates.image_url = body.image_url;
+    if (body.image_url !== undefined) {
+      if (!body.image_url) return new Response(JSON.stringify({ error: 'La imagen destacada es requerida' }), { status: 400 });
+      updates.image_url = body.image_url;
+    }
     if (body.type !== undefined) updates.type = body.type;
     if (body.category !== undefined) updates.category = body.category;
     if (body.published !== undefined) updates.published = body.published;
