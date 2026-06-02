@@ -30,16 +30,16 @@ const programas = [
 ];
 ---
 
-<section id="programas" class="section-padding bg-white">
+<section id="programas" class="section-padding bg-white dark:bg-[#0e072c]">
   <div class="container-custom">
     <div class="mb-16 text-center">
       <span class="mb-3 inline-block rounded-full bg-accent/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
         Oferta Académica
       </span>
-      <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
         Nuestros <span class="text-accent">Programas</span> Educativos
       </h2>
-      <p class="mx-auto mt-4 max-w-2xl text-gray-600">
+      <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-slate-300">
         Desde 1950 formando generaciones con excelencia académica y valores vicencianos
       </p>
       <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
@@ -47,16 +47,16 @@ const programas = [
 
     <div class="grid gap-8 md:grid-cols-3">
       {programas.map((p) => (
-        <div class={`group relative overflow-hidden rounded-2xl border ${p.border} ${p.bg} p-8 shadow-sm transition hover:shadow-xl`}>
+        <div class={`group relative overflow-hidden rounded-2xl border ${p.border} dark:border-slate-800 ${p.bg} dark:bg-[#1b1145] p-8 shadow-sm transition hover:shadow-xl`}>
           <div class={`absolute top-0 right-0 h-32 w-32 -translate-y-8 translate-x-8 rounded-full bg-gradient-to-br ${p.color} opacity-10`}></div>
           
           <div class="relative">
             <span class="mb-4 inline-block text-4xl">{p.icon}</span>
-            <h3 class="mb-1 text-xl font-bold text-gray-900">{p.nivel}</h3>
-            <span class={`mb-4 inline-block rounded-full ${p.bg} bg-opacity-50 px-3 py-0.5 text-xs font-semibold text-gray-600`}>
+            <h3 class="mb-1 text-xl font-bold text-gray-900 dark:text-slate-100">{p.nivel}</h3>
+            <span class={`mb-4 inline-block rounded-full ${p.bg} bg-opacity-50 dark:bg-slate-800 px-3 py-0.5 text-xs font-semibold text-gray-600 dark:text-slate-300`}>
               {p.grados}
             </span>
-            <p class="text-sm leading-relaxed text-gray-600">{p.descripcion}</p>
+            <p class="text-sm leading-relaxed text-gray-600 dark:text-slate-300">{p.descripcion}</p>
           </div>
         </div>
       ))}

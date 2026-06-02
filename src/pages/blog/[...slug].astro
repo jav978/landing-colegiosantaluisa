@@ -32,27 +32,27 @@ if (!post) {
           </div>
         )}
 
-        <div class="mb-6 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+        <div class="mb-6 flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-slate-400">
           {post.category && (
-            <span class="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">{post.category}</span>
+            <span class="rounded-full bg-primary/10 dark:bg-primary-light/20 px-3 py-0.5 text-xs font-medium text-primary dark:text-primary-light">{post.category}</span>
           )}
           <span>{new Date(post.created_at).toLocaleDateString('es-VE', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
           <span>—</span>
           <span>{post.usuarios?.nombre || 'Colegio Santa Luisa'}</span>
         </div>
 
-        <h1 class="mb-6 text-3xl font-bold text-gray-900 sm:text-4xl">{post.title}</h1>
+        <h1 class="mb-6 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">{post.title}</h1>
 
         {post.excerpt && (
-          <p class="mb-8 text-lg leading-relaxed text-gray-500 italic">{post.excerpt}</p>
+          <p class="mb-8 text-lg leading-relaxed text-gray-500 dark:text-slate-400 italic">{post.excerpt}</p>
         )}
 
-        <div class="prose prose-gray max-w-none text-base leading-relaxed text-gray-700 whitespace-pre-line">
+        <div class="prose prose-gray dark:prose-invert max-w-none text-base leading-relaxed text-gray-700 dark:text-slate-300 whitespace-pre-line">
           {post.content}
         </div>
 
-        <div class="mt-12 border-t pt-8">
-          <a href="/blog" class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80">
+        <div class="mt-12 border-t dark:border-slate-800 pt-8">
+          <a href="/blog" class="inline-flex items-center gap-2 text-sm font-medium text-primary dark:text-accent hover:text-primary-light dark:hover:text-accent-light">
             ← Volver al blog
           </a>
         </div>
