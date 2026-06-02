@@ -13,6 +13,19 @@ const { data: posts } = await supabase
   .eq('type', 'blog')
   .eq('published', true)
   .order('created_at', { ascending: false });
+
+function getFirstImage(imageUrl: string | null | undefined): string | null {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('[')) {
+    try {
+      const arr = JSON.parse(imageUrl);
+      return Array.isArray(arr) && arr.length > 0 ? arr[0] : null;
+    } catch (e) {
+      return imageUrl;
+    }
+  }
+  return imageUrl;
+}
 ---
 
 <Layout title="Blog — Colegio Santa Luisa">
@@ -32,14 +45,16 @@ const { data: posts } = await supabase
 
         {posts && posts.length > 0 ? (
           <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <a href={`/blog/${post.slug}`} class="group rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg overflow-hidden">
-                {post.image_url && (
-                  <div class="aspect-video overflow-hidden">
-                    <img src={post.image_url} alt={post.title} class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
-                  </div>
-                )}
-                <div class="p-6">
+            {posts.map((post) => {
+              const coverImg = getFirstImage(post.image_url);
+              return (
+                <a href={`/blog/${post.slug}`} class="group rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg overflow-hidden">
+                  {coverImg && (
+                    <div class="aspect-video overflow-hidden">
+                      <img src={coverImg} alt={post.title} class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+                    </div>
+                  )}
+                  <div class="p-6">
                   <div class="mb-3 flex items-center gap-2">
                     {post.category && (
                       <span class="rounded-full bg-primary/10 dark:bg-primary-light/20 px-3 py-0.5 text-xs font-medium text-primary dark:text-primary-light">{post.category}</span>
@@ -53,7 +68,8 @@ const { data: posts } = await supabase
                   </div>
                 </div>
               </a>
-            ))}
+            );
+          })}
           </div>
         ) : (
           <div class="py-20 text-center text-gray-400 dark:text-slate-500">

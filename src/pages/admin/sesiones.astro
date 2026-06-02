@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../components/admin/AdminLayout.astro';
 import { getSessionToken, validateSession } from '../../lib/auth';
+import { supabase } from '../../lib/db';
 
 const token = getSessionToken(Astro.request);
 const session = token ? await validateSession(token) : null;
@@ -12,6 +13,18 @@ if (!session) {
 if (session.rol !== 'admin') {
   return Astro.redirect('/admin/dashboard');
 }
+
+// Obtener las sesiones activas directamente en el servidor
+const { data: sesionesData } = await supabase
+  .from('sesiones')
+  .select(`
+    id, user_id, token, ip_address, user_agent, created_at, expires_at, last_active, deleted_at,
+    usuarios ( email, nombre )
+  `)
+  .is('deleted_at', null)
+  .order('last_active', { ascending: false });
+
+const sesiones = sesionesData || [];
 ---
 
 <AdminLayout
@@ -36,9 +49,33 @@ if (session.rol !== 'admin') {
           </tr>
         </thead>
         <tbody id="sesiones-table-body">
-          <tr>
-            <td colspan="7" class="px-5 py-10 text-center text-gray-400">Cargando sesiones...</td>
-          </tr>
+          {sesiones.length === 0 ? (
+            <tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">No hay sesiones activas</td></tr>
+          ) : (
+            sesiones.map((s) => {
+              const expiresAt = new Date(s.expires_at);
+              const lastActive = new Date(s.last_active);
+              const isExpired = expiresAt < new Date();
+              return (
+                <tr class={`border-b last:border-0 hover:bg-gray-50 transition duration-150 ${isExpired ? 'opacity-50' : ''}`}>
+                  <td class="px-5 py-4 font-medium text-gray-900">{s.usuarios?.nombre || '—'}</td>
+                  <td class="px-5 py-4 text-gray-600">{s.usuarios?.email || '—'}</td>
+                  <td class="px-5 py-4 font-mono text-xs text-gray-500 max-md:hidden">{s.ip_address || '—'}</td>
+                  <td class="max-w-xs truncate px-5 py-4 text-xs text-gray-500 max-lg:hidden" title={s.user_agent || ''}>{s.user_agent || '—'}</td>
+                  <td class="px-5 py-4 text-gray-600">{lastActive.toLocaleString('es-VE')}</td>
+                  <td class="px-5 py-4 text-gray-600">{expiresAt.toLocaleString('es-VE')}</td>
+                  <td class="px-5 py-4">
+                    <button
+                      data-id={s.id}
+                      class="cerrar-sesion-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
+                    >
+                      Cerrar
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
@@ -46,52 +83,23 @@ if (session.rol !== 'admin') {
 </AdminLayout>
 
 <script>
-  async function loadSesiones() {
-    const res = await fetch('/api/sesiones');
-    if (!res.ok) {
-      const errorEl = document.getElementById('sesiones-table-body');
-      if (errorEl) {
-        errorEl.innerHTML = '<tr><td colspan="7" class="px-5 py-10 text-center text-red-500">Error al cargar sesiones</td></tr>';
-      }
-      return;
+  import { navigate } from 'astro:transitions/client';
+
+  async function cerrarSesion(id: number) {
+    if (!confirm('¿Cerrar esta sesión?')) return;
+
+    const res = await fetch(`/api/sesiones/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      // Recargar la página reactivamente para obtener la lista actualizada del servidor
+      navigate(window.location.pathname);
+    } else {
+      alert('Error al cerrar sesión');
     }
+  }
 
-    const sesiones = await res.json();
-    const tbody = document.getElementById('sesiones-table-body');
-    if (!tbody) return;
-
-    if (sesiones.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">No hay sesiones activas</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = sesiones.map((s) => {
-      const expiresAt = new Date(s.expires_at);
-      const lastActive = new Date(s.last_active);
-      const isExpired = expiresAt < new Date();
-
-      return `
-        <tr class="border-b last:border-0 hover:bg-gray-50 ${isExpired ? 'opacity-50' : ''}">
-          <td class="px-5 py-4 font-medium text-gray-900">${s.usuarios?.nombre || '—'}</td>
-          <td class="px-5 py-4 text-gray-600">${s.usuarios?.email || '—'}</td>
-          <td class="px-5 py-4 font-mono text-xs text-gray-500 max-md:hidden">${s.ip_address || '—'}</td>
-          <td class="max-w-xs truncate px-5 py-4 text-xs text-gray-500 max-lg:hidden" title="${s.user_agent || ''}">${s.user_agent || '—'}</td>
-          <td class="px-5 py-4 text-gray-600">${lastActive.toLocaleString('es-VE')}</td>
-          <td class="px-5 py-4 text-gray-600">${expiresAt.toLocaleString('es-VE')}</td>
-          <td class="px-5 py-4">
-            <button
-              data-id="${s.id}"
-              class="cerrar-sesion-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
-            >
-              Cerrar
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    // Asignar eventos dinámicamente
-    tbody.querySelectorAll('.cerrar-sesion-btn').forEach((btn) => {
+  function setupSesiones() {
+    const buttons = document.querySelectorAll('.cerrar-sesion-btn');
+    buttons.forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = Number(btn.getAttribute('data-id'));
         if (isNaN(id)) return;
@@ -100,21 +108,10 @@ if (session.rol !== 'admin') {
     });
   }
 
-  async function cerrarSesion(id) {
-    if (!confirm('¿Cerrar esta sesión?')) return;
-
-    const res = await fetch(`/api/sesiones/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      await loadSesiones();
-    } else {
-      alert('Error al cerrar sesión');
-    }
-  }
-
   // Inicializar en la carga inicial y después de cada cambio de página
   document.addEventListener('astro:page-load', () => {
     if (document.getElementById('sesiones-table-body')) {
-      loadSesiones();
+      setupSesiones();
     }
   });
 </script>

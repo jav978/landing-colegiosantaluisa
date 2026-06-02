@@ -15,7 +15,6 @@
 			"longitude": -66.8738,
 			"postalCode": "1020"
 		},
-		"timestamp": 1780275651728
-	},
-	"dbConnectionString": "postgres://localhost:35405/postgres"
+		"timestamp": 1780368538640
+	}
 }

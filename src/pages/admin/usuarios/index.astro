@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
 import { getSessionToken, validateSession } from '../../../lib/auth';
+import { supabase } from '../../../lib/db';
 
 const token = getSessionToken(Astro.request);
 const session = token ? await validateSession(token) : null;
@@ -12,6 +13,14 @@ if (!session) {
 if (session.rol !== 'admin') {
   return Astro.redirect('/admin/dashboard');
 }
+
+// Obtener los usuarios directamente en el servidor
+const { data: usersData } = await supabase
+  .from('usuarios')
+  .select('id, email, nombre, rol, created_at')
+  .order('created_at', { ascending: false });
+
+const users = usersData || [];
 ---
 
 <AdminLayout
@@ -25,6 +34,7 @@ if (session.rol !== 'admin') {
     <p class="text-sm text-gray-500">Gestiona los usuarios del sistema</p>
     <a
       href="/admin/usuarios/new"
+      data-astro-prefetch
       class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90"
     >
       + Nuevo usuario
@@ -44,7 +54,37 @@ if (session.rol !== 'admin') {
           </tr>
         </thead>
         <tbody id="usuarios-table-body">
-          <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">Cargando...</td></tr>
+          {users.length === 0 ? (
+            <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No hay usuarios</td></tr>
+          ) : (
+            users.map((u) => {
+              const createdAt = u.created_at ? new Date(u.created_at).toLocaleDateString('es-VE') : '—';
+              const badgeClass = u.rol === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700';
+              return (
+                <tr class="border-b last:border-0 hover:bg-gray-50 transition duration-150">
+                  <td class="px-5 py-4 font-medium text-gray-900">{u.nombre}</td>
+                  <td class="px-5 py-4 text-gray-600">{u.email}</td>
+                  <td class="px-5 py-4">
+                    <span class={`rounded-full ${badgeClass} px-2.5 py-0.5 text-xs font-medium capitalize`}>{u.rol}</span>
+                  </td>
+                  <td class="px-5 py-4 text-gray-500 max-md:hidden">{createdAt}</td>
+                  <td class="px-5 py-4">
+                    {u.rol === 'admin' && u.id === 1 ? (
+                      <span class="text-xs text-gray-400">—</span>
+                    ) : (
+                      <button
+                        data-id={u.id}
+                        data-nombre={u.nombre}
+                        class="eliminar-user-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
@@ -52,57 +92,24 @@ if (session.rol !== 'admin') {
 </AdminLayout>
 
 <script>
-  async function loadUsers() {
-    const res = await fetch('/api/usuarios');
-    if (!res.ok) {
-      const errorEl = document.getElementById('usuarios-table-body');
-      if (errorEl) {
-        errorEl.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-red-500">Error al cargar usuarios</td></tr>';
-      }
-      return;
+  import { navigate } from 'astro:transitions/client';
+
+  async function eliminarUser(id: number, nombre: string) {
+    if (!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) return;
+
+    const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      // Recargar la página reactivamente para obtener la lista actualizada del servidor
+      navigate(window.location.pathname);
+    } else {
+      const data = await res.json();
+      alert(data.error || 'Error al eliminar usuario');
     }
+  }
 
-    const users = await res.json();
-    const tbody = document.getElementById('usuarios-table-body');
-    if (!tbody) return;
-
-    if (users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No hay usuarios</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = users.map((u) => {
-      const createdAt = u.created_at ? new Date(u.created_at).toLocaleDateString('es-VE') : '—';
-      const badgeClass = u.rol === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700';
-
-      return `
-        <tr class="border-b last:border-0 hover:bg-gray-50">
-          <td class="px-5 py-4 font-medium text-gray-900">${u.nombre}</td>
-          <td class="px-5 py-4 text-gray-600">${u.email}</td>
-          <td class="px-5 py-4">
-            <span class="rounded-full ${badgeClass} px-2.5 py-0.5 text-xs font-medium capitalize">${u.rol}</span>
-          </td>
-          <td class="px-5 py-4 text-gray-500 max-md:hidden">${createdAt}</td>
-          <td class="px-5 py-4">
-            ${u.rol === 'admin' && u.id === 1
-              ? '<span class="text-xs text-gray-400">—</span>'
-              : `
-                <button
-                  data-id="${u.id}"
-                  data-nombre="${u.nombre}"
-                  class="eliminar-user-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
-                >
-                  Eliminar
-                </button>
-              `
-            }
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    // Asignar eventos dinámicamente
-    tbody.querySelectorAll('.eliminar-user-btn').forEach((btn) => {
+  function setupUsuarios() {
+    const buttons = document.querySelectorAll('.eliminar-user-btn');
+    buttons.forEach((btn) => {
       btn.addEventListener('click', async () => {
         const id = Number(btn.getAttribute('data-id'));
         const nombre = btn.getAttribute('data-nombre');
@@ -112,22 +119,10 @@ if (session.rol !== 'admin') {
     });
   }
 
-  async function eliminarUser(id, nombre) {
-    if (!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) return;
-
-    const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      await loadUsers();
-    } else {
-      const data = await res.json();
-      alert(data.error || 'Error al eliminar usuario');
-    }
-  }
-
   // Inicializar en la carga inicial y después de cada cambio de página
   document.addEventListener('astro:page-load', () => {
     if (document.getElementById('usuarios-table-body')) {
-      loadUsers();
+      setupUsuarios();
     }
   });
 </script>
