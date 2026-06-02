@@ -7,12 +7,24 @@ import { supabase } from '../../lib/db';
 const { data: posts } = await supabase
   .from('posts')
   .select(`
-    id, title, slug, excerpt, image_url, category, created_at,
+    id, title, slug, excerpt, image_url, type, category, published, created_at,
     usuarios ( nombre )
   `)
-  .eq('type', 'blog')
   .eq('published', true)
   .order('created_at', { ascending: false });
+
+// Categorías únicas
+const categories = Array.from(new Set(posts?.map(p => p.category).filter(Boolean) || []));
+
+// Fechas únicas por Año-Mes
+const dates = posts?.map(p => {
+  const d = new Date(p.created_at);
+  return {
+    value: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+    label: d.toLocaleDateString('es-VE', { year: 'numeric', month: 'long' })
+  };
+}) || [];
+const uniqueDates = Array.from(new Map(dates.map(item => [item.value, item])).values());
 
 function getFirstImage(imageUrl: string | null | undefined): string | null {
   if (!imageUrl) return null;
@@ -28,52 +40,160 @@ function getFirstImage(imageUrl: string | null | undefined): string | null {
 }
 ---
 
-<Layout title="Blog — Colegio Santa Luisa">
+<Layout title="Publicaciones — Colegio Santa Luisa">
   <Header />
   <main class="pt-20">
     <section class="section-padding bg-gradient-to-b from-white to-stone-50 dark:from-[#0e072c] dark:to-[#140b37]">
       <div class="container-custom">
         <div class="mb-16 text-center">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-            Blog del <span class="text-primary dark:text-accent">Colegio Santa Luisa</span>
+            Noticias y <span class="text-primary dark:text-accent">Publicaciones</span>
           </h1>
           <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-slate-300">
-            Noticias, artículos y contenido educativo de nuestra comunidad
+            Mantente al día con los artículos, noticias, circulares y avisos oficiales de nuestra institución
           </p>
           <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
         </div>
 
+        <!-- Buscador y Filtros -->
+        <div class="mb-12 rounded-3xl border border-primary/5 dark:border-slate-800 bg-white/60 dark:bg-[#1b1145]/40 p-6 backdrop-blur-md shadow-sm">
+          <div class="grid gap-4 md:grid-cols-3">
+            <!-- Buscar texto -->
+            <div class="md:col-span-2 relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                🔍
+              </span>
+              <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Buscar por título, resumen o tema..." 
+                class="w-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#0e072c] pl-11 pr-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:text-white"
+              />
+            </div>
+            
+            <!-- Selector de Fecha -->
+            <div>
+              <select 
+                id="date-filter" 
+                class="w-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#0e072c] px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:text-white cursor-pointer"
+              >
+                <option value="">Todas las fechas</option>
+                {uniqueDates.map(d => (
+                  <option value={d.value}>{d.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-primary/5 dark:border-slate-800 pt-4">
+            <!-- Selector de Tipo (Pestañas) -->
+            <div class="flex items-center gap-2" id="type-tabs">
+              <button 
+                data-type="all" 
+                class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-full bg-primary text-white shadow-sm border border-primary dark:bg-accent dark:border-accent dark:text-slate-900 transition-all duration-200"
+              >
+                Todos
+              </button>
+              <button 
+                data-type="blog" 
+                class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-transparent text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-800 hover:border-primary dark:hover:border-accent hover:text-primary dark:hover:text-accent transition-all duration-200"
+              >
+                Artículos
+              </button>
+              <button 
+                data-type="anuncio" 
+                class="tab-btn px-4 py-1.5 text-xs font-semibold rounded-full bg-white dark:bg-transparent text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-800 hover:border-primary dark:hover:border-accent hover:text-primary dark:hover:text-accent transition-all duration-200"
+              >
+                Avisos
+              </button>
+            </div>
+
+            <!-- Selector de Categoría/Tema -->
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-400">Tema:</span>
+              <select 
+                id="category-filter" 
+                class="rounded-xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#0e072c] px-3 py-1.5 text-xs outline-none transition focus:border-primary dark:text-white cursor-pointer"
+              >
+                <option value="">Todos los temas</option>
+                {categories.map(cat => (
+                  <option value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contador y Estado de Filtros -->
+        <div class="mb-6 flex items-center justify-between text-xs text-gray-400 dark:text-slate-400">
+          <span id="results-count">Cargando publicaciones...</span>
+          <button id="reset-filters" class="hidden text-accent hover:underline font-semibold">
+            Limpiar filtros ✕
+          </button>
+        </div>
+
         {posts && posts.length > 0 ? (
-          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => {
-              const coverImg = getFirstImage(post.image_url);
-              return (
-                <a href={`/blog/${post.slug}`} class="group rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg overflow-hidden">
-                  {coverImg && (
-                    <div class="aspect-video overflow-hidden">
-                      <img src={coverImg} alt={post.title} class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
-                    </div>
-                  )}
-                  <div class="p-6">
-                  <div class="mb-3 flex items-center gap-2">
-                    {post.category && (
-                      <span class="rounded-full bg-primary/10 dark:bg-primary-light/20 px-3 py-0.5 text-xs font-medium text-primary dark:text-primary-light">{post.category}</span>
-                    )}
-                    <span class="text-xs text-gray-400">{new Date(post.created_at).toLocaleDateString('es-VE')}</span>
+          <div>
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3" id="posts-grid">
+              {posts.map((post) => {
+                const coverImg = getFirstImage(post.image_url);
+                return (
+                  <div 
+                    data-post-card
+                    data-search-text={`${post.title} ${post.excerpt || ''} ${post.category || ''}`.toLowerCase()}
+                    data-type={post.type}
+                    data-category={post.category || ''}
+                    data-date={post.created_at.substring(0, 7)}
+                    class="post-card transition-all duration-300 transform scale-100 opacity-100"
+                  >
+                    <a href={`/blog/${post.slug}`} class="group flex flex-col h-full rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg overflow-hidden">
+                      {coverImg && (
+                        <div class="aspect-video overflow-hidden">
+                          <img src={coverImg} alt={post.title} class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
+                        </div>
+                      )}
+                      <div class="p-6 flex-grow flex flex-col justify-between">
+                        <div>
+                          <div class="mb-3 flex items-center gap-2">
+                            <!-- Etiqueta de Tipo -->
+                            <span class={`rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                              post.type === 'anuncio' 
+                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' 
+                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                            }`}>
+                              {post.type === 'anuncio' ? 'Aviso' : 'Artículo'}
+                            </span>
+                            
+                            {post.category && (
+                              <span class="rounded-full bg-primary/5 dark:bg-primary-light/10 px-2.5 py-0.5 text-[9px] font-medium text-primary dark:text-primary-light">
+                                {post.category}
+                              </span>
+                            )}
+                            <span class="text-xs text-gray-400 ml-auto">{new Date(post.created_at).toLocaleDateString('es-VE')}</span>
+                          </div>
+                          <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-slate-100 group-hover:text-primary dark:group-hover:text-accent transition">{post.title}</h3>
+                          {post.excerpt && <p class="text-sm leading-relaxed text-gray-600 dark:text-slate-300 line-clamp-2">{post.excerpt}</p>}
+                        </div>
+                        <div class="mt-4 flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 dark:border-slate-800 pt-3">
+                          <span>Por {post.usuarios?.nombre || 'Colegio Santa Luisa'}</span>
+                        </div>
+                      </div>
+                    </a>
                   </div>
-                  <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-slate-100 group-hover:text-primary dark:group-hover:text-accent transition">{post.title}</h3>
-                  {post.excerpt && <p class="text-sm leading-relaxed text-gray-600 dark:text-slate-300 line-clamp-2">{post.excerpt}</p>}
-                  <div class="mt-4 flex items-center gap-2 text-xs text-gray-400">
-                    <span>{post.usuarios?.nombre || 'Colegio Santa Luisa'}</span>
-                  </div>
-                </div>
-              </a>
-            );
-          })}
+                );
+              })}
+            </div>
+
+            <!-- Contenedor de no resultados -->
+            <div id="no-results" class="hidden py-20 text-center text-gray-400 dark:text-slate-500">
+              <span class="text-5xl block mb-4">🔍</span>
+              <p class="text-lg font-semibold text-gray-700 dark:text-slate-300">No se encontraron publicaciones</p>
+              <p class="text-sm mt-1">Intenta ajustando los términos de búsqueda o los filtros aplicados.</p>
+            </div>
           </div>
         ) : (
           <div class="py-20 text-center text-gray-400 dark:text-slate-500">
-            <p class="text-lg">Próximamente nuevos artículos</p>
+            <p class="text-lg">Próximamente nuevas publicaciones</p>
           </div>
         )}
       </div>
@@ -81,3 +201,121 @@ function getFirstImage(imageUrl: string | null | undefined): string | null {
   </main>
   <Footer />
 </Layout>
+
+<script>
+  // Lógica de filtrado interactiva compatible con ClientRouter
+  document.addEventListener('astro:page-load', () => {
+    const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+    const dateFilter = document.getElementById('date-filter') as HTMLSelectElement | null;
+    const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement | null;
+    const resetBtn = document.getElementById('reset-filters') as HTMLButtonElement | null;
+    const resultsCount = document.getElementById('results-count') as HTMLSpanElement | null;
+    const noResults = document.getElementById('no-results') as HTMLDivElement | null;
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const postCards = document.querySelectorAll('[data-post-card]');
+
+    let activeType = 'all';
+
+    function updateFilters() {
+      const query = searchInput?.value.toLowerCase().trim() || '';
+      const selectedDate = dateFilter?.value || ''; // YYYY-MM
+      const selectedCategory = categoryFilter?.value || '';
+      
+      let visibleCount = 0;
+
+      postCards.forEach((card) => {
+        const htmlCard = card as HTMLElement;
+        const searchText = htmlCard.dataset.searchText || '';
+        const postType = htmlCard.dataset.type || '';
+        const postCategory = htmlCard.dataset.category || '';
+        const postDate = htmlCard.dataset.date || '';
+
+        const matchesSearch = !query || searchText.includes(query);
+        const matchesType = activeType === 'all' || postType === activeType;
+        const matchesCategory = !selectedCategory || postCategory === selectedCategory;
+        const matchesDate = !selectedDate || postDate === selectedDate;
+
+        if (matchesSearch && matchesType && matchesCategory && matchesDate) {
+          htmlCard.classList.remove('hidden');
+          setTimeout(() => {
+            htmlCard.classList.remove('opacity-0', 'scale-95');
+            htmlCard.classList.add('opacity-100', 'scale-100');
+          }, 10);
+          visibleCount++;
+        } else {
+          htmlCard.classList.add('hidden', 'opacity-0', 'scale-95');
+          htmlCard.classList.remove('opacity-100', 'scale-100');
+        }
+      });
+
+      // Actualizar contador
+      if (resultsCount) {
+        if (visibleCount === 1) {
+          resultsCount.textContent = '1 publicación encontrada';
+        } else {
+          resultsCount.textContent = `${visibleCount} publicaciones encontradas`;
+        }
+      }
+
+      // Mostrar mensaje si no hay resultados
+      if (noResults) {
+        if (visibleCount === 0) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+        }
+      }
+
+      // Mostrar/ocultar botón para resetear filtros
+      if (resetBtn) {
+        const hasActiveFilters = query || selectedDate || selectedCategory || activeType !== 'all';
+        if (hasActiveFilters) {
+          resetBtn.classList.remove('hidden');
+        } else {
+          resetBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    // Listener de búsqueda de texto
+    searchInput?.addEventListener('input', updateFilters);
+
+    // Listener de categorías
+    categoryFilter?.addEventListener('change', updateFilters);
+
+    // Listener de fechas
+    dateFilter?.addEventListener('change', updateFilters);
+
+    // Listeners para las pestañas de tipos
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Remover clases de activo de todos
+        tabButtons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'border-primary', 'dark:bg-accent', 'dark:border-accent', 'dark:text-slate-900');
+          b.classList.add('bg-white', 'dark:bg-transparent', 'text-gray-600', 'dark:text-slate-300', 'border-gray-200', 'dark:border-slate-800');
+        });
+
+        // Añadir clase de activo a este botón
+        btn.classList.add('bg-primary', 'text-white', 'shadow-sm', 'border-primary', 'dark:bg-accent', 'dark:border-accent', 'dark:text-slate-900');
+        btn.classList.remove('bg-white', 'dark:bg-transparent', 'text-gray-600', 'dark:text-slate-300', 'border-gray-200', 'dark:border-slate-800');
+
+        activeType = (btn as HTMLElement).dataset.type || 'all';
+        updateFilters();
+      });
+    });
+
+    // Resetear filtros
+    resetBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      if (dateFilter) dateFilter.value = '';
+      if (categoryFilter) categoryFilter.value = '';
+      
+      // Simular clic en la pestaña "Todos"
+      const allTab = document.querySelector('[data-type="all"]') as HTMLButtonElement | null;
+      allTab?.click();
+    });
+
+    // Inicialización
+    updateFilters();
+  });
+</script>
