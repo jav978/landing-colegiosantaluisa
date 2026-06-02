@@ -56,37 +56,48 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  const form = document.getElementById('login-form');
-  const errorMsg = document.getElementById('error-msg');
-  const submitBtn = document.getElementById('submit-btn');
+  import { navigate } from 'astro:transitions/client';
 
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorMsg.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Ingresando...';
+  function setupLogin() {
+    const form = document.getElementById('login-form') as HTMLFormElement | null;
+    const errorMsg = document.getElementById('error-msg');
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
 
-      const formData = new FormData(form);
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password'),
-        }),
+    if (form && errorMsg && submitBtn) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Ingresando...';
+
+        const formData = new FormData(form);
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.get('email'),
+            password: formData.get('password'),
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          navigate('/admin/dashboard');
+        } else {
+          errorMsg.textContent = data.error || 'Error al iniciar sesión';
+          errorMsg.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Iniciar sesión';
+        }
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        window.location.href = '/admin/dashboard';
-      } else {
-        errorMsg.textContent = data.error || 'Error al iniciar sesión';
-        errorMsg.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Iniciar sesión';
-      }
-    });
+    }
   }
+
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('login-form')) {
+      setupLogin();
+    }
+  });
 </script>

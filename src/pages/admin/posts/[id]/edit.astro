@@ -91,59 +91,79 @@ if (!post) {
 </AdminLayout>
 
 <script>
-  const form = document.getElementById('post-form');
+  import { navigate } from 'astro:transitions/client';
 
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  function setupEditPost() {
+    const form = document.getElementById('post-form') as HTMLFormElement | null;
 
-      const errorMsg = document.getElementById('error-msg');
-      const submitBtn = document.getElementById('submit-btn');
-      const postId = window.location.pathname.split('/').filter(Boolean).pop();
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      errorMsg.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Guardando...';
+        const errorMsg = document.getElementById('error-msg');
+        const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+        if (!errorMsg || !submitBtn) return;
 
-      const formData = new FormData(form);
+        const postId = window.location.pathname.split('/').filter(Boolean).pop();
 
-      const res = await fetch(`/api/posts/${postId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.get('title'),
-          content: formData.get('content'),
-          excerpt: formData.get('excerpt'),
-          image_url: formData.get('image_url'),
-          type: formData.get('type'),
-          category: formData.get('category'),
-          published: formData.get('published') === 'true',
-        }),
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        const formData = new FormData(form);
+
+        const res = await fetch(`/api/posts/${postId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: formData.get('title'),
+            content: formData.get('content'),
+            excerpt: formData.get('excerpt'),
+            image_url: formData.get('image_url'),
+            type: formData.get('type'),
+            category: formData.get('category'),
+            published: formData.get('published') === 'true',
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          navigate('/admin/posts');
+        } else {
+          errorMsg.textContent = data.error || 'Error al guardar';
+          errorMsg.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar cambios';
+        }
       });
 
-      const data = await res.json();
+      const deleteBtn = document.getElementById('delete-btn');
+      if (deleteBtn) {
+        // Clonar botón para asegurar que no se dupliquen los listeners
+        const newDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode?.replaceChild(newDeleteBtn, deleteBtn);
 
-      if (res.ok) {
-        window.location.href = '/admin/posts';
-      } else {
-        errorMsg.textContent = data.error || 'Error al guardar';
-        errorMsg.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Guardar cambios';
+        newDeleteBtn.addEventListener('click', async () => {
+          if (!confirm('¿Eliminar este post definitivamente?')) return;
+
+          const postId = window.location.pathname.split('/').filter(Boolean).pop();
+          const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+
+          if (res.ok) {
+            navigate('/admin/posts');
+          } else {
+            alert('Error al eliminar');
+          }
+        });
       }
-    });
-
-    document.getElementById('delete-btn')?.addEventListener('click', async () => {
-      if (!confirm('¿Eliminar este post definitivamente?')) return;
-
-      const postId = window.location.pathname.split('/').filter(Boolean).pop();
-      const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
-
-      if (res.ok) {
-        window.location.href = '/admin/posts';
-      } else {
-        alert('Error al eliminar');
-      }
-    });
+    }
   }
+
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('post-form')) {
+      setupEditPost();
+    }
+  });
 </script>

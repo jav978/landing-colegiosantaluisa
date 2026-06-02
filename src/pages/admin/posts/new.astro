@@ -75,45 +75,57 @@ if (!session) {
 </AdminLayout>
 
 <script>
-  const form = document.getElementById('post-form');
+  import { navigate } from 'astro:transitions/client';
 
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  function setupNewPost() {
+    const form = document.getElementById('post-form') as HTMLFormElement | null;
 
-      const errorMsg = document.getElementById('error-msg');
-      const submitBtn = document.getElementById('submit-btn');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      errorMsg.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Guardando...';
+        const errorMsg = document.getElementById('error-msg');
+        const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+        if (!errorMsg || !submitBtn) return;
 
-      const formData = new FormData(form);
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
 
-      const res = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.get('title'),
-          content: formData.get('content'),
-          excerpt: formData.get('excerpt'),
-          image_url: formData.get('image_url'),
-          type: formData.get('type'),
-          category: formData.get('category'),
-          published: formData.get('published') === 'true',
-        }),
+        const formData = new FormData(form);
+
+        const res = await fetch('/api/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: formData.get('title'),
+            content: formData.get('content'),
+            excerpt: formData.get('excerpt'),
+            image_url: formData.get('image_url'),
+            type: formData.get('type'),
+            category: formData.get('category'),
+            published: formData.get('published') === 'true',
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          navigate('/admin/posts');
+        } else {
+          errorMsg.textContent = data.error || 'Error al guardar';
+          errorMsg.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar';
+        }
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        window.location.href = '/admin/posts';
-      } else {
-        errorMsg.textContent = data.error || 'Error al guardar';
-        errorMsg.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Guardar';
-      }
-    });
+    }
   }
+
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('post-form')) {
+      setupNewPost();
+    }
+  });
 </script>

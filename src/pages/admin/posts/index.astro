@@ -19,9 +19,9 @@ if (!session) {
 >
   <div class="mb-6 flex items-center justify-between">
     <div class="flex gap-2">
-      <button onclick="filtrar('')" class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="">Todos</button>
-      <button onclick="filtrar('blog')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="blog">Blog</button>
-      <button onclick="filtrar('anuncio')" class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition" data-filter="anuncio">Anuncios</button>
+      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary" data-filter="">Todos</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="blog">Blog</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="anuncio">Anuncios</button>
     </div>
     <a href="/admin/posts/new" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
       + Nuevo
@@ -56,13 +56,16 @@ if (!session) {
     const url = currentFilter ? `/api/posts?type=${currentFilter}` : '/api/posts';
     const res = await fetch(url);
     if (!res.ok) {
-      document.getElementById('posts-table-body').innerHTML =
-        '<tr><td colspan="6" class="px-5 py-10 text-center text-red-500">Error al cargar</td></tr>';
+      const errorEl = document.getElementById('posts-table-body');
+      if (errorEl) {
+        errorEl.innerHTML = '<tr><td colspan="6" class="px-5 py-10 text-center text-red-500">Error al cargar</td></tr>';
+      }
       return;
     }
 
     const posts = await res.json();
     const tbody = document.getElementById('posts-table-body');
+    if (!tbody) return;
 
     if (posts.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay contenido</td></tr>';
@@ -97,19 +100,36 @@ if (!session) {
     }).join('');
   }
 
-  function filtrar(tipo) {
+  function filtrar(tipo: string) {
     currentFilter = tipo;
     document.querySelectorAll('.filter-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.filter === tipo);
-      btn.classList.toggle('bg-primary', btn.dataset.filter === tipo);
-      btn.classList.toggle('text-white', btn.dataset.filter === tipo);
-      btn.classList.toggle('border-primary', btn.dataset.filter === tipo);
-      btn.classList.toggle('text-gray-600', btn.dataset.filter !== tipo);
-      btn.classList.toggle('border-gray-200', btn.dataset.filter !== tipo);
+      const button = btn as HTMLButtonElement;
+      const isTarget = button.dataset.filter === tipo;
+      button.classList.toggle('active', isTarget);
+      button.classList.toggle('bg-primary', isTarget);
+      button.classList.toggle('text-white', isTarget);
+      button.classList.toggle('border-primary', isTarget);
+      button.classList.toggle('text-gray-600', !isTarget);
+      button.classList.toggle('border-gray-200', !isTarget);
     });
     loadPosts();
   }
 
-  document.querySelector('.filter-btn')?.classList.add('bg-primary', 'text-white', 'border-primary');
-  loadPosts();
+  function setupPosts() {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = (btn as HTMLButtonElement).dataset.filter || '';
+        filtrar(filter);
+      });
+    });
+    loadPosts();
+  }
+
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('posts-table-body')) {
+      setupPosts();
+    }
+  });
 </script>

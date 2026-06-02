@@ -55,13 +55,16 @@ if (session.rol !== 'admin') {
   async function loadUsers() {
     const res = await fetch('/api/usuarios');
     if (!res.ok) {
-      document.getElementById('usuarios-table-body').innerHTML =
-        '<tr><td colspan="5" class="px-5 py-10 text-center text-red-500">Error al cargar usuarios</td></tr>';
+      const errorEl = document.getElementById('usuarios-table-body');
+      if (errorEl) {
+        errorEl.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-red-500">Error al cargar usuarios</td></tr>';
+      }
       return;
     }
 
     const users = await res.json();
     const tbody = document.getElementById('usuarios-table-body');
+    if (!tbody) return;
 
     if (users.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No hay usuarios</td></tr>';
@@ -84,7 +87,11 @@ if (session.rol !== 'admin') {
             ${u.rol === 'admin' && u.id === 1
               ? '<span class="text-xs text-gray-400">—</span>'
               : `
-                <button onclick="eliminarUser(${u.id}, '${u.nombre}')" class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100">
+                <button
+                  data-id="${u.id}"
+                  data-nombre="${u.nombre}"
+                  class="eliminar-user-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100"
+                >
                   Eliminar
                 </button>
               `
@@ -93,6 +100,16 @@ if (session.rol !== 'admin') {
         </tr>
       `;
     }).join('');
+
+    // Asignar eventos dinámicamente
+    tbody.querySelectorAll('.eliminar-user-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const nombre = btn.getAttribute('data-nombre');
+        if (isNaN(id) || !nombre) return;
+        await eliminarUser(id, nombre);
+      });
+    });
   }
 
   async function eliminarUser(id, nombre) {
@@ -100,12 +117,17 @@ if (session.rol !== 'admin') {
 
     const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
     if (res.ok) {
-      loadUsers();
+      await loadUsers();
     } else {
       const data = await res.json();
       alert(data.error || 'Error al eliminar usuario');
     }
   }
 
-  loadUsers();
+  // Inicializar en la carga inicial y después de cada cambio de página
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('usuarios-table-body')) {
+      loadUsers();
+    }
+  });
 </script>
