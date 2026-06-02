@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1e3a8a;
-  --color-primary-light: #3b82f6;
+  --color-primary: #28156e;
+  --color-primary-light: #4c2fb5;
   --color-secondary: #38bdf8;
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
+  --color-accent: #f7c301;
+  --color-accent-light: #ffdf66;
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   html {
@@ -14,7 +16,11 @@
   }
 
   body {
-    @apply font-sans text-gray-800 antialiased;
+    @apply font-sans text-gray-800 antialiased bg-white transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply text-slate-100 bg-[#0e072c];
   }
 }
 

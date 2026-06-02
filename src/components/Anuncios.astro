@@ -11,13 +11,13 @@ const { data: anuncios } = await supabase
 ---
 
 {anuncios && anuncios.length > 0 && (
-  <section class="section-padding bg-gradient-to-b from-primary/5 to-white">
+  <section class="section-padding bg-gradient-to-b from-primary/5 to-white dark:from-[#1b1145]/30 dark:to-[#0e072c]">
     <div class="container-custom">
       <div class="mb-12 text-center">
         <span class="mb-3 inline-block rounded-full bg-accent/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent">
           Anuncios
         </span>
-        <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
           Últimos <span class="text-accent">Avisos</span>
         </h2>
         <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
@@ -27,7 +27,7 @@ const { data: anuncios } = await supabase
         {anuncios.map((a) => (
           <a
             href={`/blog/${a.slug}`}
-            class="group relative overflow-hidden rounded-2xl border border-amber-100 bg-white shadow-sm transition hover:shadow-lg"
+            class="group relative overflow-hidden rounded-2xl border border-amber-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] shadow-sm transition hover:shadow-lg"
           >
             {a.image_url && (
               <div class="aspect-video overflow-hidden">
@@ -48,11 +48,11 @@ const { data: anuncios } = await supabase
                   {new Date(a.created_at).toLocaleDateString('es-VE')}
                 </span>
               </div>
-              <h3 class="mb-2 text-base font-bold text-gray-900 group-hover:text-accent transition">
+              <h3 class="mb-2 text-base font-bold text-gray-900 dark:text-slate-100 group-hover:text-accent transition">
                 {a.title}
               </h3>
               {a.excerpt && (
-                <p class="text-sm leading-relaxed text-gray-600 line-clamp-2">{a.excerpt}</p>
+                <p class="text-sm leading-relaxed text-gray-600 dark:text-slate-300 line-clamp-2">{a.excerpt}</p>
               )}
               <span class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent">
                 Leer más →
