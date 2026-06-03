@@ -24,7 +24,7 @@ const contactoInfo = [
 
     <div class="grid gap-12 lg:grid-cols-5">
       <div class="lg:col-span-3">
-        <form class="space-y-6" action="#" method="POST">
+        <form class="space-y-6" id="contact-form" method="POST">
           <div class="grid gap-6 sm:grid-cols-2">
             <div>
               <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Nombre completo</label>
@@ -70,17 +70,91 @@ const contactoInfo = [
               placeholder="Escribe tu mensaje..."
             ></textarea>
           </div>
+
+          <div id="form-alert" class="hidden rounded-xl p-4 text-sm font-medium"></div>
+
           <button
             type="submit"
+            id="submit-btn"
             class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light hover:shadow-xl sm:w-auto"
           >
-            Enviar mensaje
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span id="btn-text">Enviar mensaje</span>
+            <svg id="btn-icon" class="h-4 w-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg id="btn-arrow" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
             </svg>
           </button>
         </form>
       </div>
+
+<script>
+  const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
+  const formAlert = document.getElementById('form-alert') as HTMLDivElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const btnText = document.getElementById('btn-text') as HTMLSpanElement | null;
+  const btnIcon = document.getElementById('btn-icon') as SVGElement | null;
+  const btnArrow = document.getElementById('btn-arrow') as SVGElement | null;
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!formAlert || !submitBtn || !btnText || !btnIcon || !btnArrow) return;
+
+      // Reset alert state
+      formAlert.className = 'hidden rounded-xl p-4 text-sm font-medium';
+      formAlert.textContent = '';
+
+      // Disable button and show spinner
+      submitBtn.disabled = true;
+      btnText.textContent = 'Enviando...';
+      btnIcon.classList.remove('hidden');
+      btnArrow.classList.add('hidden');
+
+      const formData = new FormData(contactForm);
+      const payload = {
+        name: formData.get('nombre'),
+        email: formData.get('email'),
+        phone: formData.get('telefono'),
+        message: formData.get('mensaje'),
+      };
+
+      try {
+        const response = await fetch('/api/contacto', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          formAlert.classList.remove('hidden');
+          formAlert.classList.add('bg-green-50', 'text-green-800', 'dark:bg-green-950/30', 'dark:text-green-400');
+          formAlert.textContent = '¡Gracias! Tu mensaje ha sido enviado con éxito. Nos pondremos en contacto pronto.';
+          contactForm.reset();
+        } else {
+          throw new Error(data.error || 'Error al enviar el mensaje');
+        }
+      } catch (error: any) {
+        console.error('Error submitting contact form:', error);
+        formAlert.classList.remove('hidden');
+        formAlert.classList.add('bg-red-50', 'text-red-800', 'dark:bg-red-950/30', 'dark:text-red-400');
+        formAlert.textContent = error.message || 'Ocurrió un error inesperado al enviar el mensaje. Inténtalo de nuevo.';
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Enviar mensaje';
+        btnIcon.classList.add('hidden');
+        btnArrow.classList.remove('hidden');
+      }
+    });
+  }
+</script>
 
       <div class="lg:col-span-2">
         <div class="rounded-2xl bg-primary dark:bg-[#1b1145] border border-transparent dark:border-slate-800/80 p-8 text-white shadow-lg">

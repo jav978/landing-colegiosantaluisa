@@ -42,3 +42,33 @@ ALTER TABLE usuarios DISABLE ROW LEVEL SECURITY;
 ALTER TABLE sesiones DISABLE ROW LEVEL SECURITY;
 ALTER TABLE posts DISABLE ROW LEVEL SECURITY;
 
+-- Table for contact form messages
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  phone VARCHAR(50),
+  message TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'in_progress', 'resolved')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for student pre-registrations
+CREATE TABLE IF NOT EXISTS pre_registrations (
+  id SERIAL PRIMARY KEY,
+  student_name VARCHAR(100) NOT NULL,
+  student_birth_date DATE NOT NULL,
+  grade_requested VARCHAR(50) NOT NULL,
+  parent_name VARCHAR(100) NOT NULL,
+  parent_email VARCHAR(100) NOT NULL,
+  parent_phone VARCHAR(50) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'contacted', 'scheduled_interview', 'accepted', 'rejected')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE contact_messages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE pre_registrations DISABLE ROW LEVEL SECURITY;
+
+

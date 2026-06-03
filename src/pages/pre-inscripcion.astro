@@ -1,0 +1,244 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const grades = [
+  'Maternal', 'Pre-Kinder', 'Kinder',
+  '1° Grado', '2° Grado', '3° Grado', '4° Grado', '5° Grado', '6° Grado',
+  '1° Año (Básica)', '2° Año (Básica)', '3° Año (Básica)',
+  '4° Año (Diversificado)', '5° Año (Diversificado)'
+];
+---
+
+<Layout title="Pre-inscripción Online | U.E. Colegio Santa Luisa" description="Realice la postulación de su representado de manera ágil y digital para el período escolar actual.">
+  <Header />
+
+  <main class="min-h-screen pt-24 pb-16 bg-gradient-to-b from-stone-50 to-white dark:from-[#0e072c] dark:to-[#08041a] transition-colors duration-300">
+    <div class="container-custom px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        
+        <!-- Header Banner -->
+        <div class="mb-12 text-center">
+          <span class="mb-3 inline-block rounded-full bg-primary/10 dark:bg-primary-light/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
+            Admisión Escolar
+          </span>
+          <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+            Solicitud de <span class="text-primary dark:text-accent">Pre-inscripción</span>
+          </h1>
+          <p class="mt-4 text-gray-600 dark:text-slate-300">
+            Complete el siguiente formulario con los datos del alumno postulante y del representante. Nuestro equipo de admisiones se comunicará con usted.
+          </p>
+          <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl dark:border-slate-800/80 dark:bg-[#150d36] transition-all">
+          <div class="bg-primary px-6 py-4 text-white dark:bg-[#1b1145] flex items-center gap-3">
+            <span class="text-2xl">📋</span>
+            <div>
+              <h2 class="text-lg font-bold">Formulario de Registro</h2>
+              <p class="text-xs text-white/70">Período Académico Vigente</p>
+            </div>
+          </div>
+
+          <form id="pre-reg-form" class="p-8 space-y-6">
+            <!-- Student Information Section -->
+            <div>
+              <h3 class="mb-4 text-md font-bold text-primary dark:text-accent border-b pb-2 border-gray-100 dark:border-slate-800">
+                1. Datos del Estudiante
+              </h3>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="studentName" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Nombre completo del alumno</label>
+                  <input
+                    type="text"
+                    id="studentName"
+                    name="studentName"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                    placeholder="Nombres y apellidos completos"
+                  />
+                </div>
+                <div>
+                  <label for="studentBirthDate" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Fecha de nacimiento</label>
+                  <input
+                    type="date"
+                    id="studentBirthDate"
+                    name="studentBirthDate"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                  />
+                </div>
+                <div>
+                  <label for="gradeRequested" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Grado a postular</label>
+                  <select
+                    id="gradeRequested"
+                    name="gradeRequested"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                  >
+                    <option value="" disabled selected>Seleccione el grado</option>
+                    {grades.map(grade => <option value={grade}>{grade}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Representative Information Section -->
+            <div class="pt-4">
+              <h3 class="mb-4 text-md font-bold text-primary dark:text-accent border-b pb-2 border-gray-100 dark:border-slate-800">
+                2. Datos del Representante
+              </h3>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="parentName" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Nombre completo del representante</label>
+                  <input
+                    type="text"
+                    id="parentName"
+                    name="parentName"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                    placeholder="Nombres y apellidos completos del representante"
+                  />
+                </div>
+                <div>
+                  <label for="parentEmail" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Correo electrónico</label>
+                  <input
+                    type="email"
+                    id="parentEmail"
+                    name="parentEmail"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                    placeholder="ejemplo@correo.com"
+                  />
+                </div>
+                <div>
+                  <label for="parentPhone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Teléfono de contacto</label>
+                  <input
+                    type="tel"
+                    id="parentPhone"
+                    name="parentPhone"
+                    required
+                    class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                    placeholder="Ej: +58 414-1234567"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="pt-4">
+              <h3 class="mb-4 text-md font-bold text-primary dark:text-accent border-b pb-2 border-gray-100 dark:border-slate-800">
+                3. Información Adicional
+              </h3>
+              <div>
+                <label for="notes" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Observaciones o notas adicionales</label>
+                <textarea
+                  id="notes"
+                  name="notes"
+                  rows="3"
+                  class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
+                  placeholder="Información que considere relevante (ej. necesidades de aprendizaje, alergias, hermanos en el plantel, etc.)"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Alert message block -->
+            <div id="form-alert" class="hidden rounded-xl p-4 text-sm font-medium"></div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end pt-4">
+              <button
+                type="submit"
+                id="submit-btn"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light hover:shadow-xl sm:w-auto"
+              >
+                <span id="btn-text">Enviar pre-inscripción</span>
+                <svg id="btn-icon" class="h-4 w-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <svg id="btn-arrow" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById('pre-reg-form') as HTMLFormElement | null;
+  const formAlert = document.getElementById('form-alert') as HTMLDivElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const btnText = document.getElementById('btn-text') as HTMLSpanElement | null;
+  const btnIcon = document.getElementById('btn-icon') as SVGElement | null;
+  const btnArrow = document.getElementById('btn-arrow') as SVGElement | null;
+
+  if (form) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!formAlert || !submitBtn || !btnText || !btnIcon || !btnArrow) return;
+
+      // Reset alert state
+      formAlert.className = 'hidden rounded-xl p-4 text-sm font-medium';
+      formAlert.textContent = '';
+
+      // Disable button and show spinner
+      submitBtn.disabled = true;
+      btnText.textContent = 'Enviando...';
+      btnIcon.classList.remove('hidden');
+      btnArrow.classList.add('hidden');
+
+      const formData = new FormData(form);
+      const payload = {
+        studentName: formData.get('studentName'),
+        studentBirthDate: formData.get('studentBirthDate'),
+        gradeRequested: formData.get('gradeRequested'),
+        parentName: formData.get('parentName'),
+        parentEmail: formData.get('parentEmail'),
+        parentPhone: formData.get('parentPhone'),
+        notes: formData.get('notes'),
+      };
+
+      try {
+        const response = await fetch('/api/pre-inscribir', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          formAlert.classList.remove('hidden');
+          formAlert.classList.add('bg-green-50', 'text-green-800', 'dark:bg-green-950/30', 'dark:text-green-400');
+          formAlert.textContent = '¡Solicitud registrada! La pre-inscripción se ha realizado con éxito. Nos comunicaremos con usted a la brevedad.';
+          form.reset();
+        } else {
+          throw new Error(data.error || 'Error al enviar la solicitud');
+        }
+      } catch (error: any) {
+        console.error('Error submitting pre-registration:', error);
+        formAlert.classList.remove('hidden');
+        formAlert.classList.add('bg-red-50', 'text-red-800', 'dark:bg-red-950/30', 'dark:text-red-400');
+        formAlert.textContent = error.message || 'Ocurrió un error inesperado al enviar la solicitud. Inténtalo de nuevo.';
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Enviar pre-inscripción';
+        btnIcon.classList.add('hidden');
+        btnArrow.classList.remove('hidden');
+      }
+    });
+  }
+</script>

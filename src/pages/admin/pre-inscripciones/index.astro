@@ -1,0 +1,210 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+import { supabase } from '../../../lib/db';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const statusFilter = Astro.url.searchParams.get('status') || '';
+
+let preRegistrations = [];
+let queryError = null;
+
+try {
+  let query = supabase.from('pre_registrations').select('id, student_name, grade_requested, parent_name, parent_phone, status, created_at').order('created_at', { ascending: false });
+  
+  if (statusFilter) {
+    query = query.eq('status', statusFilter);
+  }
+  
+  const { data, error } = await query;
+  if (error) throw error;
+  preRegistrations = data || [];
+} catch (err: any) {
+  queryError = err;
+  console.error('Error fetching pre-registrations:', err);
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('es-VE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+---
+
+<AdminLayout
+  title="Pre-inscripciones"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <!-- Description and Filter Row -->
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <p class="text-sm text-gray-500">Control y seguimiento escolar de postulaciones online</p>
+
+    <!-- Filters Badges -->
+    <div class="flex flex-wrap gap-2 text-xs font-semibold">
+      <a href="/admin/pre-inscripciones" class={`rounded-lg px-3 py-1.5 transition ${!statusFilter ? 'bg-primary text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Todos
+      </a>
+      <a href="/admin/pre-inscripciones?status=pending" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'pending' ? 'bg-amber-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Pendientes
+      </a>
+      <a href="/admin/pre-inscripciones?status=contacted" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'contacted' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Contactados
+      </a>
+      <a href="/admin/pre-inscripciones?status=scheduled_interview" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'scheduled_interview' ? 'bg-purple-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Entrevista
+      </a>
+      <a href="/admin/pre-inscripciones?status=accepted" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'accepted' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Aceptados
+      </a>
+      <a href="/admin/pre-inscripciones?status=rejected" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'rejected' ? 'bg-rose-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+        Rechazados
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Table -->
+  <div class="rounded-xl border bg-white shadow-sm overflow-hidden">
+    {queryError ? (
+      <div class="p-8 text-center text-rose-600">
+        <p class="font-semibold">Error al cargar postulaciones</p>
+        <p class="text-xs mt-1 text-gray-500">Asegúrate de haber ejecutado los scripts de base de datos en Supabase.</p>
+      </div>
+    ) : (
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="border-b bg-gray-50">
+              <th class="px-5 py-3.5 font-semibold text-gray-600">Estudiante</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600">Grado</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600">Representante</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600">Estado</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 max-md:hidden">Registro</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="pre-reg-table-body">
+            {preRegistrations.length === 0 ? (
+              <tr>
+                <td colspan="6" class="px-5 py-12 text-center text-gray-400">
+                  No hay solicitudes registradas {statusFilter && `con el estado "${statusFilter}"`}
+                </td>
+              </tr>
+            ) : (
+              preRegistrations.map((p) => {
+                const statusBadge = p.status === 'pending'
+                  ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                  : p.status === 'contacted'
+                  ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                  : p.status === 'scheduled_interview'
+                  ? 'bg-purple-50 text-purple-700 border border-purple-100'
+                  : p.status === 'accepted'
+                  ? 'bg-green-50 text-green-700 border border-green-100'
+                  : 'bg-rose-50 text-rose-700 border border-rose-100';
+
+                const statusLabels = {
+                  pending: 'Pendiente',
+                  contacted: 'Contactado',
+                  scheduled_interview: 'Entrevista',
+                  accepted: 'Aceptado',
+                  rejected: 'Rechazado'
+                };
+
+                return (
+                  <tr class="border-b last:border-0 hover:bg-gray-50/50 transition duration-150">
+                    <td class="px-5 py-4 font-semibold text-gray-900 truncate max-w-[150px]" title={p.student_name}>
+                      {p.student_name}
+                    </td>
+                    <td class="px-5 py-4 font-medium text-gray-700">
+                      {p.grade_requested}
+                    </td>
+                    <td class="px-5 py-4">
+                      <div class="text-gray-800 font-medium truncate max-w-[150px]">{p.parent_name}</div>
+                      <div class="text-xs text-gray-500">{p.parent_phone}</div>
+                    </td>
+                    <td class="px-5 py-4">
+                      <span class={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadge}`}>
+                        {statusLabels[p.status as keyof typeof statusLabels] || p.status}
+                      </span>
+                    </td>
+                    <td class="px-5 py-4 text-gray-500 max-md:hidden text-xs">
+                      {formatDate(p.created_at)}
+                    </td>
+                    <td class="px-5 py-4 text-right">
+                      <div class="flex items-center justify-end gap-2">
+                        <a
+                          href={`/admin/pre-inscripciones/${p.id}`}
+                          class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-700 border border-gray-200 transition hover:bg-gray-100"
+                        >
+                          Detalle
+                        </a>
+                        {session.rol === 'admin' && (
+                          <button
+                            data-id={p.id}
+                            data-name={p.student_name}
+                            class="eliminar-prereg-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100"
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+</AdminLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  async function deletePreReg(id: number, name: string) {
+    if (!confirm(`¿Eliminar la solicitud de pre-inscripción del alumno "${name}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/pre-inscripciones/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        navigate(window.location.pathname + window.location.search);
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Error al eliminar la postulación');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Error de red al intentar eliminar la postulación.');
+    }
+  }
+
+  function setupPreReg() {
+    const buttons = document.querySelectorAll('.eliminar-prereg-btn');
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const name = btn.getAttribute('data-name');
+        if (isNaN(id) || !name) return;
+        await deletePreReg(id, name);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('pre-reg-table-body')) {
+      setupPreReg();
+    }
+  });
+</script>

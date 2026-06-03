@@ -20,6 +20,7 @@
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "pg": "^8.21.0",
+    "resend": "^3.2.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
