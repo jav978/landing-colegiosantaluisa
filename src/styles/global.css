@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #28156e;
-  --color-primary-light: #4c2fb5;
+  --color-primary: #281470;
+  --color-primary-light: #3e229c;
   --color-secondary: #38bdf8;
   --color-accent: #f7c301;
   --color-accent-light: #ffdf66;
+  --color-brand-gray: #dddedc;
+  --color-brand-white: #fefefe;
+  --color-brand-red: #da2318;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
