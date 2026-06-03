@@ -3,11 +3,8 @@
   "mcp": {
     "stitch": {
       "type": "local",
-      "command": ["npx", "@_davideast/stitch-mcp", "proxy"],
-      "enabled": true,
-      "environment": {
-        "STITCH_API_KEY": "{file:.secrets/stitch-key.md}"
-      }
+      "command": ["/home/jav1978/.config/opencode/.secrets/stitch-proxy.sh"],
+      "enabled": true
     }
   }
 }
