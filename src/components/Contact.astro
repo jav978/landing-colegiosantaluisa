@@ -136,8 +136,14 @@ const contactoInfo = [
         if (response.ok && data.success) {
           formAlert.classList.remove('hidden');
           formAlert.classList.add('bg-green-50', 'text-green-800', 'dark:bg-green-950/30', 'dark:text-green-400');
-          formAlert.textContent = '¡Gracias! Tu mensaje ha sido enviado con éxito. Nos pondremos en contacto pronto.';
+          formAlert.textContent = 'Mensaje enviado correctamente';
           contactForm.reset();
+
+          setTimeout(() => {
+            formAlert.classList.add('hidden');
+            formAlert.className = 'hidden rounded-xl p-4 text-sm font-medium';
+            formAlert.textContent = '';
+          }, 2000);
         } else {
           throw new Error(data.error || 'Error al enviar el mensaje');
         }

@@ -1,22 +1,16 @@
 import { Resend } from 'resend';
 
-// Helper function to get environment variables in Astro
-function getEnv(key: string): string | undefined {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    return import.meta.env[key];
+function getResendClient(): Resend | null {
+  const apiKey = import.meta.env?.RESEND_API_KEY || process.env?.RESEND_API_KEY;
+  if (!apiKey || apiKey === 're_your_api_key_here') {
+    return null;
   }
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
-  return undefined;
+  return new Resend(apiKey);
 }
 
-const resendApiKey = getEnv('RESEND_API_KEY');
-const adminEmail = getEnv('ADMIN_NOTIFICATION_EMAIL') || 'jvasquez978@gmail.com';
-
-// Initialize Resend client only if API key is provided and not the placeholder
-const isConfigured = resendApiKey && resendApiKey !== 're_your_api_key_here';
-const resend = isConfigured ? new Resend(resendApiKey) : null;
+function getAdminEmail(): string {
+  return import.meta.env?.ADMIN_NOTIFICATION_EMAIL || process.env?.ADMIN_NOTIFICATION_EMAIL || 'jvasquez978@gmail.com';
+}
 
 export interface ContactEmailData {
   name: string;
@@ -39,6 +33,7 @@ export interface PreRegEmailData {
  * Sends a notification email when a new contact message is received
  */
 export async function sendContactEmail(data: ContactEmailData): Promise<boolean> {
+  const resend = getResendClient();
   if (!resend) {
     console.warn('Resend email service is not configured. Skipping email notification.');
     return false;
@@ -79,7 +74,7 @@ export async function sendContactEmail(data: ContactEmailData): Promise<boolean>
 
     const response = await resend.emails.send({
       from: 'Colegio Santa Luisa <onboarding@resend.dev>',
-      to: adminEmail,
+      to: getAdminEmail(),
       subject: `Nuevo Mensaje de Contacto - ${data.name}`,
       html: htmlContent,
       replyTo: data.email,
@@ -102,6 +97,7 @@ export async function sendContactEmail(data: ContactEmailData): Promise<boolean>
  * Sends a notification email when a new pre-registration is submitted
  */
 export async function sendPreRegistrationEmail(data: PreRegEmailData): Promise<boolean> {
+  const resend = getResendClient();
   if (!resend) {
     console.warn('Resend email service is not configured. Skipping email notification.');
     return false;
@@ -161,7 +157,7 @@ export async function sendPreRegistrationEmail(data: PreRegEmailData): Promise<b
 
     const response = await resend.emails.send({
       from: 'Colegio Santa Luisa <onboarding@resend.dev>',
-      to: adminEmail,
+      to: getAdminEmail(),
       subject: `Nueva Pre-inscripción - ${data.studentName} (${data.gradeRequested})`,
       html: htmlContent,
       replyTo: data.parentEmail,
