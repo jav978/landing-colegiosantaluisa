@@ -117,12 +117,18 @@ export async function validateSession(token: string): Promise<{
     .update({ last_active: now })
     .eq('id', data.id);
 
+  const usuario = Array.isArray(data.usuarios)
+    ? data.usuarios[0]
+    : (data.usuarios as unknown as { email: string; nombre: string; rol: string });
+
+  if (!usuario) return null;
+
   return {
     id: data.id,
     user_id: data.user_id,
-    email: data.usuarios.email,
-    nombre: data.usuarios.nombre,
-    rol: data.usuarios.rol,
+    email: usuario.email,
+    nombre: usuario.nombre,
+    rol: usuario.rol,
   };
 }
 

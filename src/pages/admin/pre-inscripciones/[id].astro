@@ -1,0 +1,287 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+import { supabase } from '../../../lib/db';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const id = Number(Astro.params.id);
+if (isNaN(id)) {
+  return Astro.redirect('/admin/pre-inscripciones');
+}
+
+let preRegistration = null;
+let queryError = null;
+
+try {
+  const { data, error } = await supabase
+    .from('pre_registrations')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  preRegistration = data;
+} catch (err: any) {
+  queryError = err;
+  console.error('Error fetching pre-registration details:', err);
+}
+
+if (!preRegistration && !queryError) {
+  return Astro.redirect('/admin/pre-inscripciones');
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('es-VE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function formatBirthDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('es-VE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+function calculateAge(birthDateStr: string) {
+  try {
+    const today = new Date();
+    const birthDate = new Date(birthDateStr);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return `${age} años`;
+  } catch (e) {
+    return '—';
+  }
+}
+---
+
+<AdminLayout
+  title={preRegistration ? `Postulación de ${preRegistration.student_name}` : 'Detalle de Pre-inscripción'}
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mb-6">
+    <a href="/admin/pre-inscripciones" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
+      ← Volver al listado de pre-inscripciones
+    </a>
+  </div>
+
+  {queryError ? (
+    <div class="rounded-xl border bg-white p-6 shadow-sm text-center text-rose-600">
+      <p class="font-semibold">Error al cargar el detalle de la pre-inscripción</p>
+      <p class="text-xs mt-1 text-gray-500">{queryError.message}</p>
+    </div>
+  ) : preRegistration && (
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Details Columns -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Student & Parent Information -->
+        <div class="rounded-xl border bg-white shadow-sm overflow-hidden">
+          <div class="border-b bg-gray-50 px-6 py-4 flex items-center justify-between">
+            <div>
+              <h2 class="text-md font-bold text-gray-900">Ficha del Estudiante</h2>
+              <p class="text-xs text-gray-500">Recibida el {formatDate(preRegistration.created_at)}</p>
+            </div>
+            <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+              preRegistration.status === 'pending'
+                ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                : preRegistration.status === 'contacted'
+                ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                : preRegistration.status === 'scheduled_interview'
+                ? 'bg-purple-50 text-purple-700 border border-purple-100'
+                : preRegistration.status === 'accepted'
+                ? 'bg-green-50 text-green-700 border border-green-100'
+                : 'bg-rose-50 text-rose-700 border border-rose-100'
+            }`}>
+              {preRegistration.status === 'pending' 
+                ? 'Pendiente' 
+                : preRegistration.status === 'contacted' 
+                ? 'Contactado' 
+                : preRegistration.status === 'scheduled_interview'
+                ? 'Entrevista'
+                : preRegistration.status === 'accepted'
+                ? 'Aceptado'
+                : 'Rechazado'}
+            </span>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Student Details Grid -->
+            <div>
+              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Datos Académicos y Personales</h3>
+              <div class="grid gap-4 sm:grid-cols-3 text-sm">
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Nombre completo</p>
+                  <p class="mt-1 font-semibold text-gray-800">{preRegistration.student_name}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Grado solicitado</p>
+                  <p class="mt-1 font-semibold text-primary">{preRegistration.grade_requested}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Fecha de nacimiento / Edad</p>
+                  <p class="mt-1 font-semibold text-gray-800">
+                    {formatBirthDate(preRegistration.student_birth_date)} 
+                    <span class="text-xs font-normal text-gray-500">({calculateAge(preRegistration.student_birth_date)})</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Parent Details Grid -->
+            <div class="pt-6 border-t">
+              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Datos del Representante</h3>
+              <div class="grid gap-4 sm:grid-cols-3 text-sm">
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Nombre completo</p>
+                  <p class="mt-1 font-semibold text-gray-800">{preRegistration.parent_name}</p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Correo electrónico</p>
+                  <p class="mt-1 font-semibold text-gray-800">
+                    <a href={`mailto:${preRegistration.parent_email}`} class="text-primary hover:underline">{preRegistration.parent_email}</a>
+                  </p>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 font-medium uppercase">Teléfono de contacto</p>
+                  <p class="mt-1 font-semibold text-gray-800">
+                    <a href={`tel:${preRegistration.parent_phone}`} class="text-primary hover:underline">{preRegistration.parent_phone}</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pre-registration comments -->
+            {preRegistration.notes && (
+              <div class="pt-6 border-t">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Comentarios del Representante</h3>
+                <p class="text-sm text-gray-700 bg-stone-50 p-4 rounded-xl border border-dashed whitespace-pre-wrap">
+                  "{preRegistration.notes}"
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- CRM Tracking Form -->
+      <div>
+        <div class="rounded-xl border bg-white p-6 shadow-sm">
+          <h3 class="mb-4 text-sm font-bold text-gray-900 uppercase tracking-wider">Control de Admisión</h3>
+          
+          <form id="crm-prereg-form" class="space-y-4">
+            <div>
+              <label for="status" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Estado de Admisión</label>
+              <select
+                id="status"
+                name="status"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="pending" selected={preRegistration.status === 'pending'}>Pendiente por revisar</option>
+                <option value="contacted" selected={preRegistration.status === 'contacted'}>Representante contactado</option>
+                <option value="scheduled_interview" selected={preRegistration.status === 'scheduled_interview'}>Entrevista programada</option>
+                <option value="accepted" selected={preRegistration.status === 'accepted'}>Alumno aceptado</option>
+                <option value="rejected" selected={preRegistration.status === 'rejected'}>No admitido</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="notes" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Notas Administrativas</label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows="6"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                placeholder="Escribe comentarios internos sobre el seguimiento (ej. 'Agendada cita para el 15/06', 'Falta partida de nacimiento')"
+              >{preRegistration.notes || ''}</textarea>
+            </div>
+
+            <div id="save-alert" class="hidden rounded-lg p-3 text-xs font-semibold"></div>
+
+            <button
+              type="submit"
+              id="save-btn"
+              class="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-white shadow transition hover:bg-primary-light"
+            >
+              Guardar Cambios
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )}
+</AdminLayout>
+
+<script>
+  const form = document.getElementById('crm-prereg-form') as HTMLFormElement | null;
+  const alertBox = document.getElementById('save-alert') as HTMLDivElement | null;
+  const saveBtn = document.getElementById('save-btn') as HTMLButtonElement | null;
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!alertBox || !saveBtn) return;
+
+      alertBox.className = 'hidden rounded-lg p-3 text-xs font-semibold';
+      alertBox.textContent = '';
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Guardando...';
+
+      const formData = new FormData(form);
+      const payload = {
+        status: formData.get('status'),
+        notes: formData.get('notes'),
+      };
+
+      try {
+        const id = window.location.pathname.split('/').pop();
+        const res = await fetch(`/api/pre-inscripciones/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alertBox.classList.remove('hidden');
+          alertBox.classList.add('bg-green-50', 'text-green-800');
+          alertBox.textContent = '¡Ficha de admisión actualizada!';
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        } else {
+          throw new Error(data.error || 'Error al guardar los cambios');
+        }
+      } catch (err: any) {
+        console.error('CRM save error:', err);
+        alertBox.classList.remove('hidden');
+        alertBox.classList.add('bg-red-50', 'text-red-800');
+        alertBox.textContent = err.message || 'Error al guardar. Inténtalo de nuevo.';
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar Cambios';
+      }
+    });
+  }
+</script>
