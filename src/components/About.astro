@@ -169,35 +169,55 @@ const primerasMaestras = [
         
         <h3 class="mt-2 mb-6 text-2xl font-bold text-gray-900 dark:text-slate-100">Himno del Colegio</h3>
         
+        <!-- Audio Player -->
+        <div class="mb-8 flex flex-col items-center justify-center rounded-2xl bg-primary/5 dark:bg-[#0e072c]/40 p-4 border border-primary/10 max-w-md mx-auto">
+          <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">Escuchar el Himno Oficial</p>
+          <audio controls class="w-full h-10 outline-none">
+            <source src="/audio/himno.mp3" type="audio/mpeg" />
+            Tu navegador no soporta el elemento de audio.
+          </audio>
+        </div>
+        
         <div class="space-y-6 text-gray-600 dark:text-slate-300 italic">
           <div>
             <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Coro</p>
-            <p class="leading-relaxed text-sm">Siempre más, siempre mejor,</p>
-            <p class="leading-relaxed text-sm">elevemos un himno solemne,</p>
-            <p class="leading-relaxed text-sm">cual incienso que sube al altar;</p>
-            <p class="leading-relaxed text-sm">entonemos con voces vibrantes</p>
-            <p class="leading-relaxed text-sm">nuestra marcha de triunfo triunfal.</p>
+            <p class="leading-relaxed text-sm">Dulce colegio de Santa Luisa,</p>
+            <p class="leading-relaxed text-sm">nido inocente del corazón.</p>
+            <p class="leading-relaxed text-sm">La vida es bella con tu sonrisa,</p>
+            <p class="leading-relaxed text-sm">la vida es santa como tu amor.</p>
           </div>
           
           <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">I</p>
-            <p class="leading-relaxed text-sm">Santa Luisa de Marillac,</p>
-            <p class="leading-relaxed text-sm">gloria eterna de virtud y bondad,</p>
-            <p class="leading-relaxed text-sm">tus alumnos te aclaman con fe,</p>
-            <p class="leading-relaxed text-sm">prometiendo lealtad y verdad.</p>
+            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa I</p>
+            <p class="leading-relaxed text-sm">Llevo un escudo sobre mi pecho,</p>
+            <p class="leading-relaxed text-sm">es Jesucristo que ha de guiar.</p>
+            <p class="leading-relaxed text-sm">Con su palabra, que acojo recio,</p>
+            <p class="leading-relaxed text-sm">y la doy vida con hermandad.</p>
           </div>
           
           <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">II</p>
-            <p class="leading-relaxed text-sm">En tus aulas hallamos la luz,</p>
-            <p class="leading-relaxed text-sm">el camino, la ciencia y la fe,</p>
-            <p class="leading-relaxed text-sm">tras las huellas de nuestro Señor,</p>
-            <p class="leading-relaxed text-sm">caminando con paso de pie.</p>
+            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa II</p>
+            <p class="leading-relaxed text-sm">Son excelentes mis profesores</p>
+            <p class="leading-relaxed text-sm">y compañeros conmigo están.</p>
+            <p class="leading-relaxed text-sm">Por eso quiero con alegría</p>
+            <p class="leading-relaxed text-sm">a mi colegio como a mi hogar.</p>
           </div>
+          
+          <div>
+            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa III</p>
+            <p class="leading-relaxed text-sm">Un beso mando a la Milagrosa,</p>
+            <p class="leading-relaxed text-sm">que ella me ampara con su poder.</p>
+            <p class="leading-relaxed text-sm">En ese culto soy victorioso</p>
+            <p class="leading-relaxed text-sm">y no me aparto de mi deber.</p>
+          </div>
+
+          <p class="text-xs font-semibold text-primary dark:text-primary-light not-italic uppercase tracking-wider pt-2">
+            (El coro se repite después de cada estrofa)
+          </p>
         </div>
         
         <div class="mt-8 text-[10px] text-gray-400 dark:text-slate-500 not-italic border-t border-gray-100 dark:border-slate-800 pt-4">
-          Nota: Si necesitas ajustar la letra oficial de tu plantel, puedes modificar esta sección en <code class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-900 text-accent font-mono text-[9px]">src/components/About.astro</code>.
+          Himno Oficial de la U.E. Colegio "Santa Luisa"
         </div>
       </div>
     </div>
