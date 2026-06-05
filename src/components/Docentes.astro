@@ -1,0 +1,185 @@
+---
+interface Teacher {
+  name: string;
+  role: string;
+  category: 'inicial' | 'primaria' | 'especialidad';
+  grade: string;
+  image: string;
+  phrase?: string;
+}
+
+const teachers: Teacher[] = [
+  {
+    name: 'Sor Rosario Daza',
+    role: 'Directora General / Pastoral',
+    category: 'especialidad',
+    grade: 'Formación en Valores y Religión',
+    image: '/images/staff/director.png',
+    phrase: 'Sembrando la semilla de la fe y el amor al prójimo en cada corazón vicenciano.'
+  },
+  {
+    name: 'Prof. Carmen Silva',
+    role: 'Subdirectora / Docente',
+    category: 'primaria',
+    grade: 'Coordinación e Historia',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Educar es guiar con paciencia, inspirar con el ejemplo y sembrar para el futuro.'
+  },
+  {
+    name: 'Prof. Ana Gómez',
+    role: 'Docente de Preescolar',
+    category: 'inicial',
+    grade: 'Maternal y Kinder (3 a 5 años)',
+    image: '/images/staff/teacher_3.png',
+    phrase: 'Acompañando los primeros pasos de aprendizaje de nuestros niños con amor y creatividad.'
+  },
+  {
+    name: 'Prof. Luis Rodríguez',
+    role: 'Docente de Primaria',
+    category: 'primaria',
+    grade: '1° a 3° Grado',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Formando bases sólidas en lectura, escritura y pensamiento lógico vicenciano.'
+  },
+  {
+    name: 'Prof. Elena Martínez',
+    role: 'Docente de Primaria',
+    category: 'primaria',
+    grade: '4° a 6° Grado',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Fomentando el pensamiento crítico, la investigación y la solidaridad escolar.'
+  },
+  {
+    name: 'Prof. Laura Delgado',
+    role: 'Especialista de Idiomas',
+    category: 'especialidad',
+    grade: 'Inglés Instrumental e Informática',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Abriendo ventanas al mundo mediante el aprendizaje de lenguajes y tecnología.'
+  }
+];
+---
+
+<section id="docentes" class="reveal-on-scroll section-padding bg-gradient-to-b from-stone-50 to-white dark:from-[#140b37] dark:to-[#0e072c]">
+  <div class="container-custom">
+    <div class="mb-16 text-center">
+      <span class="mb-3 inline-block rounded-full bg-primary/10 dark:bg-primary-light/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
+        Nuestro Equipo
+      </span>
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+        Cuerpo <span class="text-primary dark:text-accent">Docente</span> del Colegio
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-slate-300">
+        Profesores comprometidos en brindar educación integral de alta calidad a nuestros alumnos
+      </p>
+      <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
+    </div>
+
+    <!-- Interactive Category Filter Tabs -->
+    <div class="mb-12 flex justify-center flex-wrap gap-2">
+      <button
+        class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 bg-primary text-white border-primary dark:bg-accent dark:text-primary dark:border-accent"
+        data-filter="all"
+      >
+        Todos
+      </button>
+      <button
+        class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+        data-filter="inicial"
+      >
+        Educación Inicial
+      </button>
+      <button
+        class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+        data-filter="primaria"
+      >
+        Educación Primaria
+      </button>
+      <button
+        class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+        data-filter="especialidad"
+      >
+        Especialistas
+      </button>
+    </div>
+
+    <!-- Teachers Display Grid -->
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3" id="teachers-grid">
+      {teachers.map((t) => (
+        <div
+          class="teacher-card group bg-white dark:bg-[#1b1145] rounded-3xl border border-primary/5 dark:border-slate-800/80 overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          data-category={t.category}
+        >
+          <!-- Image frame wrapper with zoom on hover -->
+          <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-tr from-primary/10 to-transparent">
+            <img
+              src={t.image}
+              alt={t.name}
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent opacity-0 transition group-hover:opacity-100"></div>
+          </div>
+          
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-1">{t.name}</h3>
+            <span class="inline-block text-xs font-bold text-accent uppercase tracking-wider mb-3">{t.role}</span>
+            <div class="border-t border-gray-100 dark:border-slate-800/80 pt-3 mb-3">
+              <p class="text-xs text-gray-400 dark:text-slate-400 uppercase tracking-wider mb-1">Cátedra / Grado</p>
+              <p class="text-xs font-semibold text-gray-700 dark:text-slate-200">{t.grade}</p>
+            </div>
+            
+            {t.phrase && (
+              <p class="text-xs leading-relaxed text-gray-500 dark:text-slate-400 italic">
+                "{t.phrase}"
+              </p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function setupTeacherFilter() {
+    const tabs = document.querySelectorAll('.teacher-tab-btn');
+    const cards = document.querySelectorAll('.teacher-card');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const filter = tab.getAttribute('data-filter');
+
+        // Toggle active states on tabs
+        tabs.forEach((t) => {
+          t.classList.remove('bg-primary', 'text-white', 'border-primary', 'dark:bg-accent', 'dark:text-primary', 'dark:border-accent');
+          t.classList.add('text-gray-600', 'dark:text-slate-400', 'hover:bg-gray-100', 'dark:hover:bg-slate-800', 'hover:text-primary', 'dark:hover:text-accent');
+        });
+
+        tab.classList.add('bg-primary', 'text-white', 'border-primary', 'dark:bg-accent', 'dark:text-primary', 'dark:border-accent');
+        tab.classList.remove('text-gray-600', 'dark:text-slate-400', 'hover:bg-gray-100', 'dark:hover:bg-slate-800', 'hover:text-primary', 'dark:hover:text-accent');
+
+        // Apply grid element animation reveal
+        cards.forEach((card) => {
+          const category = card.getAttribute('data-category');
+          if (filter === 'all' || category === filter) {
+            (card as HTMLElement).style.display = 'block';
+            setTimeout(() => {
+              (card as HTMLElement).style.opacity = '1';
+              (card as HTMLElement).style.transform = 'scale(1)';
+            }, 50);
+          } else {
+            (card as HTMLElement).style.opacity = '0';
+            (card as HTMLElement).style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              (card as HTMLElement).style.display = 'none';
+            }, 200);
+          }
+        });
+      });
+    });
+  }
+
+  // Bind the client script on loading
+  document.addEventListener('astro:page-load', setupTeacherFilter);
+</script>
