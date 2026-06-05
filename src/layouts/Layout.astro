@@ -41,8 +41,35 @@ const { title = 'Colegio Santa Luisa', description = 'Formando con excelencia y 
         }
       }
 
+      function setupScrollReveal() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
+
+        const supportsScrollTimeline = CSS.supports && CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
+        
+        if (!supportsScrollTimeline) {
+          const revealElements = document.querySelectorAll('.reveal-on-scroll');
+          
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+          });
+
+          revealElements.forEach((el) => observer.observe(el));
+        }
+      }
+
       applyTheme();
       document.addEventListener('astro:after-swap', applyTheme);
+      document.addEventListener('astro:page-load', setupScrollReveal);
     </script>
   </head>
   <body class="min-h-screen">

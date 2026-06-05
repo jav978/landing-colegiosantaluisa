@@ -98,6 +98,50 @@
     }
   }
 
-  // Inicializar en la carga inicial y después de cada cambio de página
-  document.addEventListener('astro:page-load', setupHeader);
+  function setupNavigation() {
+    // Intercept section link clicks to handle smooth scrolling without showing the hash in the URL
+    const sectionLinks = document.querySelectorAll('a[href^="/#"], a[href^="#"]');
+    
+    sectionLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href') || '';
+        const hashIndex = href.indexOf('#');
+        if (hashIndex === -1) return;
+
+        const targetId = href.substring(hashIndex + 1);
+        const isLandingPage = window.location.pathname === '/' || window.location.pathname === '';
+
+        if (isLandingPage) {
+          e.preventDefault();
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Clean up the hash in the browser URL
+            if (window.location.hash) {
+              history.replaceState(null, '', '/');
+            }
+          }
+        }
+      });
+    });
+
+    // If loaded from an external page with a hash in the URL (e.g. /#about), scroll and clean it up
+    if (window.location.hash) {
+      const targetId = window.location.hash.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        setTimeout(() => {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.replaceState(null, '', window.location.pathname);
+        }, 100);
+      }
+    }
+  }
+
+  // Initialize on page load and on Astro page changes
+  document.addEventListener('astro:page-load', () => {
+    setupHeader();
+    setupNavigation();
+  });
 </script>

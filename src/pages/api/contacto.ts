@@ -40,10 +40,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Send email notification asynchronously
-    sendContactEmail({ name, email, phone, message }).catch((mailErr) => {
-      console.error('Asynchronous contact email notification failed:', mailErr);
-    });
+    // Send email notification
+    await sendContactEmail({ name, email, phone, message });
 
     return new Response(
       JSON.stringify({ success: true, message: 'Message saved successfully.', data }),

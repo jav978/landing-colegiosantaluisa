@@ -58,8 +58,8 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Send email notification asynchronously
-    sendPreRegistrationEmail({
+    // Send email notification
+    await sendPreRegistrationEmail({
       studentName,
       studentBirthDate,
       gradeRequested,
@@ -67,8 +67,6 @@ export const POST: APIRoute = async ({ request }) => {
       parentEmail,
       parentPhone,
       notes: notes || undefined,
-    }).catch((mailErr) => {
-      console.error('Asynchronous pre-registration email notification failed:', mailErr);
     });
 
     return new Response(
