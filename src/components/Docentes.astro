@@ -2,7 +2,7 @@
 interface Teacher {
   name: string;
   role: string;
-  category: 'inicial' | 'primaria' | 'especialidad';
+  category: 'inicial' | 'primaria' | 'media' | 'coordinacion';
   grade: string;
   image: string;
   phrase?: string;
@@ -11,51 +11,139 @@ interface Teacher {
 const teachers: Teacher[] = [
   {
     name: 'Sor Rosario Daza',
-    role: 'Directora General / Pastoral',
-    category: 'especialidad',
-    grade: 'Formación en Valores y Religión',
+    role: 'Directora General',
+    category: 'coordinacion',
+    grade: 'Dirección y Pastoral',
     image: '/images/staff/director.png',
     phrase: 'Sembrando la semilla de la fe y el amor al prójimo en cada corazón vicenciano.'
   },
   {
     name: 'Prof. Carmen Silva',
-    role: 'Subdirectora / Docente',
-    category: 'primaria',
-    grade: 'Coordinación e Historia',
+    role: 'Subdirectora Académica',
+    category: 'coordinacion',
+    grade: 'Consejo Directivo',
     image: '/images/staff/teacher_2.png',
     phrase: 'Educar es guiar con paciencia, inspirar con el ejemplo y sembrar para el futuro.'
   },
   {
-    name: 'Prof. Ana Gómez',
+    name: 'Prof. María Bompart',
+    role: 'Coordinadora de Primaria',
+    category: 'coordinacion',
+    grade: 'Coordinación Académica Primaria',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Comprometida con el desarrollo pedagógico y los valores cristianos de nuestros niños.'
+  },
+  {
+    name: 'Prof. Ivonne Palacios',
+    role: 'Coordinadora de Media General',
+    category: 'coordinacion',
+    grade: 'Coordinación Académica Media General',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Guiando a nuestros jóvenes hacia la excelencia académica y el compromiso social.'
+  },
+  {
+    name: 'Prof. Xiomara Martínez',
     role: 'Docente de Preescolar',
     category: 'inicial',
-    grade: 'Maternal y Kinder (3 a 5 años)',
+    grade: 'Educación Inicial',
     image: '/images/staff/teacher_3.png',
-    phrase: 'Acompañando los primeros pasos de aprendizaje de nuestros niños con amor y creatividad.'
+    phrase: 'Despertando la curiosidad y la alegría del aprendizaje en los más pequeños.'
   },
   {
-    name: 'Prof. Luis Rodríguez',
-    role: 'Docente de Primaria',
+    name: 'Prof. Yeisa Romero',
+    role: 'Docente de Preescolar',
+    category: 'inicial',
+    grade: 'Educación Inicial',
+    image: '/images/staff/teacher_3.png',
+    phrase: 'Formando corazones alegres desde los primeros pasos de su vida escolar.'
+  },
+  {
+    name: 'Prof. María Berrios',
+    role: 'Docente de 1er Grado',
     category: 'primaria',
-    grade: '1° a 3° Grado',
+    grade: '1er Grado - Educación Primaria',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Con amor y paciencia construimos los cimientos de la lectura y el aprendizaje.'
+  },
+  {
+    name: 'Prof. Betty Hernández',
+    role: 'Docente de 2do Grado',
+    category: 'primaria',
+    grade: '2do Grado - Educación Primaria',
     image: '/images/staff/teacher_2.png',
-    phrase: 'Formando bases sólidas en lectura, escritura y pensamiento lógico vicenciano.'
+    phrase: 'Guiando a nuestros niños a descubrir el mundo con valores y entusiasmo.'
   },
   {
-    name: 'Prof. Elena Martínez',
-    role: 'Docente de Primaria',
+    name: 'Prof. Nohelia Rodríguez',
+    role: 'Docente de 3er Grado',
     category: 'primaria',
-    grade: '4° a 6° Grado',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Fomentando el pensamiento crítico, la investigación y la solidaridad escolar.'
+    grade: '3er Grado - Educación Primaria',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Motivando la creatividad y el compañerismo en cada jornada de clase.'
   },
   {
-    name: 'Prof. Laura Delgado',
-    role: 'Especialista de Idiomas',
-    category: 'especialidad',
-    grade: 'Inglés Instrumental e Informática',
+    name: 'Prof. Dubraska Guillen',
+    role: 'Docente de 4to Grado',
+    category: 'primaria',
+    grade: '4to Grado - Educación Primaria',
     image: '/images/staff/teacher_1.png',
-    phrase: 'Abriendo ventanas al mundo mediante el aprendizaje de lenguajes y tecnología.'
+    phrase: 'Fomentando la responsabilidad, la lectura reflexiva y el respeto mutuo.'
+  },
+  {
+    name: 'Prof. Yenny Pérez',
+    role: 'Docente de 5to Grado',
+    category: 'primaria',
+    grade: '5to Grado - Educación Primaria',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Impulsando el pensamiento crítico y la solidaridad vicenciana en el aula.'
+  },
+  {
+    name: 'Prof. María Santos',
+    role: 'Docente de 6to Grado',
+    category: 'primaria',
+    grade: '6to Grado - Educación Primaria',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Preparando a los estudiantes para nuevos retos académicos con bases sólidas y fe.'
+  },
+  {
+    name: 'Prof. José Vásquez',
+    role: 'Profesor Guía de 1er Año',
+    category: 'media',
+    grade: '1er Año - Media General',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Acompañando la transición al bachillerato con orientación formal y valores.'
+  },
+  {
+    name: 'Prof. Anele Palacios',
+    role: 'Profesora Guía de 2do Año',
+    category: 'media',
+    grade: '2do Año - Media General',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Fortaleciendo la convivencia y el desarrollo académico de nuestros jóvenes.'
+  },
+  {
+    name: 'Prof. Francesca Cianflaglione',
+    role: 'Profesora Guía de 3er Año',
+    category: 'media',
+    grade: '3er Año - Media General',
+    image: '/images/staff/teacher_1.png',
+    phrase: 'Promoviendo el esfuerzo personal y el trabajo colaborativo en cada área.'
+  },
+  {
+    name: 'Prof. Kelvin Tabata',
+    role: 'Profesor Guía de 4to Año',
+    category: 'media',
+    grade: '4to Año - Media General',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Guiando la vocación y el compromiso social de los futuros bachilleres.'
+  },
+  {
+    name: 'Prof. Jorge Hernández',
+    role: 'Profesor Guía de 5to Año',
+    category: 'media',
+    grade: '5to Año - Media General',
+    image: '/images/staff/teacher_2.png',
+    phrase: 'Inspirando a la promoción de egresados a ser líderes de caridad y excelencia.'
   }
 ];
 ---
@@ -85,6 +173,12 @@ const teachers: Teacher[] = [
       </button>
       <button
         class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+        data-filter="coordinacion"
+      >
+        Liderazgo y Coordinación
+      </button>
+      <button
+        class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
         data-filter="inicial"
       >
         Educación Inicial
@@ -97,11 +191,12 @@ const teachers: Teacher[] = [
       </button>
       <button
         class="teacher-tab-btn px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
-        data-filter="especialidad"
+        data-filter="media"
       >
-        Especialistas
+        Media General
       </button>
     </div>
+
 
     <!-- Teachers Display Grid -->
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3" id="teachers-grid">
