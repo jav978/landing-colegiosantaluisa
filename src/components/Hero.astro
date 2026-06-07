@@ -1,27 +1,78 @@
 ---
-const slides = [
-  '/images/hero/hero1.jpg',
-  '/images/hero/hero2.jpg',
-  '/images/hero/hero3.jpg',
-  '/images/hero/hero4.jpg',
-  '/images/hero/hero5.jpg'
+interface HeroSlide {
+  src: string;
+  title: string;
+  phrase: string;
+}
+
+const slides: HeroSlide[] = [
+  {
+    src: '/images/hero/hero1.jpg',
+    title: 'Excelencia Académica',
+    phrase: 'Un espacio diseñado para crecer, aprender y convivir en armonía y fraternidad vicenciana.'
+  },
+  {
+    src: '/images/hero/hero2.jpg',
+    title: 'Valores Vicencianos',
+    phrase: 'Sembrando la semilla de la sencillez, el respeto cívico y el amor al prójimo.'
+  },
+  {
+    src: '/images/hero/hero3.jpg',
+    title: 'Desarrollo Integral',
+    phrase: 'El juego, la recreación y el deporte son pilares fundamentales para el crecimiento sano.'
+  },
+  {
+    src: '/images/hero/hero4.jpg',
+    title: 'Liderazgo y Pensamiento',
+    phrase: 'Formamos mentes reflexivas a través del aprendizaje colaborativo y el amor por el saber.'
+  },
+  {
+    src: '/images/hero/hero5.jpg',
+    title: 'Fe y Solidaridad',
+    phrase: 'Educamos el corazón para servir con generosidad y compromiso social a los más necesitados.'
+  }
 ];
 ---
 
 <section id="inicio" class="relative flex min-h-screen items-center justify-center overflow-hidden">
   
-  <!-- Carousel Background -->
+  <!-- Carousel Background (Super Flow fragments) -->
   <div class="absolute inset-0 z-0">
     {slides.map((slide, index) => (
       <div
-        class={`hero-slide absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out transform ${
-          index === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+        class={`hero-slide absolute inset-0 z-0 ${
+          index === 0 ? 'visible' : 'invisible'
         }`}
-        style={`background-image: url('${slide}');`}
-        data-index={index}
+        data-slide-index={index}
+        data-active={index === 0 ? 'true' : 'false'}
       >
-        <!-- Dark Blue/Violet Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-r from-primary/85 to-primary/70 dark:from-primary/95 dark:to-primary/80"></div>
+        <!-- Fragment 1: Top Triangle -->
+        <div 
+          class="hero-fragment absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1400 ease-out transform"
+          style={`background-image: url('${slide.src}'); clip-path: polygon(0 0, 100% 0, 50% 50%);`}
+          data-fragment="top"
+        ></div>
+        <!-- Fragment 2: Right Triangle -->
+        <div 
+          class="hero-fragment absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1400 ease-out transform"
+          style={`background-image: url('${slide.src}'); clip-path: polygon(100% 0, 100% 100%, 50% 50%);`}
+          data-fragment="right"
+        ></div>
+        <!-- Fragment 3: Bottom Triangle -->
+        <div 
+          class="hero-fragment absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1400 ease-out transform"
+          style={`background-image: url('${slide.src}'); clip-path: polygon(100% 100%, 0 100%, 50% 50%);`}
+          data-fragment="bottom"
+        ></div>
+        <!-- Fragment 4: Left Triangle -->
+        <div 
+          class="hero-fragment absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1400 ease-out transform"
+          style={`background-image: url('${slide.src}'); clip-path: polygon(0 100%, 0 0, 50% 50%);`}
+          data-fragment="left"
+        ></div>
+
+        <!-- More Transparent Gradient Overlay (gives more opacity and visibility to the images) -->
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/30 to-primary/50 dark:from-[#0e072c]/70 dark:via-[#0e072c]/45 dark:to-[#0e072c]/70 pointer-events-none"></div>
       </div>
     ))}
   </div>
@@ -33,28 +84,45 @@ const slides = [
       Hijas de la Caridad — Venezuela
     </div>
 
-    <h1 class="mb-4 text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-      Colegio <span class="text-accent">Santa Luisa</span>
-    </h1>
+    <!-- Container for dynamic text blocks - positioned absolute center within itself to prevent overlap -->
+    <div class="relative w-full min-h-[280px] sm:min-h-[220px] md:min-h-[185px] flex items-center justify-center mb-8 overflow-hidden select-none">
+      {slides.map((slide, index) => {
+        const words = slide.title.split(' ');
+        const firstWord = words[0];
+        const restWords = words.slice(1).join(' ');
+        
+        return (
+          <div
+            class={`hero-text-block absolute w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center px-2 transition-all duration-1200 ease-in-out transform ${
+              index === 0 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-8 scale-95 invisible pointer-events-none'
+            }`}
+            data-text-index={index}
+          >
+            <h1 class="mb-4 text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl tracking-tight select-none drop-shadow-md">
+              {firstWord} <span class="text-accent">{restWords}</span>
+            </h1>
 
-    <p class="mx-auto mb-10 max-w-2xl text-lg text-white/90 sm:text-xl">
-      Formando con excelencia académica y valores vicencianos desde 1950.
-      Educamos líderes con corazón solidario y compromiso social.
-    </p>
+            <p class="mx-auto max-w-2xl text-base sm:text-lg md:text-xl font-medium italic drop-shadow-md leading-relaxed text-white/95">
+              "{slide.phrase}"
+            </p>
+          </div>
+        );
+      })}
+    </div>
 
     <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
       <a
         href="#nosotros"
-        class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3.5 text-base font-bold text-white shadow-lg transition hover:bg-accent-light hover:shadow-xl"
+        class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3.5 text-base font-bold text-white shadow-lg transition hover:bg-accent-light hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
       >
         Conócenos
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
         </svg>
       </a>
       <a
         href="#contacto"
-        class="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white/10 hover:border-white/50"
+        class="inline-flex items-center gap-2 rounded-xl border-2 border-white/40 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5 active:translate-y-0"
       >
         Contáctanos
       </a>
@@ -64,7 +132,7 @@ const slides = [
   <!-- Navigation Controls -->
   <button
     id="prev-slide"
-    class="absolute left-4 z-20 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition hover:bg-white/25 hover:scale-105 active:scale-95"
+    class="absolute left-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
     aria-label="Previous slide"
   >
     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +141,7 @@ const slides = [
   </button>
   <button
     id="next-slide"
-    class="absolute right-4 z-20 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition hover:bg-white/25 hover:scale-105 active:scale-95"
+    class="absolute right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
     aria-label="Next slide"
   >
     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,26 +149,77 @@ const slides = [
     </svg>
   </button>
 
-  <!-- Slide Indicators -->
-  <div class="absolute bottom-20 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+  <!-- Slide Indicators (Moved up to prevent overlap with scroll arrow) -->
+  <div class="absolute bottom-28 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
     {slides.map((_, index) => (
       <button
-        class={`slide-indicator h-2.5 rounded-full transition-all duration-300 ${index === 0 ? 'bg-accent w-8' : 'bg-white/40 w-2.5'}`}
+        class={`slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer ${index === 0 ? 'bg-accent w-8 shadow-sm' : 'bg-white/45 w-2.5 hover:bg-white/70'}`}
         data-index={index}
         aria-label={`Go to slide ${index + 1}`}
       ></button>
     ))}
   </div>
 
+  <!-- Down scroll chevron (Bottom) -->
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
-    <svg class="h-8 w-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="h-7 w-7 text-white/75 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7"/>
     </svg>
   </div>
 </section>
 
+<style is:global>
+  /* Base state for all fragments */
+  .hero-fragment {
+    transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.4s ease-in-out;
+    opacity: 0;
+  }
+
+  /* Specific initial displacements for transitions when data-active="false" */
+  .hero-slide[data-active="false"] [data-fragment="top"] {
+    transform: translateY(-45px) scale(1.08);
+    opacity: 0;
+  }
+  .hero-slide[data-active="false"] [data-fragment="right"] {
+    transform: translateX(45px) scale(1.08);
+    opacity: 0;
+  }
+  .hero-slide[data-active="false"] [data-fragment="bottom"] {
+    transform: translateY(45px) scale(1.08);
+    opacity: 0;
+  }
+  .hero-slide[data-active="false"] [data-fragment="left"] {
+    transform: translateX(-45px) scale(1.08);
+    opacity: 0;
+  }
+
+  /* Active states with staggered delays to replicate "Super Flow" */
+  .hero-slide[data-active="true"] .hero-fragment {
+    transform: translate(0) scale(1);
+    opacity: 1;
+  }
+
+  /* Staggered transition delays for assembling */
+  .hero-slide[data-active="true"] [data-fragment="top"] {
+    transition-delay: 0ms;
+  }
+  .hero-slide[data-active="true"] [data-fragment="right"] {
+    transition-delay: 120ms;
+  }
+  .hero-slide[data-active="true"] [data-fragment="bottom"] {
+    transition-delay: 240ms;
+  }
+  .hero-slide[data-active="true"] [data-fragment="left"] {
+    transition-delay: 360ms;
+  }
+</style>
+
 <script>
   function setupHeroCarousel() {
+    const heroSection = document.getElementById('inicio');
+    if (!heroSection || heroSection.hasAttribute('data-carousel-initialized')) return;
+    heroSection.setAttribute('data-carousel-initialized', 'true');
+
     const slides = document.querySelectorAll('.hero-slide');
     const prevBtn = document.getElementById('prev-slide');
     const nextBtn = document.getElementById('next-slide');
@@ -110,31 +229,50 @@ const slides = [
 
     let currentIndex = 0;
     let autoplayTimer: any = null;
-    const intervalTime = 5000; // 5 seconds
+    const intervalTime = 6000; // 6 seconds auto rotation
 
     function showSlide(index: number) {
       if (index >= slides.length) index = 0;
       if (index < 0) index = slides.length - 1;
 
-      // Update slide visibility and zoom transition
+      // Update slide attributes for CSS transitions
       slides.forEach((slide, i) => {
         if (i === index) {
-          slide.classList.remove('opacity-0', 'scale-105');
-          slide.classList.add('opacity-100', 'scale-100');
+          slide.setAttribute('data-active', 'true');
+          slide.classList.remove('invisible');
+          slide.classList.add('visible');
         } else {
-          slide.classList.remove('opacity-100', 'scale-100');
-          slide.classList.add('opacity-0', 'scale-105');
+          slide.setAttribute('data-active', 'false');
+          // Wait for transition to complete before setting invisible to prevent sudden clipping
+          setTimeout(() => {
+            if (slide.getAttribute('data-active') === 'false') {
+              slide.classList.remove('visible');
+              slide.classList.add('invisible');
+            }
+          }, 1400);
+        }
+      });
+
+      // Update dynamic text blocks
+      const textBlocks = document.querySelectorAll('.hero-text-block');
+      textBlocks.forEach((block, i) => {
+        if (i === index) {
+          block.classList.remove('opacity-0', 'translate-y-8', 'scale-95', 'pointer-events-none', 'invisible');
+          block.classList.add('opacity-100', 'translate-y-0', 'scale-100', 'visible');
+        } else {
+          block.classList.remove('opacity-100', 'translate-y-0', 'scale-100', 'visible');
+          block.classList.add('opacity-0', 'translate-y-8', 'scale-95', 'pointer-events-none', 'invisible');
         }
       });
 
       // Update indicator dots shape/color
       indicators.forEach((indicator, i) => {
         if (i === index) {
-          indicator.classList.remove('bg-white/40', 'w-2.5');
+          indicator.classList.remove('bg-white/45', 'w-2.5');
           indicator.classList.add('bg-accent', 'w-8');
         } else {
           indicator.classList.remove('bg-accent', 'w-8');
-          indicator.classList.add('bg-white/40', 'w-2.5');
+          indicator.classList.add('bg-white/45', 'w-2.5');
         }
       });
 
@@ -189,6 +327,7 @@ const slides = [
     startAutoplay();
   }
 
-  // Initialize on page load and support client-side navigation transitions
+  // Initialize carousel on DOM load and Astro transitions
+  document.addEventListener('DOMContentLoaded', setupHeroCarousel);
   document.addEventListener('astro:page-load', setupHeroCarousel);
 </script>
