@@ -175,19 +175,58 @@ const transcendentalSubsectors = [
     <div id="view-diagram" class="w-full max-w-5xl mx-auto">
       <div 
         id="org-canvas-wrapper" 
-        class="relative w-full overflow-auto border border-slate-200 dark:border-white/10 rounded-3xl bg-slate-50/50 dark:bg-[#0c0527] shadow-inner p-4 md:p-8 cursor-grab active:cursor-grabbing select-none min-h-[600px] max-h-[700px] scrollbar-thin"
+        class="relative w-full overflow-auto border border-slate-200 dark:border-white/10 rounded-3xl bg-slate-50/50 dark:bg-[#0c0527] org-grid-pattern shadow-inner p-4 md:p-8 cursor-grab active:cursor-grabbing select-none h-[60vh] md:h-[70vh] min-h-[500px] max-h-[800px] scrollbar-thin transition-all duration-300"
       >
         <!-- Canvas Floating Controls -->
-        <div class="absolute bottom-6 right-6 z-30 flex gap-2">
-          <button id="zoom-in" class="bg-white dark:bg-[#1b1145] border border-slate-200 dark:border-white/10 p-2.5 rounded-xl shadow-md text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-primary transition-all font-bold text-xs cursor-pointer" title="Acercar">➕</button>
-          <button id="zoom-out" class="bg-white dark:bg-[#1b1145] border border-slate-200 dark:border-white/10 p-2.5 rounded-xl shadow-md text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-primary transition-all font-bold text-xs cursor-pointer" title="Alejar">➖</button>
-          <button id="zoom-reset" class="bg-white dark:bg-[#1b1145] border border-slate-200 dark:border-white/10 p-2.5 rounded-xl shadow-md text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-primary transition-all font-bold text-xs cursor-pointer" title="Restablecer">🔄</button>
-          <button id="fullscreen-btn" class="bg-white dark:bg-[#1b1145] border border-slate-200 dark:border-white/10 p-2.5 rounded-xl shadow-md text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-primary transition-all font-bold text-xs cursor-pointer" title="Pantalla Completa">📺</button>
+        <div class="absolute bottom-6 right-6 z-30 flex items-center gap-1.5 bg-white/90 dark:bg-[#1b1145]/90 border border-slate-200 dark:border-white/10 p-1.5 rounded-2xl shadow-xl backdrop-blur-md">
+          <span 
+            id="zoom-indicator" 
+            class="px-2 text-[10px] font-extrabold text-gray-700 dark:text-slate-300 min-w-[42px] text-center select-none tracking-tight"
+          >
+            95%
+          </span>
+          <div class="h-4 w-px bg-slate-200 dark:bg-white/10 mx-0.5"></div>
+          <button 
+            id="zoom-out" 
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-primary hover:text-primary dark:hover:text-accent transition duration-200 cursor-pointer" 
+            title="Alejar"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+            </svg>
+          </button>
+          <button 
+            id="zoom-in" 
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-primary hover:text-primary dark:hover:text-accent transition duration-200 cursor-pointer" 
+            title="Acercar"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button 
+            id="zoom-reset" 
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-primary hover:text-primary dark:hover:text-accent transition duration-200 cursor-pointer" 
+            title="Centrar y Ajustar"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" />
+            </svg>
+          </button>
+          <button 
+            id="fullscreen-btn" 
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-primary hover:text-primary dark:hover:text-accent transition duration-200 cursor-pointer" 
+            title="Pantalla Completa"
+          >
+            <svg id="fullscreen-svg" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
+          </button>
         </div>
 
         <!-- Scroll instruction for mobile -->
         <div class="absolute top-4 left-4 z-20 pointer-events-none md:hidden bg-slate-900/60 text-white text-[10px] px-2.5 py-1 rounded-full backdrop-blur-xs">
-          👈 Desliza para explorar 👉
+          👈 Arrastra para explorar 👉
         </div>
 
         <!-- Diagram Content Tree -->
@@ -814,6 +853,17 @@ const transcendentalSubsectors = [
     cursor: grabbing;
   }
 
+  /* Figma-like Grid Background */
+  .org-grid-pattern {
+    background-image: radial-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  :global(.dark) .org-grid-pattern {
+    background-image: radial-gradient(rgba(247, 195, 1, 0.08) 1.2px, transparent 1.2px);
+    background-size: 20px 20px;
+  }
+
   /* Fullscreen styles */
   #org-canvas-wrapper.fullscreen-active {
     position: fixed !important;
@@ -826,6 +876,11 @@ const transcendentalSubsectors = [
     background-color: #0c0527 !important;
     border-radius: 0 !important;
     padding: 2rem !important;
+  }
+
+  /* Lock scrolling when fullscreen organigrama is active */
+  body.org-fullscreen-lock {
+    overflow: hidden !important;
   }
 </style>
 
@@ -846,6 +901,9 @@ const transcendentalSubsectors = [
         // Show/hide views
         viewDiagram.classList.remove('hidden');
         viewTabs.classList.add('hidden');
+
+        // Recenter diagram when shown
+        setTimeout(centerDiagram, 100);
       });
 
       btnToggleTabs.addEventListener('click', () => {
@@ -913,6 +971,8 @@ const transcendentalSubsectors = [
             branchContainer.classList.add('collapsed');
             btn.textContent = '➕';
           }
+          // Readjust layout / centering slightly when branch triggers
+          setTimeout(centerDiagram, 100);
         }
       });
     });
@@ -921,10 +981,14 @@ const transcendentalSubsectors = [
     let currentScale = 0.95;
     const treeContent = document.getElementById('org-tree-content');
     const canvasWrapper = document.getElementById('org-canvas-wrapper');
+    const zoomIndicator = document.getElementById('zoom-indicator');
 
     function updateZoom() {
       if (treeContent) {
         treeContent.style.transform = `scale(${currentScale})`;
+      }
+      if (zoomIndicator) {
+        zoomIndicator.textContent = `${Math.round(currentScale * 100)}%`;
       }
     }
 
@@ -941,32 +1005,95 @@ const transcendentalSubsectors = [
     document.getElementById('zoom-reset')?.addEventListener('click', () => {
       currentScale = 0.95;
       updateZoom();
+      centerDiagram();
+    });
+
+    // Centering tree content function
+    function centerDiagram() {
       if (treeContent && canvasWrapper) {
-        canvasWrapper.scrollLeft = (treeContent.clientWidth - canvasWrapper.clientWidth) / 2;
+        // Find dimensions and scroll to center horizontal
+        canvasWrapper.scrollLeft = (treeContent.scrollWidth - canvasWrapper.clientWidth) / 2;
         canvasWrapper.scrollTop = 0;
       }
-    });
+    }
 
     // Fullscreen Toggler
     const fullscreenBtn = document.getElementById('fullscreen-btn');
-    fullscreenBtn?.addEventListener('click', () => {
-      if (canvasWrapper) {
-        canvasWrapper.classList.toggle('fullscreen-active');
-        if (canvasWrapper.classList.contains('fullscreen-active')) {
-          fullscreenBtn.textContent = '❌';
+    const fullscreenSvg = document.getElementById('fullscreen-svg');
+    
+    function toggleFullscreenMode() {
+      if (!canvasWrapper) return;
+      
+      const isFullscreen = canvasWrapper.classList.contains('fullscreen-active');
+      
+      if (!isFullscreen) {
+        // Enter fullscreen
+        canvasWrapper.classList.add('fullscreen-active');
+        document.body.classList.add('org-fullscreen-lock');
+        if (fullscreenBtn) {
           fullscreenBtn.title = 'Salir de Pantalla Completa';
-        } else {
-          fullscreenBtn.textContent = '📺';
+        }
+        if (fullscreenSvg) {
+          // Exit Fullscreen SVG icon path
+          fullscreenSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14h6v6m10-6h-6v6M4 20l6-6m10 6l-6-6" />`;
+        }
+        
+        // Attempt browser native Fullscreen API for immersive experience
+        try {
+          if (canvasWrapper.requestFullscreen) {
+            canvasWrapper.requestFullscreen();
+          }
+        } catch (err) {
+          console.warn('Native fullscreen not supported or blocked:', err);
+        }
+      } else {
+        // Exit fullscreen
+        canvasWrapper.classList.remove('fullscreen-active');
+        document.body.classList.remove('org-fullscreen-lock');
+        if (fullscreenBtn) {
           fullscreenBtn.title = 'Pantalla Completa';
         }
+        if (fullscreenSvg) {
+          // Enter Fullscreen SVG icon path
+          fullscreenSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />`;
+        }
+        
+        try {
+          if (document.exitFullscreen && document.fullscreenElement) {
+            document.exitFullscreen();
+          }
+        } catch (err) {
+          console.warn('Error exiting native fullscreen:', err);
+        }
+      }
+      
+      setTimeout(centerDiagram, 150);
+    }
+
+    fullscreenBtn?.addEventListener('click', toggleFullscreenMode);
+
+    // Sync state if user exits native fullscreen via Esc key
+    document.addEventListener('fullscreenchange', () => {
+      if (canvasWrapper && !document.fullscreenElement && canvasWrapper.classList.contains('fullscreen-active')) {
+        canvasWrapper.classList.remove('fullscreen-active');
+        document.body.classList.remove('org-fullscreen-lock');
+        if (fullscreenBtn) {
+          fullscreenBtn.title = 'Pantalla Completa';
+        }
+        if (fullscreenSvg) {
+          fullscreenSvg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />`;
+        }
+        setTimeout(centerDiagram, 150);
       }
     });
 
-    // Pan / Drag-to-scroll implementation
+    // Panning & Drag-to-scroll implementation (Mouse)
     if (canvasWrapper) {
       let isDown = false;
-      let startX, startY;
-      let scrollLeft, scrollTop;
+      let startX = 0;
+      let startY = 0;
+      let scrollLeft = 0;
+      let scrollTop = 0;
 
       canvasWrapper.addEventListener('mousedown', (e) => {
         const targetElement = e.target as HTMLElement;
@@ -999,15 +1126,58 @@ const transcendentalSubsectors = [
         canvasWrapper.scrollLeft = scrollLeft - walkX;
         canvasWrapper.scrollTop = scrollTop - walkY;
       });
+
+      // Panning & Drag-to-scroll implementation (Touch / Mobile)
+      canvasWrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return; // Only allow single-finger panning
+        const targetElement = e.target as HTMLElement;
+        if (targetElement.closest('.org-card') || targetElement.closest('button') || targetElement.closest('input')) return;
+        isDown = true;
+        canvasWrapper.classList.add('active');
+        const touch = e.touches[0];
+        startX = touch.pageX - canvasWrapper.offsetLeft;
+        startY = touch.pageY - canvasWrapper.offsetTop;
+        scrollLeft = canvasWrapper.scrollLeft;
+        scrollTop = canvasWrapper.scrollTop;
+      });
+
+      canvasWrapper.addEventListener('touchend', () => {
+        isDown = false;
+        canvasWrapper.classList.remove('active');
+      });
+
+      canvasWrapper.addEventListener('touchmove', (e) => {
+        if (!isDown || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const x = touch.pageX - canvasWrapper.offsetLeft;
+        const y = touch.pageY - canvasWrapper.offsetTop;
+        const walkX = (x - startX) * 1.5;
+        const walkY = (y - startY) * 1.5;
+        canvasWrapper.scrollLeft = scrollLeft - walkX;
+        canvasWrapper.scrollTop = scrollTop - walkY;
+        
+        // Prevent default touch dragging to stop window scroll
+        e.preventDefault();
+      }, { passive: false });
+
+      // Figma-like Mouse Wheel Zoom (Ctrl + Wheel)
+      canvasWrapper.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const zoomFactor = 0.05;
+          if (e.deltaY < 0) {
+            currentScale = Math.min(2.0, currentScale + zoomFactor);
+          } else {
+            currentScale = Math.max(0.4, currentScale - zoomFactor);
+          }
+          updateZoom();
+        }
+      }, { passive: false });
     }
 
-    // Centering tree content initially
-    if (treeContent && canvasWrapper) {
-      setTimeout(() => {
-        canvasWrapper.scrollLeft = (treeContent.scrollWidth - canvasWrapper.clientWidth) / 2;
-        canvasWrapper.scrollTop = 0;
-      }, 100);
-    }
+    // Centering tree content initially & on Window Resize
+    setTimeout(centerDiagram, 150);
+    window.addEventListener('resize', centerDiagram);
 
     // 5. Search Bar Functionality
     const searchInput = document.getElementById('org-search-input') as HTMLInputElement;

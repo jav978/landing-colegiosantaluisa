@@ -34,7 +34,7 @@ const slides: HeroSlide[] = [
 ];
 ---
 
-<section id="inicio" class="relative flex min-h-screen items-center justify-center overflow-hidden">
+<section id="inicio" class="relative flex min-h-screen items-center justify-center overflow-hidden [perspective:1000px] [transform-style:preserve-3d]">
   
   <!-- Carousel Background (Super Flow fragments) -->
   <div class="absolute inset-0 z-0">
@@ -78,14 +78,14 @@ const slides: HeroSlide[] = [
   </div>
 
   <!-- Content (Foreground) -->
-  <div class="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
+  <div class="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6 [transform:translateZ(15px)] [transform-style:preserve-3d]">
     <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm text-white backdrop-blur-sm">
       <span class="flex h-2 w-2 rounded-full bg-accent"></span>
       Hijas de la Caridad — Venezuela
     </div>
 
-    <!-- Container for dynamic text blocks - positioned absolute center within itself to prevent overlap -->
-    <div class="relative w-full min-h-[280px] sm:min-h-[220px] md:min-h-[185px] flex items-center justify-center mb-8 overflow-hidden select-none">
+    <!-- Grid container for dynamic text blocks - auto-adapts height to content to prevent overlaps -->
+    <div class="grid grid-cols-1 grid-rows-1 w-full mb-8 sm:mb-10 select-none [transform-style:preserve-3d]">
       {slides.map((slide, index) => {
         const words = slide.title.split(' ');
         const firstWord = words[0];
@@ -93,16 +93,16 @@ const slides: HeroSlide[] = [
         
         return (
           <div
-            class={`hero-text-block absolute w-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center px-2 transition-all duration-1200 ease-in-out transform ${
-              index === 0 ? 'opacity-100 translate-y-0 scale-100 visible' : 'opacity-0 translate-y-8 scale-95 invisible pointer-events-none'
+            class={`hero-text-block col-start-1 row-start-1 flex flex-col items-center justify-center text-center px-2 transition-all duration-1200 ease-in-out transform [transform-style:preserve-3d] ${
+              index === 0 ? 'opacity-100 translate-y-0 scale-100 z-10' : 'opacity-0 translate-y-6 scale-95 z-0 pointer-events-none'
             }`}
             data-text-index={index}
           >
-            <h1 class="mb-4 text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl tracking-tight select-none drop-shadow-md">
+            <h1 class="mb-4 text-3xl xs:text-4xl sm:text-5xl md:text-6.5xl lg:text-7xl font-extrabold leading-tight text-white tracking-tight select-none drop-shadow-md">
               {firstWord} <span class="text-accent">{restWords}</span>
             </h1>
 
-            <p class="mx-auto max-w-2xl text-base sm:text-lg md:text-xl font-medium italic drop-shadow-md leading-relaxed text-white/95">
+            <p class="mx-auto max-w-2xl text-sm xs:text-base sm:text-lg md:text-xl font-medium italic drop-shadow-md leading-relaxed text-white/95 mt-2 sm:mt-4">
               "{slide.phrase}"
             </p>
           </div>
@@ -110,10 +110,10 @@ const slides: HeroSlide[] = [
       })}
     </div>
 
-    <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+    <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center w-full max-w-sm xs:max-w-none mx-auto [transform:translateZ(5px)]">
       <a
         href="#nosotros"
-        class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3.5 text-base font-bold text-white shadow-lg transition hover:bg-accent-light hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
+        class="w-full xs:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm sm:px-8 sm:py-3.5 sm:text-base font-bold text-white shadow-lg transition hover:bg-accent-light hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
       >
         Conócenos
         <svg class="h-5 w-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@ const slides: HeroSlide[] = [
       </a>
       <a
         href="#contacto"
-        class="inline-flex items-center gap-2 rounded-xl border-2 border-white/40 px-8 py-3.5 text-base font-semibold text-white transition hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5 active:translate-y-0"
+        class="w-full xs:w-auto inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/40 px-6 py-3 text-sm sm:px-8 sm:py-3.5 sm:text-base font-semibold text-white transition hover:bg-white/10 hover:border-white/60 hover:-translate-y-0.5 active:translate-y-0"
       >
         Contáctanos
       </a>
@@ -257,11 +257,11 @@ const slides: HeroSlide[] = [
       const textBlocks = document.querySelectorAll('.hero-text-block');
       textBlocks.forEach((block, i) => {
         if (i === index) {
-          block.classList.remove('opacity-0', 'translate-y-8', 'scale-95', 'pointer-events-none', 'invisible');
-          block.classList.add('opacity-100', 'translate-y-0', 'scale-100', 'visible');
+          block.classList.remove('opacity-0', 'translate-y-6', 'scale-95', 'pointer-events-none', 'z-0');
+          block.classList.add('opacity-100', 'translate-y-0', 'scale-100', 'z-10');
         } else {
-          block.classList.remove('opacity-100', 'translate-y-0', 'scale-100', 'visible');
-          block.classList.add('opacity-0', 'translate-y-8', 'scale-95', 'pointer-events-none', 'invisible');
+          block.classList.remove('opacity-100', 'translate-y-0', 'scale-100', 'z-10');
+          block.classList.add('opacity-0', 'translate-y-6', 'scale-95', 'pointer-events-none', 'z-0');
         }
       });
 
