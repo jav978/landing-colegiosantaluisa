@@ -1,0 +1,174 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+import { supabase } from '../../../lib/db';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Fetch testimonials from database
+const { data: dbTestimonios } = await supabase
+  .from('testimonios')
+  .select('*')
+  .order('orden', { ascending: true })
+  .order('created_at', { ascending: false });
+
+const testimonials = dbTestimonios || [];
+---
+
+<AdminLayout
+  title="Testimonios"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mb-6 flex items-center justify-between">
+    <div class="flex gap-2">
+      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary cursor-pointer" data-filter="">Todos</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="publicados">Publicados</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="borradores">Borradores</button>
+    </div>
+    <a href="/admin/testimonios/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+      + Nuevo Testimonio
+    </a>
+  </div>
+
+  <div class="rounded-xl border bg-white shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b bg-gray-50">
+            <th class="px-5 py-3 font-semibold text-gray-600">Autor</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Rol</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Testimonio</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Estado</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Orden</th>
+            <th class="px-5 py-3 font-semibold text-gray-600">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="testimonios-table-body">
+          {testimonials.length === 0 ? (
+            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay testimonios registrados</td></tr>
+          ) : (
+            testimonials.map((t) => {
+              const statusLabel = t.published ? 'Publicado' : 'Borrador';
+              const statusClass = t.published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600';
+              return (
+                <tr class="border-b last:border-0 hover:bg-gray-50 transition duration-150" data-published={t.published ? 'true' : 'false'} data-row>
+                  <td class="px-5 py-4 font-medium text-gray-900 flex items-center gap-3">
+                    {t.image_url ? (
+                      <img src={t.image_url} alt={t.autor} class="h-8 w-8 rounded-full object-cover border" />
+                    ) : (
+                      <div class={`flex h-8 w-8 items-center justify-center rounded-full ${t.color} text-white font-bold text-[10px]`}>
+                        {t.iniciales}
+                      </div>
+                    )}
+                    <span>{t.autor}</span>
+                  </td>
+                  <td class="px-5 py-4 text-gray-700">{t.rol}</td>
+                  <td class="px-5 py-4 text-gray-500 max-md:hidden max-w-sm truncate" title={t.texto}>"{t.texto}"</td>
+                  <td class="px-5 py-4">
+                    <span class={`rounded-full ${statusClass} px-2.5 py-0.5 text-xs font-medium`}>{statusLabel}</span>
+                  </td>
+                  <td class="px-5 py-4 text-gray-600 max-md:hidden">{t.orden}</td>
+                  <td class="px-5 py-4">
+                    <div class="flex items-center gap-2">
+                      <a href={`/admin/testimonios/${t.id}/edit`} data-astro-prefetch class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100">
+                        Editar
+                      </a>
+                      <button 
+                        class="delete-btn rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100 cursor-pointer"
+                        data-id={t.id}
+                        data-author={t.autor}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  function setupFiltering() {
+    const buttons = document.querySelectorAll('.filter-btn');
+    const rows = document.querySelectorAll('[data-row]');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = (btn as HTMLButtonElement).dataset.filter || '';
+
+        // Update active buttons states
+        buttons.forEach((b) => {
+          const isTarget = (b as HTMLButtonElement).dataset.filter === filter;
+          b.classList.toggle('active', isTarget);
+          b.classList.toggle('bg-primary', isTarget);
+          b.classList.toggle('text-white', isTarget);
+          b.classList.toggle('border-primary', isTarget);
+          b.classList.toggle('text-gray-600', !isTarget);
+          b.classList.toggle('border-gray-200', !isTarget);
+        });
+
+        // Toggle visibility of rows in DOM
+        rows.forEach((row) => {
+          const isPublished = (row as HTMLElement).dataset.published === 'true';
+          if (
+            filter === '' || 
+            (filter === 'publicados' && isPublished) || 
+            (filter === 'borradores' && !isPublished)
+          ) {
+            row.classList.remove('hidden');
+          } else {
+            row.classList.add('hidden');
+          }
+        });
+      });
+    });
+  }
+
+  function setupDeletion() {
+    const deleteBtns = document.querySelectorAll('.delete-btn');
+    deleteBtns.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = (btn as HTMLElement).dataset.id;
+        const author = (btn as HTMLElement).dataset.author;
+
+        if (!id || !confirm(`¿Estás seguro de que deseas eliminar el testimonio de "${author}"?`)) return;
+
+        try {
+          const res = await fetch(`/api/testimonios/${id}`, {
+            method: 'DELETE',
+          });
+          
+          if (res.ok) {
+            window.location.reload();
+          } else {
+            const data = await res.json();
+            alert(`Error: ${data.error || 'No se pudo eliminar'}`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error de conexión al eliminar');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.querySelector('.filter-btn')) {
+      setupFiltering();
+      setupDeletion();
+    }
+  });
+</script>

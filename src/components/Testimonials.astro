@@ -1,31 +1,50 @@
 ---
-const testimonios = [
+import { supabase } from '../lib/db';
+
+// Fetch published testimonials from database
+const { data: dbTestimonios } = await supabase
+  .from('testimonios')
+  .select('*')
+  .eq('published', true)
+  .order('orden', { ascending: true })
+  .order('created_at', { ascending: false });
+
+// Fallback static testimonials if the database table is empty or query fails
+const activeTestimonios = (dbTestimonios && dbTestimonios.length > 0) ? dbTestimonios : [
   {
+    id: 's1',
     texto: 'El Colegio Santa Luisa ha sido una segunda casa para mis hijos. La formación en valores y la excelencia académica son incomparables.',
     autor: 'María Fernández',
     rol: 'Madre representante',
     iniciales: 'MF',
     color: 'bg-primary',
+    image_url: '/images/testimonials/maria_fernandez.png',
   },
   {
+    id: 's2',
     texto: 'Estudiar aquí me dio las herramientas no solo para destacar académicamente, sino para ser una persona de bien. ¡Orgullosamente exalumna!',
     autor: 'Carmen Rivas',
     rol: 'Exalumna · Promoción 2015',
     iniciales: 'CR',
     color: 'bg-secondary',
+    image_url: '/images/testimonials/carmen_rivas.png',
   },
   {
+    id: 's3',
     texto: 'Como docente, valoro el compromiso del colegio con la educación integral. Es un privilegio formar parte de esta gran familia vicenciana.',
     autor: 'Prof. José Martínez',
     rol: 'Docente de Matemáticas',
     iniciales: 'JM',
     color: 'bg-accent',
+    image_url: '/images/testimonials/jose_martinez.png',
   },
 ];
 ---
 
-<section id="testimonios" class="reveal-on-scroll section-padding bg-white dark:bg-[#0e072c]">
-  <div class="container-custom">
+<section id="testimonios" class="reveal-on-scroll section-padding bg-gradient-to-b from-white to-gray-50/50 dark:from-[#0e072c] dark:to-[#09041d] overflow-hidden">
+  <div class="container-custom relative">
+    
+    <!-- Header Section -->
     <div class="mb-16 text-center">
       <span class="mb-3 inline-block rounded-full bg-primary/10 dark:bg-primary-light/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
         Testimonios
@@ -36,28 +55,206 @@ const testimonios = [
       <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
     </div>
 
-    <div class="grid gap-8 md:grid-cols-3">
-      {testimonios.map((t) => (
-        <div class="group relative rounded-2xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#1b1145] p-8 shadow-sm transition hover:shadow-lg">
-          <div class="mb-6">
-            <svg class="h-8 w-8 text-primary/20 dark:text-accent/20" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-            </svg>
-          </div>
-          <p class="mb-6 text-sm leading-relaxed text-gray-600 dark:text-slate-300 italic">
-            "{t.texto}"
-          </p>
-          <div class="flex items-center gap-3">
-            <div class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${t.color} text-xs font-bold text-white`}>
-              {t.iniciales}
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-slate-100">{t.autor}</p>
-              <p class="text-xs text-gray-500 dark:text-slate-400">{t.rol}</p>
-            </div>
-          </div>
+    <!-- Testimonials Slider Container -->
+    <div id="testimonials-slider-section" class="relative mx-auto max-w-4xl select-none" data-total-slides={activeTestimonios.length}>
+      
+      <!-- Outer Glassmorphic Card -->
+      <div class="relative overflow-hidden rounded-3xl border border-gray-100 dark:border-slate-800/80 bg-white/70 dark:bg-[#1b1145]/70 backdrop-blur-md p-8 md:p-14 shadow-xl">
+        
+        <!-- Glowing decorative background blobs -->
+        <div class="absolute -top-12 -left-12 h-44 w-44 rounded-full bg-primary/10 dark:bg-primary/5 blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -right-12 h-44 w-44 rounded-full bg-accent/15 dark:bg-accent/5 blur-3xl pointer-events-none"></div>
+        
+        <!-- Quote icon indicator (Top-Left) -->
+        <div class="absolute top-6 left-8 text-primary/15 dark:text-accent/10 pointer-events-none">
+          <svg class="h-16 w-16" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+          </svg>
         </div>
-      ))}
+
+        <!-- CSS Grid stack overlay container -->
+        <div class="grid grid-cols-1 grid-rows-1 w-full z-10 relative">
+          {activeTestimonios.map((t, idx) => (
+            <div
+              class={`testimonial-slide col-start-1 row-start-1 flex flex-col items-center text-center transition-all duration-700 ease-in-out transform ${
+                idx === 0
+                  ? 'opacity-100 translate-y-0 scale-100 z-10 pointer-events-auto'
+                  : 'opacity-0 translate-y-4 scale-95 z-0 pointer-events-none'
+              }`}
+              data-index={idx}
+            >
+              
+              <!-- Quote text -->
+              <p class="mb-8 text-base sm:text-lg md:text-xl font-medium italic leading-relaxed text-gray-700 dark:text-slate-200">
+                "{t.texto}"
+              </p>
+
+              <!-- Author info box -->
+              <div class="flex flex-col items-center gap-3 mt-2">
+                
+                <!-- Avatar image/initials fallback -->
+                {t.image_url ? (
+                  <img
+                    src={t.image_url}
+                    alt={t.autor}
+                    class="h-25 w-25 rounded-full object-cover ring-4 ring-primary/10 dark:ring-accent/15 shadow-md"
+                  />
+                ) : (
+                  <div class={`flex h-25 w-25 items-center justify-center rounded-full ${t.color || 'bg-primary'} text-white font-bold text-3xl shadow-md ring-4 ring-primary/10 dark:ring-accent/15`}>
+                    {t.iniciales}
+                  </div>
+                )}
+                
+                <div>
+                  <h4 class="text-sm sm:text-base font-semibold text-gray-950 dark:text-white">{t.autor}</h4>
+                  <p class="text-xs font-medium text-gray-500 dark:text-slate-400 mt-0.5">{t.rol}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button
+        id="prev-testimonial"
+        class="absolute left-[-16px] md:left-[-24px] top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-200 shadow-lg border border-gray-100 dark:border-slate-800 hover:bg-primary hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        aria-label="Anterior testimonio"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <button
+        id="next-testimonial"
+        class="absolute right-[-16px] md:right-[-24px] top-1/2 -translate-y-1/2 z-20 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-200 shadow-lg border border-gray-100 dark:border-slate-800 hover:bg-primary hover:text-white dark:hover:bg-accent dark:hover:text-white transition-all hover:scale-105 active:scale-95 cursor-pointer"
+        aria-label="Siguiente testimonio"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <!-- Indicators Dots -->
+      <div class="mt-8 flex justify-center gap-2">
+        {activeTestimonios.map((_, idx) => (
+          <button
+            class={`testimonial-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+              idx === 0 ? 'bg-primary dark:bg-accent w-8' : 'bg-gray-300 dark:bg-slate-700 w-2.5 hover:bg-gray-400'
+            }`}
+            data-index={idx}
+            aria-label={`Ir al testimonio ${idx + 1}`}
+          ></button>
+        ))}
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  function setupTestimonialsSlider() {
+    const section = document.getElementById('testimonials-slider-section');
+    if (!section || section.hasAttribute('data-slider-initialized')) return;
+    section.setAttribute('data-slider-initialized', 'true');
+
+    const slides = section.querySelectorAll('.testimonial-slide');
+    const indicators = section.querySelectorAll('.testimonial-indicator');
+    const prevBtn = document.getElementById('prev-testimonial');
+    const nextBtn = document.getElementById('next-testimonial');
+
+    if (slides.length === 0) return;
+
+    let currentIndex = 0;
+    let autoplayInterval: any = null;
+    const intervalDuration = 5000; // Auto-play rotate every 5 seconds
+
+    function showSlide(index: number) {
+      if (index >= slides.length) index = 0;
+      if (index < 0) index = slides.length - 1;
+
+      // Update slide active states (which controls visibility and transition classes)
+      slides.forEach((slide, i) => {
+        if (i === index) {
+          slide.classList.remove('opacity-0', 'translate-y-4', 'scale-95', 'pointer-events-none', 'z-0');
+          slide.classList.add('opacity-100', 'translate-y-0', 'scale-100', 'z-10', 'pointer-events-auto');
+        } else {
+          slide.classList.remove('opacity-100', 'translate-y-0', 'scale-100', 'z-10', 'pointer-events-auto');
+          slide.classList.add('opacity-0', 'translate-y-4', 'scale-95', 'z-0', 'pointer-events-none');
+        }
+      });
+
+      // Update indicators active dot sizes and color
+      indicators.forEach((ind, i) => {
+        if (i === index) {
+          ind.classList.remove('bg-gray-300', 'dark:bg-slate-700', 'w-2.5');
+          ind.classList.add('bg-primary', 'dark:bg-accent', 'w-8');
+        } else {
+          ind.classList.remove('bg-primary', 'dark:bg-accent', 'w-8');
+          ind.classList.add('bg-gray-300', 'dark:bg-slate-700', 'w-2.5');
+        }
+      });
+
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      showSlide(currentIndex - 1);
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      autoplayInterval = setInterval(nextSlide, intervalDuration);
+    }
+
+    function stopAutoplay() {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+        autoplayInterval = null;
+      }
+    }
+
+    // Attach interaction events
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        nextSlide();
+        startAutoplay(); // Reset timer on click
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        prevSlide();
+        startAutoplay(); // Reset timer on click
+      });
+    }
+
+    indicators.forEach((indicator) => {
+      indicator.addEventListener('click', () => {
+        const idx = Number(indicator.getAttribute('data-index'));
+        if (!isNaN(idx)) {
+          showSlide(idx);
+          startAutoplay(); // Reset timer on click
+        }
+      });
+    });
+
+    // Pause on mouse interaction (hover)
+    const card = section.querySelector('.relative.overflow-hidden.rounded-3xl');
+    if (card) {
+      card.addEventListener('mouseenter', stopAutoplay);
+      card.addEventListener('mouseleave', startAutoplay);
+    }
+
+    // Start auto-play
+    startAutoplay();
+  }
+
+  // Support DOM Content Loaded and Astro Page Transitions Client swap/loads
+  document.addEventListener('DOMContentLoaded', setupTestimonialsSlider);
+  document.addEventListener('astro:page-load', setupTestimonialsSlider);
+</script>

@@ -71,4 +71,20 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
 ALTER TABLE contact_messages DISABLE ROW LEVEL SECURITY;
 ALTER TABLE pre_registrations DISABLE ROW LEVEL SECURITY;
 
+-- Table for school and parent testimonials
+CREATE TABLE IF NOT EXISTS testimonios (
+  id SERIAL PRIMARY KEY,
+  texto TEXT NOT NULL,
+  autor VARCHAR(100) NOT NULL,
+  rol VARCHAR(100) NOT NULL,
+  iniciales VARCHAR(5) NOT NULL,
+  color VARCHAR(50) NOT NULL DEFAULT 'bg-primary',
+  image_url TEXT DEFAULT NULL,
+  orden INTEGER DEFAULT 0,
+  published BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE testimonios DISABLE ROW LEVEL SECURITY;
+
 

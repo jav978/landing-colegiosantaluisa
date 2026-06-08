@@ -1,0 +1,343 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout
+  title="Nuevo Testimonio"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath={Astro.url.pathname}
+>
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <form id="testimonio-form" class="space-y-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="autor" class="mb-1.5 block text-sm font-medium text-gray-700">Autor <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="autor"
+              name="autor"
+              required
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="Ej: Juan Pérez"
+            />
+          </div>
+          <div>
+            <label for="rol" class="mb-1.5 block text-sm font-medium text-gray-700">Rol <span class="text-red-500">*</span></label>
+            <input
+              type="text"
+              id="rol"
+              name="rol"
+              required
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="Ej: Padre de familia, Exalumno, Docente"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="texto" class="mb-1.5 block text-sm font-medium text-gray-700">Testimonio <span class="text-red-500">*</span></label>
+          <textarea
+            id="texto"
+            name="texto"
+            required
+            rows="4"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Escribe el testimonio o comentario aquí..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-gray-700">Foto de perfil (Opcional)</label>
+          <p class="text-xs text-gray-400 mb-3">Sube una foto de perfil o ingresa una dirección URL. Si se deja en blanco, se generará un avatar con iniciales.</p>
+
+          <!-- Toggle tabs -->
+          <div class="mb-4 flex rounded-xl bg-gray-100 p-1 border border-gray-200/80">
+            <button type="button" id="tab-upload" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 bg-white text-gray-800 shadow-sm border border-gray-100">
+              Subir Foto
+            </button>
+            <button type="button" id="tab-url" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 text-gray-500 hover:text-gray-800">
+              Dirección URL
+            </button>
+          </div>
+
+          <!-- Upload manual -->
+          <div id="upload-container" class="space-y-3">
+            <div class="flex items-center justify-center w-full">
+              <label for="image_file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300">
+                <div class="flex flex-col items-center justify-center pt-4 pb-4">
+                  <span class="text-2xl mb-1.5">📸</span>
+                  <p class="mb-1 text-sm text-gray-500 font-medium">Haz clic para buscar imagen</p>
+                  <p class="text-xs text-gray-400">Máx. 1MB</p>
+                </div>
+                <input type="file" id="image_file" accept="image/*" class="hidden" />
+              </label>
+            </div>
+          </div>
+
+          <!-- URL input -->
+          <div id="url-container" class="hidden space-y-2">
+            <div class="flex gap-2">
+              <input
+                type="url"
+                id="image_url_input"
+                class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                placeholder="https://ejemplo.com/foto.jpg"
+              />
+              <button type="button" id="add-url-btn" class="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition">
+                Usar URL
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden Input for actual value to send -->
+          <input type="hidden" id="image_url" name="image_url" />
+
+          <!-- Preview -->
+          <div id="image-preview-container" class="hidden mt-4">
+            <p class="text-xs font-semibold text-gray-500 mb-2">Vista previa de la foto:</p>
+            <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-primary/20 group">
+              <img id="preview-img" src="" class="w-full h-full object-cover" alt="Vista previa de perfil" />
+              <button
+                type="button"
+                id="del-preview-btn"
+                class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition duration-200 text-white text-xs font-bold flex items-center justify-center cursor-pointer"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="orden" class="mb-1.5 block text-sm font-medium text-gray-700">Orden de visualización</label>
+            <input
+              type="number"
+              id="orden"
+              name="orden"
+              value="0"
+              min="0"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            <p class="text-xs text-gray-400 mt-1">Los testimonios se muestran ordenados de menor a mayor valor.</p>
+          </div>
+          <div class="flex items-center pt-6">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="published" name="published" value="true" checked class="sr-only peer" />
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              <span class="ml-3 text-sm font-medium text-gray-700">Publicado</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
+            Guardar Testimonio
+          </button>
+          <a href="/admin/testimonios" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  function compressImage(file: File, maxWidth = 400, maxHeight = 400, quality = 0.8): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith('image/')) {
+        reject(new Error('El archivo no es una imagen.'));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Crop or resize to square for avatar
+          const size = Math.min(width, height);
+          const startX = (width - size) / 2;
+          const startY = (height - size) / 2;
+
+          canvas.width = maxWidth;
+          canvas.height = maxHeight;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(event.target?.result as string);
+            return;
+          }
+
+          ctx.drawImage(img, startX, startY, size, size, 0, 0, maxWidth, maxHeight);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedDataUrl);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  }
+
+  function setupNewTestimonio() {
+    const form = document.getElementById('testimonio-form') as HTMLFormElement | null;
+    if (!form) return;
+
+    const tabUpload = document.getElementById('tab-upload');
+    const tabUrl = document.getElementById('tab-url');
+    const uploadContainer = document.getElementById('upload-container');
+    const urlContainer = document.getElementById('url-container');
+    
+    const imageFile = document.getElementById('image_file') as HTMLInputElement | null;
+    const imageUrlInput = document.getElementById('image_url_input') as HTMLInputElement | null;
+    const addUrlBtn = document.getElementById('add-url-btn');
+    const imageUrlHidden = document.getElementById('image_url') as HTMLInputElement | null;
+    
+    const previewContainer = document.getElementById('image-preview-container');
+    const previewImg = document.getElementById('preview-img') as HTMLImageElement | null;
+    const delPreviewBtn = document.getElementById('del-preview-btn');
+
+    let currentImageUrl = '';
+
+    function setMode(mode: 'upload' | 'url') {
+      if (mode === 'upload') {
+        tabUpload?.classList.add('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-100');
+        tabUpload?.classList.remove('text-gray-500', 'hover:text-gray-800');
+        tabUrl?.classList.add('text-gray-500', 'hover:text-gray-800');
+        tabUrl?.classList.remove('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-100');
+        
+        uploadContainer?.classList.remove('hidden');
+        urlContainer?.classList.add('hidden');
+      } else {
+        tabUrl?.classList.add('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-100');
+        tabUrl?.classList.remove('text-gray-500', 'hover:text-gray-800');
+        tabUpload?.classList.add('text-gray-500', 'hover:text-gray-800');
+        tabUpload?.classList.remove('bg-white', 'text-gray-800', 'shadow-sm', 'border', 'border-gray-100');
+        
+        urlContainer?.classList.remove('hidden');
+        uploadContainer?.classList.add('hidden');
+      }
+    }
+
+    tabUpload?.addEventListener('click', () => setMode('upload'));
+    tabUrl?.addEventListener('click', () => setMode('url'));
+
+    function renderImagePreview(src: string) {
+      currentImageUrl = src;
+      if (imageUrlHidden) imageUrlHidden.value = src;
+      if (previewImg) previewImg.src = src;
+
+      if (src) {
+        previewContainer?.classList.remove('hidden');
+      } else {
+        previewContainer?.classList.add('hidden');
+      }
+    }
+
+    // Manual upload
+    imageFile?.addEventListener('change', async () => {
+      const file = imageFile.files?.[0];
+      if (!file) return;
+
+      if (file.size >= 1024 * 1024) {
+        alert('La foto supera el límite de 1MB. Por favor selecciona una imagen más pequeña.');
+        imageFile.value = '';
+        return;
+      }
+
+      try {
+        const base64 = await compressImage(file);
+        renderImagePreview(base64);
+      } catch (err) {
+        console.error('Error al procesar foto:', err);
+        // Fallback reading
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          renderImagePreview(e.target?.result as string || '');
+        };
+        reader.readAsDataURL(file);
+      }
+      imageFile.value = '';
+    });
+
+    // Add URL
+    addUrlBtn?.addEventListener('click', () => {
+      if (!imageUrlInput) return;
+      const url = imageUrlInput.value.trim();
+      if (!url) return;
+      renderImagePreview(url);
+      imageUrlInput.value = '';
+    });
+
+    // Delete preview
+    delPreviewBtn?.addEventListener('click', () => {
+      renderImagePreview('');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const errorMsg = document.getElementById('error-msg');
+      const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+      if (!errorMsg || !submitBtn) return;
+
+      errorMsg.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+
+      const formData = new FormData(form);
+      const isPublished = (document.getElementById('published') as HTMLInputElement)?.checked;
+
+      const res = await fetch('/api/testimonios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          autor: formData.get('autor'),
+          rol: formData.get('rol'),
+          texto: formData.get('texto'),
+          image_url: currentImageUrl || null,
+          orden: Number(formData.get('orden')) || 0,
+          published: isPublished,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        navigate('/admin/testimonios');
+      } else {
+        errorMsg.textContent = data.error || 'Error al guardar el testimonio';
+        errorMsg.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar Testimonio';
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('testimonio-form')) {
+      setupNewTestimonio();
+    }
+  });
+</script>
