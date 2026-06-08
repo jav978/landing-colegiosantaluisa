@@ -1,17 +1,20 @@
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 border-b border-transparent dark:bg-[#0e072c]/90 dark:border-slate-800/50 backdrop-blur-md shadow-sm transition-colors duration-300">
-  <div class="container-custom flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+<header
+  id="main-header"
+  class="fixed top-0 left-0 right-0 z-50 bg-white/90 border-b border-transparent dark:bg-[#0e072c]/90 dark:border-slate-800/50 backdrop-blur-md shadow-sm transition-all duration-300 py-4 sm:py-5"
+>
+  <div class="container-custom flex items-center justify-between px-4 sm:px-6 lg:px-8">
     <a href="/" class="flex items-center gap-2">
       <img src="/logocolegio.png" alt="Logo Colegio Santa Luisa" class="h-10 w-auto" />
       <span class="text-sm font-bold text-primary dark:text-slate-100 sm:text-lg">U.E. Colegio Santa Luisa</span>
     </a>
 
     <nav class="hidden items-center gap-8 md:flex">
-      <a href="/#inicio" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Inicio</a>
-      <a href="/#nosotros" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Nosotros</a>
-      <a href="/#programas" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Programas</a>
-      <a href="/#galeria" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Galería</a>
-      <a href="/#testimonios" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Testimonios</a>
-      <a href="/blog" class="text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Blog</a>
+      <a href="/#inicio" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Inicio</a>
+      <a href="/#nosotros" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Nosotros</a>
+      <a href="/#programas" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Programas</a>
+      <a href="/#galeria" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Galería</a>
+      <a href="/#testimonios" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Testimonios</a>
+      <a href="/blog" class="nav-link text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:text-primary dark:hover:text-accent">Blog</a>
       <a href="/#contacto" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light">
         Contacto
       </a>
@@ -21,7 +24,7 @@
       <!-- Botón de Modo Oscuro -->
       <button
         id="theme-toggle"
-        class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+        class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         aria-label="Cambiar tema"
       >
         <!-- Icono de Sol (Modo Oscuro -> Light) -->
@@ -34,26 +37,40 @@
         </svg>
       </button>
 
-      <button id="menu-toggle" class="flex flex-col gap-1.5 md:hidden" aria-label="Abrir menú">
-        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition"></span>
-        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition"></span>
-        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition"></span>
+      <button id="menu-toggle" class="flex flex-col gap-1.5 md:hidden p-1.5 justify-center items-center cursor-pointer" aria-label="Abrir menú">
+        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition duration-300 origin-center"></span>
+        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition duration-300 origin-center"></span>
+        <span class="block h-0.5 w-6 bg-gray-700 dark:bg-slate-300 transition duration-300 origin-center"></span>
       </button>
     </div>
   </div>
 
   <div id="mobile-menu" class="hidden border-t border-gray-100 dark:border-slate-800 bg-white dark:bg-[#0e072c] px-4 pb-5 pt-3 md:hidden">
     <nav class="flex flex-col gap-3">
-      <a href="/#inicio" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Inicio</a>
-      <a href="/#nosotros" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Nosotros</a>
-      <a href="/#programas" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Programas</a>
-      <a href="/#galeria" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Galería</a>
-      <a href="/#testimonios" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Testimonios</a>
-      <a href="/blog" class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Blog</a>
+      <a href="/#inicio" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Inicio</a>
+      <a href="/#nosotros" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Nosotros</a>
+      <a href="/#programas" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Programas</a>
+      <a href="/#galeria" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Galería</a>
+      <a href="/#testimonios" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Testimonios</a>
+      <a href="/blog" class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 transition hover:bg-gray-50 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent">Blog</a>
       <a href="/#contacto" class="rounded-lg bg-primary px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light">Contacto</a>
     </nav>
   </div>
 </header>
+
+<style is:global>
+  /* Hamburger button transitions to X */
+  #menu-toggle.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  #menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  #menu-toggle.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+</style>
 
 <script>
   function setupHeader() {
@@ -61,12 +78,18 @@
     const menu = document.getElementById('mobile-menu');
 
     if (toggle && menu) {
-      toggle.addEventListener('click', () => {
+      // Recreate event listener to prevent duplicates in SPA client transitions
+      const newToggle = toggle.cloneNode(true) as HTMLButtonElement;
+      toggle.parentNode?.replaceChild(newToggle, toggle);
+
+      newToggle.addEventListener('click', () => {
+        newToggle.classList.toggle('open');
         menu.classList.toggle('hidden');
       });
 
       menu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
+          newToggle.classList.remove('open');
           menu.classList.add('hidden');
         });
       });
@@ -90,7 +113,11 @@
 
       updateIcons();
 
-      themeToggle.addEventListener('click', () => {
+      // Reset listener
+      const newThemeToggle = themeToggle.cloneNode(true) as HTMLButtonElement;
+      themeToggle.parentNode?.replaceChild(newThemeToggle, themeToggle);
+
+      newThemeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.classList.toggle('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateIcons();
@@ -98,8 +125,20 @@
     }
   }
 
+  function smoothScrollTo(targetElement: HTMLElement) {
+    const header = document.getElementById('main-header');
+    // Header gets smaller on scroll, use exact height with offset compensation
+    const headerHeight = header ? header.offsetHeight : 70;
+    const elementPosition = targetElement.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - headerHeight + 8;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    });
+  }
+
   function setupNavigation() {
-    // Intercept section link clicks to handle smooth scrolling without showing the hash in the URL
     const sectionLinks = document.querySelectorAll('a[href^="/#"], a[href^="#"]');
     
     sectionLinks.forEach((link) => {
@@ -112,36 +151,108 @@
         const isLandingPage = window.location.pathname === '/' || window.location.pathname === '';
 
         if (isLandingPage) {
-          e.preventDefault();
           const targetElement = document.getElementById(targetId);
           if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            // Clean up the hash in the browser URL
-            if (window.location.hash) {
-              history.replaceState(null, '', '/');
-            }
+            e.preventDefault();
+            smoothScrollTo(targetElement);
+            // Update URL hash without instant scroll-jumps
+            history.pushState(null, '', `#${targetId}`);
           }
         }
       });
     });
 
-    // If loaded from an external page with a hash in the URL (e.g. /#about), scroll and clean it up
+    // Handle initial URL hash scrolling cleanly after page assembly
     if (window.location.hash) {
       const targetId = window.location.hash.substring(1);
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         setTimeout(() => {
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          history.replaceState(null, '', window.location.pathname);
-        }, 100);
+          smoothScrollTo(targetElement);
+        }, 300);
       }
     }
   }
 
-  // Initialize on page load and on Astro page changes
+  function setupScrollEffects() {
+    const header = document.getElementById('main-header');
+    
+    const checkScroll = () => {
+      if (!header) return;
+      if (window.scrollY > 30) {
+        header.classList.remove('py-4', 'sm:py-5', 'border-transparent');
+        header.classList.add('py-2', 'sm:py-2.5', 'border-gray-100', 'dark:border-slate-800/80', 'shadow-md');
+      } else {
+        header.classList.remove('py-2', 'sm:py-2.5', 'border-gray-100', 'dark:border-slate-800/80', 'shadow-md');
+        header.classList.add('py-4', 'sm:py-5', 'border-transparent');
+      }
+    };
+
+    window.addEventListener('scroll', checkScroll);
+    checkScroll(); // Initial check
+  }
+
+  function setupScrollSpy() {
+    const sections = ['inicio', 'nosotros', 'programas', 'galeria', 'testimonios', 'contacto'];
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    const isBlogPage = window.location.pathname.startsWith('/blog');
+    
+    if (isBlogPage) {
+      navLinks.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        if (href === '/blog') {
+          link.classList.remove('text-gray-700', 'dark:text-slate-300');
+          link.classList.add('text-primary', 'dark:text-accent', 'font-semibold');
+        } else {
+          link.classList.remove('text-primary', 'dark:text-accent', 'font-semibold');
+          link.classList.add('text-gray-700', 'dark:text-slate-300');
+        }
+      });
+      return;
+    }
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-35% 0px -55% 0px',
+      threshold: 0
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          
+          navLinks.forEach((link) => {
+            const href = link.getAttribute('href') || '';
+            const isMatch = href.endsWith(`#${id}`) || href === `#${id}`;
+            
+            if (isMatch) {
+              link.classList.remove('text-gray-700', 'dark:text-slate-300');
+              link.classList.add('text-primary', 'dark:text-accent', 'font-semibold');
+            } else {
+              // Ensure we only touch landing page hash links
+              if (href.includes('#')) {
+                link.classList.remove('text-primary', 'dark:text-accent', 'font-semibold');
+                link.classList.add('text-gray-700', 'dark:text-slate-300');
+              }
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  }
+
+  // Initialize all logic on first load and on subsequent client router page swaps
   document.addEventListener('astro:page-load', () => {
     setupHeader();
     setupNavigation();
+    setupScrollEffects();
+    setupScrollSpy();
   });
 </script>
