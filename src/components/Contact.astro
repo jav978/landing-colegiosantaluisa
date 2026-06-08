@@ -1,9 +1,9 @@
 ---
 const contactoInfo = [
-  { icon: '📍', label: 'Dirección', value: 'Calle Real del Prado de María, junto a la Iglesia La Milagrosa, Caracas' },
-  { icon: '📞', label: 'Teléfono', value: '+58 (212) 555-1234' },
-  { icon: '✉️', label: 'Email', value: 'info@colegiosantaluisa.edu.ve' },
-  { icon: '🕐', label: 'Horario', value: 'Lunes a Viernes · 7:00 AM - 1:00 PM' },
+  { type: 'address', label: 'Dirección', value: 'Calle Real del Prado de María, junto a la Iglesia La Milagrosa, Caracas' },
+  { type: 'phone', label: 'Teléfono', value: '+58 (212) 632-0634' },
+  { type: 'email', label: 'Email', value: 'info@colegiosantaluisa.edu.ve' },
+  { type: 'hours', label: 'Horario', value: 'Lunes a Viernes · 7:00 AM - 1:00 PM' },
 ];
 ---
 
@@ -22,72 +22,75 @@ const contactoInfo = [
       <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
     </div>
 
-    <div class="grid gap-12 lg:grid-cols-5">
-      <div class="lg:col-span-3">
-        <form class="space-y-6" id="contact-form" method="POST">
-          <div class="grid gap-6 sm:grid-cols-2">
+    <div class="grid gap-8 lg:grid-cols-12">
+      <!-- Columna Formulario (7/12) -->
+      <div class="lg:col-span-7">
+        <div class="rounded-2xl bg-white dark:bg-[#110935] border border-gray-100 dark:border-slate-800/60 p-8 shadow-lg dark:shadow-2xl/20 transition-all duration-300">
+          <form class="space-y-6" id="contact-form" method="POST">
+            <div class="grid gap-6 sm:grid-cols-2">
+              <div>
+                <label for="nombre" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Nombre completo</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  required
+                  class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition duration-200 focus:border-primary dark:focus:border-accent focus:ring-4 focus:ring-primary/10 dark:focus:ring-accent/10 focus:shadow-sm"
+                  placeholder="Tu nombre"
+                />
+              </div>
+              <div>
+                <label for="email" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition duration-200 focus:border-primary dark:focus:border-accent focus:ring-4 focus:ring-primary/10 dark:focus:ring-accent/10 focus:shadow-sm"
+                  placeholder="tu@correo.com"
+                />
+              </div>
+            </div>
             <div>
-              <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Nombre completo</label>
+              <label for="telefono" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Teléfono</label>
               <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                required
-                class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
-                placeholder="Tu nombre"
+                type="tel"
+                id="telefono"
+                name="telefono"
+                class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition duration-200 focus:border-primary dark:focus:border-accent focus:ring-4 focus:ring-primary/10 dark:focus:ring-accent/10 focus:shadow-sm"
+                placeholder="+58 412-..."
               />
             </div>
             <div>
-              <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Correo electrónico</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
+              <label for="mensaje" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Mensaje</label>
+              <textarea
+                id="mensaje"
+                name="mensaje"
+                rows="4"
                 required
-                class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
-                placeholder="tu@correo.com"
-              />
+                class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition duration-200 focus:border-primary dark:focus:border-accent focus:ring-4 focus:ring-primary/10 dark:focus:ring-accent/10 focus:shadow-sm"
+                placeholder="Escribe tu mensaje..."
+              ></textarea>
             </div>
-          </div>
-          <div>
-            <label for="telefono" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Teléfono</label>
-            <input
-              type="tel"
-              id="telefono"
-              name="telefono"
-              class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
-              placeholder="+58 412-..."
-            />
-          </div>
-          <div>
-            <label for="mensaje" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Mensaje</label>
-            <textarea
-              id="mensaje"
-              name="mensaje"
-              rows="4"
-              required
-              class="w-full rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#1b1145] text-gray-800 dark:text-slate-100 px-4 py-3 text-sm outline-none transition focus:border-primary dark:focus:border-accent focus:ring-2 focus:ring-primary/20 dark:focus:ring-accent/20"
-              placeholder="Escribe tu mensaje..."
-            ></textarea>
-          </div>
 
-          <div id="form-alert" class="hidden rounded-xl p-4 text-sm font-medium"></div>
+            <div id="form-alert" class="hidden rounded-xl p-4 text-sm font-medium"></div>
 
-          <button
-            type="submit"
-            id="submit-btn"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light hover:shadow-xl sm:w-auto"
-          >
-            <span id="btn-text">Enviar mensaje</span>
-            <svg id="btn-icon" class="h-4 w-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <svg id="btn-arrow" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-          </button>
-        </form>
+            <button
+              type="submit"
+              id="submit-btn"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg transition duration-200 hover:bg-primary-light dark:bg-accent dark:text-primary dark:hover:bg-accent-light hover:shadow-xl sm:w-auto hover:-translate-y-0.5 active:translate-y-0"
+            >
+              <span id="btn-text">Enviar mensaje</span>
+              <svg id="btn-icon" class="h-4 w-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <svg id="btn-arrow" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
 
 <script>
@@ -162,26 +165,70 @@ const contactoInfo = [
   }
 </script>
 
-      <div class="lg:col-span-2">
+      <!-- Columna Info + Mapa (5/12) -->
+      <div class="flex flex-col gap-6 lg:col-span-5">
+        <!-- Tarjeta Info -->
         <div class="rounded-2xl bg-primary dark:bg-[#1b1145] border border-transparent dark:border-slate-800/80 p-8 text-white shadow-lg">
           <h3 class="mb-6 text-lg font-bold">Información de contacto</h3>
           <div class="space-y-6">
             {contactoInfo.map((item) => (
               <div class="flex items-start gap-4">
-                <span class="mt-0.5 text-xl">{item.icon}</span>
+                <div class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 dark:bg-slate-800/50 text-accent">
+                  {item.type === 'address' && (
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                  {item.type === 'phone' && (
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                  )}
+                  {item.type === 'email' && (
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                  {item.type === 'hours' && (
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
+                </div>
                 <div>
-                  <p class="text-xs font-medium uppercase tracking-wider text-white/70 dark:text-slate-400">{item.label}</p>
-                  <p class="text-sm font-medium">{item.value}</p>
+                  <p class="text-xs font-semibold uppercase tracking-wider text-white/60 dark:text-slate-400">{item.label}</p>
+                  <p class="text-sm font-medium leading-relaxed">{item.value}</p>
                 </div>
               </div>
             ))}
           </div>
           <div class="mt-8 flex gap-3">
-            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 dark:bg-slate-800/80 text-sm transition hover:bg-white/25 dark:hover:bg-slate-700/80">📘</a>
-            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 dark:bg-slate-800/80 text-sm transition hover:bg-white/25 dark:hover:bg-slate-700/80">📸</a>
-            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 dark:bg-slate-800/80 text-sm transition hover:bg-white/25 dark:hover:bg-slate-700/80">🐦</a>
-            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 dark:bg-slate-800/80 text-sm transition hover:bg-white/25 dark:hover:bg-slate-700/80">▶️</a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 text-white hover:text-accent transition hover:bg-white/20 dark:hover:bg-slate-700/50" aria-label="Facebook">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 text-white hover:text-accent transition hover:bg-white/20 dark:hover:bg-slate-700/50" aria-label="Instagram">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 text-white hover:text-accent transition hover:bg-white/20 dark:hover:bg-slate-700/50" aria-label="Twitter/X">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 text-white hover:text-accent transition hover:bg-white/20 dark:hover:bg-slate-700/50" aria-label="YouTube">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
           </div>
+        </div>
+
+        <!-- Tarjeta Mapa -->
+        <div class="overflow-hidden rounded-2xl bg-white dark:bg-[#110935] border border-gray-100 dark:border-slate-800/60 p-2 shadow-lg dark:shadow-2xl/20 transition-all duration-300">
+          <iframe
+            src="https://maps.google.com/maps?q=Colegio%20Santa%20Luisa%20Prado%20de%20Maria%20Caracas&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            class="w-full h-[250px] rounded-xl border-0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Mapa de ubicación del Colegio Santa Luisa"
+          ></iframe>
         </div>
       </div>
     </div>
