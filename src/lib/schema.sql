@@ -87,4 +87,19 @@ CREATE TABLE IF NOT EXISTS testimonios (
 
 ALTER TABLE testimonios DISABLE ROW LEVEL SECURITY;
 
+-- Table for body of school teachers
+CREATE TABLE IF NOT EXISTS docentes (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  role VARCHAR(150) NOT NULL,
+  category VARCHAR(50) NOT NULL CHECK (category IN ('inicial', 'primaria', 'media', 'coordinacion')),
+  grade VARCHAR(200) NOT NULL,
+  image_url TEXT DEFAULT NULL,
+  phrase TEXT DEFAULT NULL,
+  orden INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE docentes DISABLE ROW LEVEL SECURITY;
+
 

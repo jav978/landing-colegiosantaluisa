@@ -8,200 +8,217 @@ interface Teacher {
   phrase?: string;
 }
 
-const teachers: Teacher[] = [
-  {
-    name: 'Sor Yolanda Zambrano',
-    role: 'Directora General',
-    category: 'coordinacion',
-    grade: 'Dirección y Pastoral',
-    image: '/images/staff/director.png',
-    phrase: 'Sembrando la semilla de la fe y el amor al prójimo en cada corazón vicenciano.'
-  },
-  {
-    name: 'Prof. Carmen Silva',
-    role: 'Subdirectora Académica',
-    category: 'coordinacion',
-    grade: 'Consejo Directivo',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Educar es guiar con paciencia, inspirar con el ejemplo y sembrar para el futuro.'
-  },
-  {
-    name: 'Prof. María Bompart',
-    role: 'Coordinadora de Primaria',
-    category: 'coordinacion',
-    grade: 'Coordinación Académica Primaria',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Comprometida con el desarrollo pedagógico y los valores cristianos de nuestros niños.'
-  },
-  {
-    name: 'Prof. Ivonne Palacios',
-    role: 'Coordinadora de Media General',
-    category: 'coordinacion',
-    grade: 'Coordinación Académica Media General',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Guiando a nuestros jóvenes hacia la excelencia académica y el compromiso social.'
-  },
-  {
-    name: 'Prof. Xiomara Martínez',
-    role: 'Docente de Preescolar',
-    category: 'inicial',
-    grade: 'Educación Inicial',
-    image: '/images/staff/teacher_3.png',
-    phrase: 'Despertando la curiosidad y la alegría del aprendizaje en los más pequeños.'
-  },
-  {
-    name: 'Prof. Yeisa Romero',
-    role: 'Docente de Preescolar',
-    category: 'inicial',
-    grade: 'Educación Inicial',
-    image: '/images/staff/teacher_3.png',
-    phrase: 'Formando corazones alegres desde los primeros pasos de su vida escolar.'
-  },
-  {
-    name: 'Prof. María Berrios',
-    role: 'Docente de 1er Grado',
-    category: 'primaria',
-    grade: '1er Grado - Educación Primaria',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Con amor y paciencia construimos los cimientos de la lectura y el aprendizaje.'
-  },
-  {
-    name: 'Prof. Betty Hernández',
-    role: 'Docente de 2do Grado',
-    category: 'primaria',
-    grade: '2do Grado - Educación Primaria',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Guiando a nuestros niños a descubrir el mundo con valores y entusiasmo.'
-  },
-  {
-    name: 'Prof. Nohelia Rodríguez',
-    role: 'Docente de 3er Grado',
-    category: 'primaria',
-    grade: '3er Grado - Educación Primaria',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Motivando la creatividad y el compañerismo en cada jornada de clase.'
-  },
-  {
-    name: 'Prof. Dubraska Guillen',
-    role: 'Docente de 4to Grado',
-    category: 'primaria',
-    grade: '4to Grado - Educación Primaria',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Fomentando la responsabilidad, la lectura reflexiva y el respeto mutuo.'
-  },
-  {
-    name: 'Prof. Yenny Pérez',
-    role: 'Docente de 5to Grado',
-    category: 'primaria',
-    grade: '5to Grado - Educación Primaria',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Impulsando el pensamiento crítico y la solidaridad vicenciana en el aula.'
-  },
-  {
-    name: 'Prof. María Santos',
-    role: 'Docente de 6to Grado',
-    category: 'primaria',
-    grade: '6to Grado - Educación Primaria',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Preparando a los estudiantes para nuevos retos académicos con bases sólidas y fe.'
-  },
-  {
-    name: 'Prof. José Vásquez',
-    role: 'Profesor de Computación y Orientación',
-    category: 'media',
-    grade: 'Computación (1er a 5to Año), Orientación y Guía de 1er Año',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Guiando el desarrollo tecnológico y la orientación personal de nuestros jóvenes.'
-  },
-  {
-    name: 'Prof. Anele Palacios',
-    role: 'Profesora de GHC y Soberanía',
-    category: 'media',
-    grade: 'GHC y Soberanía (4to y 5to Año) y Guía de 2do Año',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Fortaleciendo la conciencia histórica, ciudadana y la soberanía patria.'
-  },
-  {
-    name: 'Prof. Francesca Giannandole',
-    role: 'Profesora de Matemáticas y Física',
-    category: 'media',
-    grade: 'Matemáticas (1er a 3er Año), Física (3er Año) y Guía de 3er Año',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Desarrollando el pensamiento lógico y analítico a través de la ciencia.'
-  },
-  {
-    name: 'Prof. Kelvin Tábata',
-    role: 'Profesor de Matemáticas y Física',
-    category: 'media',
-    grade: 'Matemáticas y Física (4to y 5to Año) y Guía de 4to Año',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Preparando a los futuros bachilleres en el campo de las ciencias puras.'
-  },
-  {
-    name: 'Prof. Jorge Hernández',
-    role: 'Coordinador de Media General y Prof. de Ed. Física',
-    category: 'media',
-    grade: 'Educación Física (4to y 5to Año) y Guía de 5to Año',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Inculcando la disciplina, la salud física y el liderazgo vicenciano.'
-  },
-  {
-    name: 'Prof. Humberto Bisuela',
-    role: 'Profesor de Inglés',
-    category: 'media',
-    grade: 'Inglés (1er a 5to Año) - Media General',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Fomentando el dominio del idioma inglés como herramienta clave para el futuro global.'
-  },
-  {
-    name: 'Prof. Geydis Freira',
-    role: 'Profesora de GHC y Arte y Patrimonio',
-    category: 'media',
-    grade: 'GHC y Arte (1er a 3er Año) - Media General',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Fomentando la apreciación del arte, la historia y nuestro patrimonio cultural.'
-  },
-  {
-    name: 'Prof. Ilenia Pasero',
-    role: 'Profesora de Castellano',
-    category: 'media',
-    grade: 'Castellano (1er a 3er Año) - Media General',
-    image: '/images/staff/teacher_3.png',
-    phrase: 'Impulsando las habilidades lingüísticas, la lectura comprensiva y la expresión escrita.'
-  },
-  {
-    name: 'Prof. Maikol Gómez',
-    role: 'Profesor de Educación Física',
-    category: 'media',
-    grade: 'Educación Física (1er a 3er Año) - Media General',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Promoviendo la actividad física, la recreación y el desarrollo psicomotor en la juventud.'
-  },
-  {
-    name: 'Prof. Madyuri Hernández',
-    role: 'Profesora de Química y Biología',
-    category: 'media',
-    grade: 'Química y Biología - Media General',
-    image: '/images/staff/teacher_1.png',
-    phrase: 'Inspirando la curiosidad científica mediante el estudio de la vida y los elementos químicos.'
-  },
-  {
-    name: 'Prof. Génesis Sacare',
-    role: 'Profesora de Castellano',
-    category: 'media',
-    grade: 'Castellano (4to y 5to Año) - Media General',
-    image: '/images/staff/teacher_3.png',
-    phrase: 'Acompañando la formación literaria y el análisis crítico de textos en bachillerato.'
-  },
-  {
-    name: 'Prof. Benigno',
-    role: 'Profesor de Educación Física',
-    category: 'media',
-    grade: 'Educación Física - Media General',
-    image: '/images/staff/teacher_2.png',
-    phrase: 'Fomentando hábitos de vida saludables y el trabajo en equipo a través del deporte.'
-  }
-];
+import { supabase } from '../lib/db';
+
+const { data: dbDocentes } = await supabase
+  .from('docentes')
+  .select('*')
+  .order('orden', { ascending: true })
+  .order('created_at', { ascending: false });
+
+const teachers: Teacher[] = (dbDocentes && dbDocentes.length > 0)
+  ? dbDocentes.map((d) => ({
+      name: d.name,
+      role: d.role,
+      category: d.category as any,
+      grade: d.grade,
+      image: d.image_url || '/images/staff/teacher_1.png',
+      phrase: d.phrase || undefined,
+    }))
+  : [
+      {
+        name: 'Sor Yolanda Zambrano',
+        role: 'Directora General',
+        category: 'coordinacion',
+        grade: 'Dirección y Pastoral',
+        image: '/images/staff/director.png',
+        phrase: 'Sembrando la semilla de la fe y el amor al prójimo en cada corazón vicenciano.'
+      },
+      {
+        name: 'Prof. Carmen Silva',
+        role: 'Subdirectora Académica',
+        category: 'coordinacion',
+        grade: 'Consejo Directivo',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Educar es guiar con paciencia, inspirar con el ejemplo y sembrar para el futuro.'
+      },
+      {
+        name: 'Prof. María Bompart',
+        role: 'Coordinadora de Primaria',
+        category: 'coordinacion',
+        grade: 'Coordinación Académica Primaria',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Comprometida con el desarrollo pedagógico y los valores cristianos de nuestros niños.'
+      },
+      {
+        name: 'Prof. Ivonne Palacios',
+        role: 'Coordinadora de Media General',
+        category: 'coordinacion',
+        grade: 'Coordinación Académica Media General',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Guiando a nuestros jóvenes hacia la excelencia académica y el compromiso social.'
+      },
+      {
+        name: 'Prof. Xiomara Martínez',
+        role: 'Docente de Preescolar',
+        category: 'inicial',
+        grade: 'Educación Inicial',
+        image: '/images/staff/teacher_3.png',
+        phrase: 'Despertando la curiosidad y la alegría del aprendizaje en los más pequeños.'
+      },
+      {
+        name: 'Prof. Yeisa Romero',
+        role: 'Docente de Preescolar',
+        category: 'inicial',
+        grade: 'Educación Inicial',
+        image: '/images/staff/teacher_3.png',
+        phrase: 'Formando corazones alegres desde los primeros pasos de su vida escolar.'
+      },
+      {
+        name: 'Prof. María Berrios',
+        role: 'Docente de 1er Grado',
+        category: 'primaria',
+        grade: '1er Grado - Educación Primaria',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Con amor y paciencia construimos los cimientos de la lectura y el aprendizaje.'
+      },
+      {
+        name: 'Prof. Betty Hernández',
+        role: 'Docente de 2do Grado',
+        category: 'primaria',
+        grade: '2do Grado - Educación Primaria',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Guiando a nuestros niños a descubrir el mundo con valores y entusiasmo.'
+      },
+      {
+        name: 'Prof. Nohelia Rodríguez',
+        role: 'Docente de 3er Grado',
+        category: 'primaria',
+        grade: '3er Grado - Educación Primaria',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Motivando la creatividad y el compañerismo en cada jornada de clase.'
+      },
+      {
+        name: 'Prof. Dubraska Guillen',
+        role: 'Docente de 4to Grado',
+        category: 'primaria',
+        grade: '4to Grado - Educación Primaria',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Fomentando la responsabilidad, la lectura reflexiva y el respeto mutuo.'
+      },
+      {
+        name: 'Prof. Yenny Pérez',
+        role: 'Docente de 5to Grado',
+        category: 'primaria',
+        grade: '5to Grado - Educación Primaria',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Impulsando el pensamiento crítico y la solidaridad vicenciana en el aula.'
+      },
+      {
+        name: 'Prof. María Santos',
+        role: 'Docente de 6to Grado',
+        category: 'primaria',
+        grade: '6to Grado - Educación Primaria',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Preparando a los estudiantes para nuevos retos académicos con bases sólidas y fe.'
+      },
+      {
+        name: 'Prof. José Vásquez',
+        role: 'Profesor de Computación y Orientación',
+        category: 'media',
+        grade: 'Computación (1er a 5to Año), Orientación y Guía de 1er Año',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Guiando el desarrollo tecnológico y la orientación personal de nuestros jóvenes.'
+      },
+      {
+        name: 'Prof. Anele Palacios',
+        role: 'Profesora de GHC y Soberanía',
+        category: 'media',
+        grade: 'GHC y Soberanía (4to y 5to Año) y Guía de 2do Año',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Fortaleciendo la conciencia histórica, ciudadana y la soberanía patria.'
+      },
+      {
+        name: 'Prof. Francesca Giannandole',
+        role: 'Profesora de Matemáticas y Física',
+        category: 'media',
+        grade: 'Matemáticas (1er a 3er Año), Física (3er Año) y Guía de 3er Año',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Desarrollando el pensamiento lógico y analítico a través de la ciencia.'
+      },
+      {
+        name: 'Prof. Kelvin Tábata',
+        role: 'Profesor de Matemáticas y Física',
+        category: 'media',
+        grade: 'Matemáticas y Física (4to y 5to Año) y Guía de 4to Año',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Preparando a los futuros bachilleres en el campo de las ciencias puras.'
+      },
+      {
+        name: 'Prof. Jorge Hernández',
+        role: 'Coordinador de Media General y Prof. de Ed. Física',
+        category: 'media',
+        grade: 'Educación Física (4to y 5to Año) y Guía de 5to Año',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Inculcando la disciplina, la salud física y el liderazgo vicenciano.'
+      },
+      {
+        name: 'Prof. Humberto Bisuela',
+        role: 'Profesor de Inglés',
+        category: 'media',
+        grade: 'Inglés (1er a 5to Año) - Media General',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Fomentando el dominio del idioma inglés como herramienta clave para el futuro global.'
+      },
+      {
+        name: 'Prof. Geydis Freira',
+        role: 'Profesora de GHC y Arte y Patrimonio',
+        category: 'media',
+        grade: 'GHC y Arte (1er a 3er Año) - Media General',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Fomentando la apreciación del arte, la historia y nuestro patrimonio cultural.'
+      },
+      {
+        name: 'Prof. Ilenia Pasero',
+        role: 'Profesora de Castellano',
+        category: 'media',
+        grade: 'Castellano (1er a 3er Año) - Media General',
+        image: '/images/staff/teacher_3.png',
+        phrase: 'Impulsando las habilidades lingüísticas, la lectura comprensiva y la expresión escrita.'
+      },
+      {
+        name: 'Prof. Maikol Gómez',
+        role: 'Profesor de Educación Física',
+        category: 'media',
+        grade: 'Educación Física (1er a 3er Año) - Media General',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Promoviendo la actividad física, la recreación y el desarrollo psicomotor en la juventud.'
+      },
+      {
+        name: 'Prof. Madyuri Hernández',
+        role: 'Profesora de Química y Biología',
+        category: 'media',
+        grade: 'Química y Biología - Media General',
+        image: '/images/staff/teacher_1.png',
+        phrase: 'Inspirando la curiosidad científica mediante el estudio de la vida y los elementos químicos.'
+      },
+      {
+        name: 'Prof. Génesis Sacare',
+        role: 'Profesora de Castellano',
+        category: 'media',
+        grade: 'Castellano (4to y 5to Año) - Media General',
+        image: '/images/staff/teacher_3.png',
+        phrase: 'Acompañando la formación literaria y el análisis crítico de textos en bachillerato.'
+      },
+      {
+        name: 'Prof. Benigno',
+        role: 'Profesor de Educación Física',
+        category: 'media',
+        grade: 'Educación Física - Media General',
+        image: '/images/staff/teacher_2.png',
+        phrase: 'Fomentando hábitos de vida saludables y el trabajo en equipo a través del deporte.'
+      }
+    ];
 ---
 
 <section id="docentes" class="reveal-on-scroll section-padding bg-gradient-to-b from-stone-50 to-white dark:from-[#140b37] dark:to-[#0e072c]">
