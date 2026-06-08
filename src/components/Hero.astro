@@ -78,7 +78,7 @@ const slides: HeroSlide[] = [
   </div>
 
   <!-- Content (Foreground) -->
-  <div class="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6 [transform:translateZ(15px)] [transform-style:preserve-3d]">
+  <div class="relative z-10 mx-auto max-w-4xl px-12 text-center sm:px-6 [transform:translateZ(15px)] [transform-style:preserve-3d]">
     <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm text-white backdrop-blur-sm">
       <span class="flex h-2 w-2 rounded-full bg-accent"></span>
       Hijas de la Caridad — Venezuela
@@ -132,25 +132,25 @@ const slides: HeroSlide[] = [
   <!-- Navigation Controls -->
   <button
     id="prev-slide"
-    class="absolute left-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+    class="absolute left-2 md:left-6 z-20 flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
     aria-label="Previous slide"
   >
-    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
   </button>
   <button
     id="next-slide"
-    class="absolute right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
+    class="absolute right-2 md:right-6 z-20 flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition border border-white/10 hover:bg-white/30 hover:scale-105 active:scale-95 cursor-pointer shadow-md"
     aria-label="Next slide"
   >
-    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg class="h-5 w-5 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
     </svg>
   </button>
 
   <!-- Slide Indicators (Moved up to prevent overlap with scroll arrow) -->
-  <div class="absolute bottom-28 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
+  <div class="absolute bottom-20 md:bottom-28 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
     {slides.map((_, index) => (
       <button
         class={`slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer ${index === 0 ? 'bg-accent w-8 shadow-sm' : 'bg-white/45 w-2.5 hover:bg-white/70'}`}
@@ -161,7 +161,7 @@ const slides: HeroSlide[] = [
   </div>
 
   <!-- Down scroll chevron (Bottom) -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
+  <div class="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 animate-bounce z-10">
     <svg class="h-7 w-7 text-white/75 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7"/>
     </svg>

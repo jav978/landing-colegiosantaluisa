@@ -185,7 +185,7 @@ const historicalSisters: HistoricalSister[] = [
     <div class="mb-24 grid gap-8 lg:grid-cols-12">
       <!-- Timeline Navigation (Left on desktop, top on mobile) -->
       <div class="lg:col-span-3">
-        <div class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-2 border-b lg:border-b-0 lg:border-l border-gray-200 dark:border-slate-800 scrollbar-thin">
+        <div class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-2 border-b lg:border-b-0 lg:border-l border-gray-200 dark:border-slate-800 scrollbar-thin px-4 lg:px-0">
           {milestones.map((m, index) => (
             <button
               class={`timeline-tab-btn flex items-center gap-3 px-4 py-3 text-left rounded-xl lg:rounded-r-xl lg:rounded-l-none border-l-2 lg:border-l-4 border-transparent transition-all duration-300 whitespace-nowrap lg:whitespace-normal font-semibold text-sm ${
@@ -199,15 +199,17 @@ const historicalSisters: HistoricalSister[] = [
               <span>Año {m.year}</span>
             </button>
           ))}
+          <!-- Scroll offset end spacer for mobile -->
+          <div class="w-8 shrink-0 lg:hidden"></div>
         </div>
       </div>
-
+ 
       <!-- Timeline Details Display Panel -->
-      <div class="lg:col-span-9 relative min-h-[380px] sm:min-h-[300px]">
+      <div class="lg:col-span-9 grid grid-cols-1 grid-rows-1 w-full relative">
         {milestones.map((m, index) => (
           <div
-            class={`timeline-panel absolute inset-0 bg-white/75 dark:bg-[#1b1145]/40 border border-primary/5 dark:border-slate-800/60 p-8 rounded-3xl backdrop-blur-sm shadow-sm transition-all duration-500 flex flex-col justify-between ${
-              index === 0 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-8 pointer-events-none'
+            class={`timeline-panel col-start-1 row-start-1 bg-white/75 dark:bg-[#1b1145]/40 border border-primary/5 dark:border-slate-800/60 p-5 sm:p-8 rounded-3xl backdrop-blur-sm shadow-sm transition-all duration-500 flex flex-col justify-between ${
+              index === 0 ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-8 pointer-events-none z-0'
             }`}
             id={`timeline-panel-${index}`}
           >
@@ -511,11 +513,11 @@ const historicalSisters: HistoricalSister[] = [
 
         panels.forEach((panel, pIndex) => {
           if (pIndex.toString() === targetIndex) {
-            panel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
-            panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            panel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0');
+            panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10');
           } else {
-            panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            panel.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none');
+            panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10');
+            panel.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0');
           }
         });
       });

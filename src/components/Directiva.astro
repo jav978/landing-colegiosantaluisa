@@ -156,14 +156,14 @@ const transcendentalSubsectors = [
       <div class="bg-slate-100 dark:bg-[#0c0527] border border-slate-200 dark:border-white/10 rounded-2xl p-1 flex gap-1 shadow-inner shrink-0">
         <button 
           id="btn-toggle-diagram" 
-          class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary shadow-sm"
+          class="px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary shadow-sm cursor-pointer"
           data-view="diagram"
         >
           🗺️ Mapa Organigrama
         </button>
         <button 
           id="btn-toggle-tabs" 
-          class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-600 dark:text-slate-400 hover:text-primary dark:hover:text-accent"
+          class="px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-600 dark:text-slate-400 hover:text-primary dark:hover:text-accent cursor-pointer"
           data-view="tabs"
         >
           🗂️ Vista de Fichas
@@ -560,37 +560,39 @@ const transcendentalSubsectors = [
     <!-- VIEW 2: Traditional Tabs (Fallback & Accessibility) -->
     <div id="view-tabs" class="hidden w-full">
       <!-- Interactive Organigrama Tabs Selector -->
-      <div class="mb-12 flex justify-center flex-wrap gap-2 max-w-5xl mx-auto">
+      <div class="mb-8 flex flex-row sm:justify-center overflow-x-auto pb-4 gap-2 max-w-5xl mx-auto scrollbar-thin px-4 sm:px-0">
         <button
-          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-primary dark:border-accent transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary"
+          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-primary dark:border-accent transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary whitespace-nowrap shrink-0 cursor-pointer"
           data-target="leadership"
         >
           👑 Dirección y Consejo
         </button>
         <button
-          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent whitespace-nowrap shrink-0 cursor-pointer"
           data-target="academia"
         >
           📖 Coordinación y Academia
         </button>
         <button
-          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent whitespace-nowrap shrink-0 cursor-pointer"
           data-target="servicios"
         >
           💼 Secretaría y Obreros
         </button>
         <button
-          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent whitespace-nowrap shrink-0 cursor-pointer"
           data-target="consejo"
         >
           👥 Consejo Educativo
         </button>
         <button
-          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent"
+          class="organigrama-tab-btn px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider border border-gray-200 dark:border-slate-800 transition-all duration-300 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-accent whitespace-nowrap shrink-0 cursor-pointer"
           data-target="bienestar"
         >
           🌱 Bienestar Estudiantil
         </button>
+        <!-- Scroll offset end spacer for mobile -->
+        <div class="w-8 shrink-0 sm:hidden"></div>
       </div>
 
       <!-- Organigrama Panels Wrapper -->
@@ -893,10 +895,16 @@ const transcendentalSubsectors = [
     const viewTabs = document.getElementById('view-tabs');
 
     if (btnToggleDiagram && btnToggleTabs && viewDiagram && viewTabs) {
+      const activeClasses = ['bg-primary', 'text-white', 'dark:bg-accent', 'dark:text-primary', 'shadow-sm'];
+      const inactiveClasses = ['text-gray-600', 'dark:text-slate-400', 'hover:text-primary', 'dark:hover:text-accent'];
+
       btnToggleDiagram.addEventListener('click', () => {
-        // Switch buttons
-        btnToggleDiagram.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary shadow-sm';
-        btnToggleTabs.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-600 dark:text-slate-400 hover:text-primary dark:hover:text-accent';
+        // Switch buttons styling
+        btnToggleDiagram.classList.remove(...inactiveClasses);
+        btnToggleDiagram.classList.add(...activeClasses);
+        
+        btnToggleTabs.classList.remove(...activeClasses);
+        btnToggleTabs.classList.add(...inactiveClasses);
         
         // Show/hide views
         viewDiagram.classList.remove('hidden');
@@ -907,9 +915,12 @@ const transcendentalSubsectors = [
       });
 
       btnToggleTabs.addEventListener('click', () => {
-        // Switch buttons
-        btnToggleTabs.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-primary text-white dark:bg-accent dark:text-primary shadow-sm';
-        btnToggleDiagram.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-600 dark:text-slate-400 hover:text-primary dark:hover:text-accent';
+        // Switch buttons styling
+        btnToggleTabs.classList.remove(...inactiveClasses);
+        btnToggleTabs.classList.add(...activeClasses);
+        
+        btnToggleDiagram.classList.remove(...activeClasses);
+        btnToggleDiagram.classList.add(...inactiveClasses);
         
         // Show/hide views
         viewTabs.classList.remove('hidden');
