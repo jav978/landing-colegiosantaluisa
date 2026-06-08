@@ -167,10 +167,15 @@ const historicalSisters: HistoricalSister[] = [
   { name: 'Sor Ilse Delgado', period: 'desde Octubre 1998 – 1999' },
   { name: 'Sor Conrada Azcona', period: 'desde Octubre 1999' }
 ];
+
+function getDirectorInitial(name: string) {
+  const cleanName = name.replace(/^Sor\s+/i, '');
+  return cleanName.charAt(0).toUpperCase();
+}
 ---
 
-<section id="nosotros" class="reveal-on-scroll section-padding bg-gradient-to-b from-white to-stone-50 dark:from-[#0e072c] dark:to-[#140b37]">
-  <div class="container-custom">
+<section id="nosotros" class="reveal-on-scroll section-padding bg-gradient-to-b from-white to-stone-50 dark:from-[#0e072c] dark:to-[#140b37] min-w-0 w-full overflow-hidden">
+  <div class="container-custom min-w-0 w-full">
     <div class="mb-16 text-center">
       <span class="mb-3 inline-block rounded-full bg-primary/10 dark:bg-primary-light/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
         Nuestra Historia
@@ -182,21 +187,41 @@ const historicalSisters: HistoricalSister[] = [
     </div>
 
     <!-- Interactive Timeline -->
-    <div class="mb-24 grid gap-8 lg:grid-cols-12">
+    <div class="mb-24 grid gap-8 lg:grid-cols-12 min-w-0 w-full">
       <!-- Timeline Navigation (Left on desktop, top on mobile) -->
-      <div class="lg:col-span-3">
-        <div class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-2 border-b lg:border-b-0 lg:border-l border-gray-200 dark:border-slate-800 scrollbar-thin px-4 lg:px-0">
+      <div class="lg:col-span-4 relative min-w-0 w-full">
+        <!-- Scroll Indicators / Fade overlays (Only on mobile/tablet) -->
+        <div class="absolute left-0 top-0 bottom-4 w-8 bg-gradient-to-r from-white dark:from-[#0e072c] to-transparent pointer-events-none z-20 lg:hidden"></div>
+        <div class="absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white/95 dark:from-[#0e072c]/95 to-transparent pointer-events-none z-20 lg:hidden"></div>
+
+        <!-- Background Timeline Connector Line -->
+        <!-- Mobile: horizontal line across the middle of nodes -->
+        <div class="absolute left-8 right-8 top-[32px] h-0.5 bg-gray-200 dark:bg-slate-800 lg:hidden z-0"></div>
+        <!-- Desktop: vertical line down the nodes -->
+        <div class="absolute left-8 top-8 bottom-8 w-0.5 bg-gray-200 dark:bg-slate-800 hidden lg:block z-0"></div>
+
+        <div class="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 gap-3 scrollbar-thin px-4 lg:px-0 relative z-10 min-w-0 w-full">
           {milestones.map((m, index) => (
             <button
-              class={`timeline-tab-btn flex items-center gap-3 px-4 py-3 text-left rounded-xl lg:rounded-r-xl lg:rounded-l-none border-l-2 lg:border-l-4 border-transparent transition-all duration-300 whitespace-nowrap lg:whitespace-normal font-semibold text-sm ${
-                index === 0 
-                  ? 'bg-primary text-white border-accent dark:bg-accent dark:text-primary dark:border-primary-light' 
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100/80 dark:hover:bg-slate-800/50 hover:text-primary dark:hover:text-accent'
+              class={`timeline-tab-btn group relative flex flex-col lg:flex-row items-center gap-3 p-3 rounded-2xl transition-all duration-300 cursor-pointer focus:outline-none shrink-0 text-left ${
+                index === 0 ? 'active' : ''
               }`}
               data-index={index}
             >
-              <span class="text-lg">{m.icon}</span>
-              <span>Año {m.year}</span>
+              <!-- The Node Dot -->
+              <div class="timeline-node flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 bg-white dark:bg-[#150b3d] text-base transition-all duration-300 border-gray-300 dark:border-slate-700 shadow-sm group-hover:scale-110">
+                {m.icon}
+              </div>
+              
+              <!-- Text -->
+              <div class="text-center lg:text-left">
+                <span class="year-text block text-xs font-bold tracking-wider font-mono text-gray-400 dark:text-slate-500 transition-colors duration-300">
+                  {m.year}
+                </span>
+                <span class="title-text block text-xs font-semibold text-gray-700 dark:text-slate-300 transition-colors duration-300 line-clamp-1 max-w-[120px] lg:max-w-none">
+                  {m.title}
+                </span>
+              </div>
             </button>
           ))}
           <!-- Scroll offset end spacer for mobile -->
@@ -205,39 +230,46 @@ const historicalSisters: HistoricalSister[] = [
       </div>
  
       <!-- Timeline Details Display Panel -->
-      <div class="lg:col-span-9 grid grid-cols-1 grid-rows-1 w-full relative">
+      <div class="lg:col-span-8 grid grid-cols-1 grid-rows-1 w-full relative min-w-0">
         {milestones.map((m, index) => (
           <div
-            class={`timeline-panel col-start-1 row-start-1 bg-white/75 dark:bg-[#1b1145]/40 border border-primary/5 dark:border-slate-800/60 p-5 sm:p-8 rounded-3xl backdrop-blur-sm shadow-sm transition-all duration-500 flex flex-col justify-between ${
-              index === 0 ? 'opacity-100 translate-y-0 pointer-events-auto z-10' : 'opacity-0 translate-y-8 pointer-events-none z-0'
+            class={`timeline-panel col-start-1 row-start-1 w-full min-w-0 bg-white dark:bg-[#1b1145]/60 border border-primary/10 dark:border-slate-800/80 p-6 sm:p-10 rounded-3xl backdrop-blur-md shadow-lg transition-all duration-500 flex flex-col justify-between ${
+              index === 0 ? 'opacity-100 translate-y-0 pointer-events-auto z-10 scale-100' : 'opacity-0 translate-y-8 pointer-events-none z-0 scale-[0.98]'
             }`}
             id={`timeline-panel-${index}`}
           >
             <!-- Large year backdrop in panel -->
-            <span class="text-7xl sm:text-9xl font-black text-primary/5 dark:text-accent/5 select-none absolute right-6 top-4 z-0">{m.year}</span>
+            <span class="text-8xl sm:text-[10rem] font-black text-primary/[0.03] dark:text-accent/[0.03] select-none absolute right-8 bottom-6 z-0 pointer-events-none font-mono">
+              {m.year}
+            </span>
 
             <div class="relative z-10">
-              <div class="flex items-center gap-3 mb-2">
-                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/25 text-lg">{m.icon}</span>
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-slate-100">{m.title}</h3>
+              <div class="flex items-center gap-3.5 mb-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 dark:bg-accent/20 border border-accent/20 dark:border-accent/30 text-xl shadow-inner">
+                  {m.icon}
+                </span>
+                <div>
+                  <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">{m.title}</h3>
+                  {m.subtitle && (
+                    <span class="block text-[11px] font-bold text-accent uppercase tracking-widest mt-1">{m.subtitle}</span>
+                  )}
+                </div>
               </div>
               
-              {m.subtitle && (
-                <span class="block text-xs font-semibold text-accent uppercase tracking-wider mb-4">{m.subtitle}</span>
-              )}
-              
-              <p class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-slate-300 mb-6 max-w-3xl">
+              <p class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-slate-200 mt-6 mb-8 max-w-3xl font-normal">
                 {m.description}
               </p>
             </div>
 
             {m.details && m.details.length > 0 && (
-              <div class="relative z-10 border-t border-gray-100 dark:border-slate-800/80 pt-4">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-400 mb-2">Hechos destacados</h4>
-                <ul class="grid sm:grid-cols-2 gap-3">
+              <div class="relative z-10 border-t border-gray-100 dark:border-slate-800/80 pt-6 mt-auto">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-400 mb-3">Hechos destacados</h4>
+                <ul class="grid sm:grid-cols-2 gap-4">
                   {m.details.map((detail) => (
-                    <li class="flex items-start gap-2 text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
-                      <span class="text-accent mt-0.5">✦</span>
+                    <li class="flex items-start gap-3 text-xs text-gray-600 dark:text-slate-300 leading-relaxed group">
+                      <span class="text-accent flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/10 border border-accent/20 font-bold transition-all duration-300 group-hover:bg-accent group-hover:text-primary">
+                        ✦
+                      </span>
                       <span>{detail}</span>
                     </li>
                   ))}
@@ -263,12 +295,12 @@ const historicalSisters: HistoricalSister[] = [
 
       <div class="grid gap-8 md:grid-cols-2">
         <!-- San Vicente de Paúl -->
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 rounded-2xl border border-primary/5 dark:border-slate-800 bg-white/50 dark:bg-[#1b1145]/40 p-6 backdrop-blur-sm shadow-sm transition hover:shadow-md hover:border-primary/10">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 rounded-2xl border border-primary/10 dark:border-slate-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-[#1b1145]/40 dark:to-[#0e072c]/40 p-6 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md hover:border-primary/20 dark:hover:border-accent/30">
           <div class="h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl shadow-md border-2 border-primary/10">
             <img src="/images/sanvicente.png" alt="Retrato de San Vicente de Paúl" class="h-full w-full object-cover animate-fade-in" />
           </div>
           <div>
-            <h4 class="text-lg font-bold text-primary dark:text-slate-100">San Vicente de Paúl</h4>
+            <h4 class="text-lg font-bold text-primary dark:text-accent-light">San Vicente de Paúl</h4>
             <span class="text-xs font-semibold text-accent uppercase tracking-wider block mb-1">1581 - 1660</span>
             <p class="text-xs leading-relaxed text-gray-600 dark:text-slate-300">
               Conocido como el <strong>"Apóstol de la Caridad"</strong>. Dedicó su vida a la atención de los más necesitados y marginados en la Francia del siglo XVII. Fundó la Congregación de la Misión (Padres Vicencianos) y, junto a Santa Luisa de Marillac, cofundó la Compañía de las Hijas de la Caridad. Su carisma nos inspira a ver el servicio y la solidaridad como pilares de nuestra formación.
@@ -277,12 +309,12 @@ const historicalSisters: HistoricalSister[] = [
         </div>
 
         <!-- Santa Luisa de Marillac -->
-        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 rounded-2xl border border-primary/5 dark:border-slate-800 bg-white/50 dark:bg-[#1b1145]/40 p-6 backdrop-blur-sm shadow-sm transition hover:shadow-md hover:border-primary/10">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 rounded-2xl border border-primary/10 dark:border-slate-800 bg-gradient-to-br from-white to-gray-50/50 dark:from-[#1b1145]/40 dark:to-[#0e072c]/40 p-6 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md hover:border-primary/20 dark:hover:border-accent/30">
           <div class="h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl shadow-md border-2 border-primary/10">
             <img src="/images/santaluisa.png" alt="Retrato de Santa Luisa de Marillac" class="h-full w-full object-cover animate-fade-in" />
           </div>
           <div>
-            <h4 class="text-lg font-bold text-primary dark:text-slate-100">Santa Luisa de Marillac</h4>
+            <h4 class="text-lg font-bold text-primary dark:text-accent-light">Santa Luisa de Marillac</h4>
             <span class="text-xs font-semibold text-accent uppercase tracking-wider block mb-1">1591 - 1660</span>
             <p class="text-xs leading-relaxed text-gray-600 dark:text-slate-300">
               Cofundadora de las Hijas de la Caridad y <strong>Patrona de los Asistentes Sociales</strong>. Mujer de profunda fe, dotada de una visión audaz y un gran talento organizativo. Estableció las bases de la educación popular para niñas de familias vulnerables en Francia. Su pedagogía del amor, respeto y sencillez guía la filosofía de nuestro colegio.
@@ -307,7 +339,7 @@ const historicalSisters: HistoricalSister[] = [
       <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 mb-16">
         {directors.map((d) => (
           <div class="group relative overflow-hidden rounded-2xl border border-primary/5 dark:border-slate-800 bg-white/50 dark:bg-[#1b1145]/40 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/10 text-center">
-            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-primary/10 dark:border-slate-700/60 shadow-sm relative bg-primary/5 flex items-center justify-center">
+            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-primary/10 dark:border-slate-700/60 shadow-sm relative bg-primary/5 flex items-center justify-center group-hover:border-accent transition duration-300">
               {d.image ? (
                 <img
                   src={d.image}
@@ -316,7 +348,9 @@ const historicalSisters: HistoricalSister[] = [
                   loading="lazy"
                 />
               ) : (
-                <span class="text-3xl select-none">👩‍🏫</span>
+                <div class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary-light/20 dark:to-primary-light/10 text-primary dark:text-accent font-bold text-xl">
+                  {getDirectorInitial(d.name)}
+                </div>
               )}
             </div>
             <h4 class="text-sm font-bold text-gray-800 dark:text-slate-200 line-clamp-1">{d.name}</h4>
@@ -337,17 +371,17 @@ const historicalSisters: HistoricalSister[] = [
 
       <div class="grid gap-8 md:grid-cols-2">
         <!-- Sister Servants List Card -->
-        <div class="bg-white dark:bg-[#1b1145] rounded-3xl border border-primary/5 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between">
+        <div class="bg-white/80 dark:bg-[#1b1145]/50 backdrop-blur-md rounded-3xl border border-primary/10 dark:border-slate-800/80 p-6 shadow-sm flex flex-col justify-between">
           <div>
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-2xl">🙏</span>
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5 dark:bg-primary-light/20 text-xl border border-primary/10 dark:border-primary-light/10">🙏</span>
               <h4 class="text-lg font-bold text-gray-900 dark:text-slate-100">Hermanas Sirvientes</h4>
             </div>
             <p class="text-xs text-gray-500 dark:text-slate-400 mb-4">Hermanas Superiores a cargo de la Obra y Comunidad Vicenciana.</p>
             <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
               {sisterServants.map((s) => (
-                <div class="flex flex-col border-l-2 border-primary dark:border-primary-light pl-3 py-1">
-                  <span class="text-sm font-bold text-gray-800 dark:text-slate-200">{s.name}</span>
+                <div class="flex flex-col border-l-2 border-primary dark:border-accent pl-3 py-1 group transition-all duration-300 hover:bg-primary/[0.02] dark:hover:bg-primary-light/5 rounded-r-lg">
+                  <span class="text-sm font-bold text-gray-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-accent transition duration-155">{s.name}</span>
                   <span class="text-xs text-gray-500 dark:text-slate-400">{s.period}</span>
                 </div>
               ))}
@@ -356,10 +390,10 @@ const historicalSisters: HistoricalSister[] = [
         </div>
 
         <!-- Serving Sisters Full Searchable Panel -->
-        <div class="bg-white dark:bg-[#1b1145] rounded-3xl border border-primary/5 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between">
+        <div class="bg-white/80 dark:bg-[#1b1145]/50 backdrop-blur-md rounded-3xl border border-primary/10 dark:border-slate-800/80 p-6 shadow-sm flex flex-col justify-between">
           <div>
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-2xl">📋</span>
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5 dark:bg-primary-light/20 text-xl border border-primary/10 dark:border-primary-light/10">📋</span>
               <h4 class="text-lg font-bold text-gray-900 dark:text-slate-100">Hermanas de la Obra</h4>
             </div>
             <p class="text-xs text-gray-500 dark:text-slate-400 mb-3">Buscador de todas las hermanas que han prestado servicio desde 1953.</p>
@@ -369,14 +403,14 @@ const historicalSisters: HistoricalSister[] = [
               <input
                 type="text"
                 id="sister-search-input"
-                class="w-full text-xs rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-[#0e072c] text-gray-800 dark:text-slate-100 px-3 py-2 pl-8 outline-none transition focus:border-accent"
+                class="w-full text-xs rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-50/50 dark:bg-[#0e072c]/40 text-gray-800 dark:text-slate-100 px-3.5 py-2.5 pl-9 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/15"
                 placeholder="Buscar hermana por nombre..."
               />
-              <span class="absolute left-2.5 top-2 text-gray-400 text-xs">🔍</span>
+              <span class="absolute left-3 top-3 text-gray-400 text-xs">🔍</span>
             </div>
 
             <!-- Search Results Scroll Box -->
-            <div class="space-y-2.5 max-h-[200px] overflow-y-auto pr-2 scrollbar-thin" id="sister-search-results">
+            <div class="space-y-2.5 max-h-[220px] overflow-y-auto pr-2 scrollbar-thin" id="sister-search-results">
               {historicalSisters.map((sis) => (
                 <div class="sister-item flex items-center justify-between border-b border-gray-50 dark:border-slate-800/40 pb-2 text-xs">
                   <span class="sister-name font-semibold text-gray-700 dark:text-slate-300">{sis.name}</span>
@@ -447,43 +481,47 @@ const historicalSisters: HistoricalSister[] = [
           </audio>
         </div>
         
-        <div class="space-y-6 text-gray-600 dark:text-slate-300 italic">
-          <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Coro</p>
-            <p class="leading-relaxed text-sm">Dulce colegio de Santa Luisa,</p>
-            <p class="leading-relaxed text-sm">nido inocente del corazón.</p>
-            <p class="leading-relaxed text-sm">La vida es bella con tu sonrisa,</p>
-            <p class="leading-relaxed text-sm">la vida es santa como tu amor.</p>
+        <div class="grid sm:grid-cols-2 gap-8 text-center sm:text-left text-gray-600 dark:text-slate-300 italic">
+          <div class="space-y-6">
+            <div>
+              <p class="font-bold text-primary dark:text-accent not-italic mb-2 text-xs uppercase tracking-widest">Coro</p>
+              <p class="leading-relaxed text-sm">Dulce colegio de Santa Luisa,</p>
+              <p class="leading-relaxed text-sm">nido inocente del corazón.</p>
+              <p class="leading-relaxed text-sm">La vida es bella con tu sonrisa,</p>
+              <p class="leading-relaxed text-sm">la vida es santa como tu amor.</p>
+            </div>
+            
+            <div>
+              <p class="font-bold text-primary dark:text-accent not-italic mb-2 text-xs uppercase tracking-widest">Estrofa I</p>
+              <p class="leading-relaxed text-sm">Llevo un escudo sobre mi pecho,</p>
+              <p class="leading-relaxed text-sm">es Jesucristo que ha de guiar.</p>
+              <p class="leading-relaxed text-sm">Con su palabra, que acojo recio,</p>
+              <p class="leading-relaxed text-sm">y la doy vida con hermandad.</p>
+            </div>
           </div>
           
-          <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa I</p>
-            <p class="leading-relaxed text-sm">Llevo un escudo sobre mi pecho,</p>
-            <p class="leading-relaxed text-sm">es Jesucristo que ha de guiar.</p>
-            <p class="leading-relaxed text-sm">Con su palabra, que acojo recio,</p>
-            <p class="leading-relaxed text-sm">y la doy vida con hermandad.</p>
+          <div class="space-y-6">
+            <div>
+              <p class="font-bold text-primary dark:text-accent not-italic mb-2 text-xs uppercase tracking-widest">Estrofa II</p>
+              <p class="leading-relaxed text-sm">Son excelentes mis profesores</p>
+              <p class="leading-relaxed text-sm">y compañeros conmigo están.</p>
+              <p class="leading-relaxed text-sm">Por eso quiero con alegría</p>
+              <p class="leading-relaxed text-sm">a mi colegio como a mi hogar.</p>
+            </div>
+            
+            <div>
+              <p class="font-bold text-primary dark:text-accent not-italic mb-2 text-xs uppercase tracking-widest">Estrofa III</p>
+              <p class="leading-relaxed text-sm">Un beso mando a la Milagrosa,</p>
+              <p class="leading-relaxed text-sm">que ella me ampara con su poder.</p>
+              <p class="leading-relaxed text-sm">En ese culto soy victorioso</p>
+              <p class="leading-relaxed text-sm">y no me aparto de mi deber.</p>
+            </div>
           </div>
-          
-          <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa II</p>
-            <p class="leading-relaxed text-sm">Son excelentes mis profesores</p>
-            <p class="leading-relaxed text-sm">y compañeros conmigo están.</p>
-            <p class="leading-relaxed text-sm">Por eso quiero con alegría</p>
-            <p class="leading-relaxed text-sm">a mi colegio como a mi hogar.</p>
-          </div>
-          
-          <div>
-            <p class="font-semibold text-primary dark:text-primary-light not-italic mb-1 text-xs uppercase tracking-wider">Estrofa III</p>
-            <p class="leading-relaxed text-sm">Un beso mando a la Milagrosa,</p>
-            <p class="leading-relaxed text-sm">que ella me ampara con su poder.</p>
-            <p class="leading-relaxed text-sm">En ese culto soy victorioso</p>
-            <p class="leading-relaxed text-sm">y no me aparto de mi deber.</p>
-          </div>
-
-          <p class="text-xs font-semibold text-primary dark:text-primary-light not-italic uppercase tracking-wider pt-2">
-            (El coro se repite después de cada estrofa)
-          </p>
         </div>
+
+        <p class="text-xs font-semibold text-primary dark:text-accent uppercase tracking-wider mt-8 not-italic">
+          (El coro se repite después de cada estrofa)
+        </p>
         
         <div class="mt-8 text-[10px] text-gray-400 dark:text-slate-500 not-italic border-t border-gray-100 dark:border-slate-800 pt-4">
           Himno Oficial de la U.E. Colegio "Santa Luisa"
@@ -492,6 +530,86 @@ const historicalSisters: HistoricalSister[] = [
     </div>
   </div>
 </section>
+
+<style is:global>
+  /* Custom scrollbar for timelines and search results */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.2);
+    border-radius: 2px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.35);
+  }
+
+  /* Timeline navigation tab styling */
+  .timeline-tab-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Default inactive node state */
+  .timeline-tab-btn .timeline-node {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Active Node State styling */
+  .timeline-tab-btn.active {
+    background-color: rgba(40, 20, 112, 0.04); /* bg-primary/4 */
+    border-color: #f7c301; /* border-accent */
+  }
+
+  html.dark .timeline-tab-btn.active {
+    background-color: rgba(62, 34, 156, 0.15); /* bg-primary-light/15 */
+    border-color: #f7c301;
+  }
+
+  @media (min-width: 1024px) {
+    .timeline-tab-btn.active {
+      border-left-width: 4px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+    }
+  }
+
+  .timeline-tab-btn.active .timeline-node {
+    background-color: #f7c301; /* bg-accent */
+    border-color: #281470; /* border-primary */
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(247, 195, 1, 0.35);
+  }
+
+  html.dark .timeline-tab-btn.active .timeline-node {
+    background-color: #f7c301;
+    border-color: #3e229c;
+    box-shadow: 0 4px 12px rgba(247, 195, 1, 0.2);
+  }
+
+  .timeline-tab-btn.active .year-text {
+    color: #281470; /* text-primary */
+    font-weight: 800;
+  }
+
+  html.dark .timeline-tab-btn.active .year-text {
+    color: #f7c301; /* text-accent */
+  }
+
+  .timeline-tab-btn.active .title-text {
+    color: #111827; /* text-gray-900 */
+    font-weight: 800;
+  }
+
+  html.dark .timeline-tab-btn.active .title-text {
+    color: #ffffff;
+  }
+</style>
 
 <script>
   function setupTimeline() {
@@ -503,21 +621,20 @@ const historicalSisters: HistoricalSister[] = [
       tab.addEventListener('click', () => {
         const targetIndex = tab.getAttribute('data-index');
 
+        // Toggle active class on all tabs
         tabs.forEach((t) => {
-          t.classList.remove('bg-primary', 'text-white', 'border-accent', 'dark:bg-accent', 'dark:text-primary', 'dark:border-primary-light');
-          t.classList.add('text-gray-600', 'dark:text-slate-400', 'hover:bg-gray-100/80', 'dark:hover:bg-slate-800/50', 'hover:text-primary', 'dark:hover:text-accent');
+          t.classList.remove('active');
         });
+        tab.classList.add('active');
 
-        tab.classList.add('bg-primary', 'text-white', 'border-accent', 'dark:bg-accent', 'dark:text-primary', 'dark:border-primary-light');
-        tab.classList.remove('text-gray-600', 'dark:text-slate-400', 'hover:bg-gray-100/80', 'dark:hover:bg-slate-800/50', 'hover:text-primary', 'dark:hover:text-accent');
-
+        // Toggle visibility and scale transitions on panels
         panels.forEach((panel, pIndex) => {
           if (pIndex.toString() === targetIndex) {
-            panel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0');
-            panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10');
+            panel.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0', 'scale-[0.98]');
+            panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10', 'scale-100');
           } else {
-            panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10');
-            panel.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0');
+            panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto', 'z-10', 'scale-100');
+            panel.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none', 'z-0', 'scale-[0.98]');
           }
         });
       });
