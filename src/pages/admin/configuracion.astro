@@ -1,0 +1,314 @@
+---
+import AdminLayout from '../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../lib/auth';
+import { getPreRegistrationConfig } from '../../lib/settings';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
+const config = await getPreRegistrationConfig();
+const weekDays = [
+  { value: 1, label: 'Lunes' },
+  { value: 2, label: 'Martes' },
+  { value: 3, label: 'Miércoles' },
+  { value: 4, label: 'Jueves' },
+  { value: 5, label: 'Viernes' },
+  { value: 6, label: 'Sábado' },
+  { value: 0, label: 'Domingo' }
+];
+---
+
+<AdminLayout
+  title="Configuración del Sistema"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath="/admin/configuracion"
+>
+  <div class="mx-auto max-w-2xl">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-gray-900 mb-6">Disponibilidad de Pre-inscripciones</h2>
+      
+      <form id="settings-form" class="space-y-6">
+        <!-- Main Switch -->
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div>
+            <label for="enabled" class="text-sm font-semibold text-gray-800 block">Habilitar Pre-inscripciones</label>
+            <span class="text-xs text-gray-500">Controla si el enlace público y el registro están accesibles</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="enabled" name="enabled" class="sr-only peer" checked={config.enabled} />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+
+        <div id="config-fields-container" class={`space-y-6 ${config.enabled ? '' : 'hidden'}`}>
+          <!-- Mode Select -->
+          <div>
+            <label for="type" class="mb-1.5 block text-sm font-semibold text-gray-700">Modo de disponibilidad</label>
+            <select id="type" name="type"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+              <option value="always" selected={config.type === 'always'}>Siempre activo</option>
+              <option value="manual" selected={config.type === 'manual'}>Activación manual simple</option>
+              <option value="schedule" selected={config.type === 'schedule'}>Programación por fecha y hora (Calendario)</option>
+            </select>
+          </div>
+
+          <!-- Schedule Options Container (Visible if type is NOT always) -->
+          <div id="schedule-container" class={`space-y-6 pt-4 border-t border-gray-100 ${config.type === 'always' ? 'hidden' : ''}`}>
+            <h3 class="text-sm font-bold text-gray-800">Parámetros de disponibilidad</h3>
+            
+            <!-- Date range options (Visible for manual and schedule) -->
+            <div id="date-range-options" class={`grid gap-6 sm:grid-cols-2 ${['manual', 'schedule'].includes(config.type) ? '' : 'hidden'}`}>
+              <div>
+                <label for="start_date" class="mb-1.5 block text-sm font-medium text-gray-700">Fecha de inicio (Desde)</label>
+                <input type="date" id="start_date" name="start_date" value={config.start_date}
+                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+              </div>
+              <div>
+                <label for="end_date" class="mb-1.5 block text-sm font-medium text-gray-700">Fecha de fin (Hasta)</label>
+                <input type="date" id="end_date" name="end_date" value={config.end_date}
+                  class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+              </div>
+            </div>
+
+            <!-- Weekly Days and Time range options (Visible only for schedule) -->
+            <div id="time-range-options" class={`space-y-6 ${config.type === 'schedule' ? '' : 'hidden'}`}>
+              <div>
+                <label class="mb-2.5 block text-sm font-medium text-gray-700">Días de la semana permitidos</label>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {weekDays.map((day) => (
+                    <label class="flex items-center gap-2.5 rounded-lg border border-gray-200 p-3 hover:bg-gray-50 transition cursor-pointer">
+                      <input type="checkbox" name="days_of_week" value={day.value} checked={config.days_of_week.includes(day.value)}
+                        class="rounded border-gray-300 text-primary focus:ring-primary" />
+                      <span class="text-xs font-semibold text-gray-700">{day.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label for="start_time" class="mb-1.5 block text-sm font-medium text-gray-700">Hora de apertura</label>
+                  <input type="time" id="start_time" name="start_time" value={config.start_time || '07:00'}
+                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                </div>
+                <div>
+                  <label for="end_time" class="mb-1.5 block text-sm font-medium text-gray-700">Hora de cierre</label>
+                  <input type="time" id="end_time" name="end_time" value={config.end_time || '19:00'}
+                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="alert-msg" class="hidden rounded-lg px-4 py-3 text-sm font-medium"></div>
+
+        <div class="flex gap-3 pt-4 border-t border-gray-100">
+          <button type="submit" id="submit-btn"
+            class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
+            Guardar configuración
+          </button>
+          <a href="/admin/dashboard"
+            class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  function setupSettings() {
+    const enabledInput = document.getElementById('enabled') as HTMLInputElement | null;
+    const configFieldsContainer = document.getElementById('config-fields-container') as HTMLDivElement | null;
+    const typeSelect = document.getElementById('type') as HTMLSelectElement | null;
+    const scheduleContainer = document.getElementById('schedule-container') as HTMLDivElement | null;
+    const dateRangeOptions = document.getElementById('date-range-options') as HTMLDivElement | null;
+    const timeRangeOptions = document.getElementById('time-range-options') as HTMLDivElement | null;
+    const form = document.getElementById('settings-form') as HTMLFormElement | null;
+    const alertMsg = document.getElementById('alert-msg') as HTMLDivElement | null;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+    if (!form || !alertMsg || !submitBtn || !enabledInput || !configFieldsContainer) return;
+
+    const toggleVisibility = () => {
+      const isEnabled = enabledInput.checked;
+      if (!isEnabled) {
+        configFieldsContainer.classList.add('hidden');
+        return;
+      }
+      configFieldsContainer.classList.remove('hidden');
+
+      if (typeSelect && scheduleContainer && dateRangeOptions && timeRangeOptions) {
+        const type = typeSelect.value;
+        if (type === 'always') {
+          scheduleContainer.classList.add('hidden');
+          dateRangeOptions.classList.add('hidden');
+          timeRangeOptions.classList.add('hidden');
+        } else if (type === 'manual') {
+          scheduleContainer.classList.remove('hidden');
+          dateRangeOptions.classList.remove('hidden');
+          timeRangeOptions.classList.add('hidden');
+        } else if (type === 'schedule') {
+          scheduleContainer.classList.remove('hidden');
+          dateRangeOptions.classList.remove('hidden');
+          timeRangeOptions.classList.remove('hidden');
+        }
+      }
+    };
+
+    const saveSettings = async (autoSave = false) => {
+      alertMsg.className = 'hidden rounded-lg px-4 py-3 text-sm font-medium';
+      alertMsg.textContent = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+
+      const enabled = enabledInput.checked;
+      const type = typeSelect ? typeSelect.value : 'always';
+      const start_date = (document.getElementById('start_date') as HTMLInputElement)?.value || '';
+      const end_date = (document.getElementById('end_date') as HTMLInputElement)?.value || '';
+      const start_time = (document.getElementById('start_time') as HTMLInputElement)?.value || '';
+      const end_time = (document.getElementById('end_time') as HTMLInputElement)?.value || '';
+
+      // Frontend Validations (Only when enabling)
+      if (enabled && type !== 'always') {
+        if (!start_date || !end_date) {
+          alertMsg.classList.remove('hidden');
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = 'Debe seleccionar una fecha de inicio y una fecha de fin para este modo.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar configuración';
+          return;
+        }
+        if (end_date < start_date) {
+          alertMsg.classList.remove('hidden');
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = 'La fecha de fin no puede ser anterior a la fecha de inicio. Por favor, revise el campo.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar configuración';
+          return;
+        }
+      }
+
+      if (enabled && type === 'schedule') {
+        const daysOfWeekChecked = form.querySelectorAll('input[name="days_of_week"]:checked');
+        const days_of_week = Array.from(daysOfWeekChecked).map((el) => Number((el as HTMLInputElement).value));
+
+        if (days_of_week.length === 0) {
+          alertMsg.classList.remove('hidden');
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = 'Debe seleccionar al menos un día de la semana para programar las pre-inscripciones.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar configuración';
+          return;
+        }
+
+        if (!start_time || !end_time) {
+          alertMsg.classList.remove('hidden');
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = 'La hora de apertura y cierre son requeridas para la programación.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar configuración';
+          return;
+        }
+
+        if (end_time <= start_time) {
+          alertMsg.classList.remove('hidden');
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = 'La hora de cierre debe ser posterior a la hora de apertura.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar configuración';
+          return;
+        }
+      }
+
+      // Collect days of week
+      const daysOfWeekChecked = form.querySelectorAll('input[name="days_of_week"]:checked');
+      const days_of_week = Array.from(daysOfWeekChecked).map((el) => Number((el as HTMLInputElement).value));
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            enabled,
+            type,
+            start_date,
+            end_date,
+            days_of_week,
+            start_time,
+            end_time,
+          }),
+        });
+
+        const data = await res.json();
+
+        alertMsg.classList.remove('hidden');
+        if (res.ok && data.success) {
+          alertMsg.classList.add('bg-green-50', 'text-green-800');
+          alertMsg.textContent = autoSave 
+            ? 'Pre-inscripciones desactivadas y guardadas automáticamente.' 
+            : 'Configuración guardada con éxito.';
+          setTimeout(() => {
+            alertMsg.classList.add('hidden');
+          }, 3000);
+        } else {
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = data.error || 'Ocurrió un error al guardar la configuración.';
+        }
+      } catch (err) {
+        console.error(err);
+        alertMsg.classList.remove('hidden');
+        alertMsg.classList.add('bg-red-50', 'text-red-800');
+        alertMsg.textContent = 'Error de conexión con el servidor.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar configuración';
+      }
+    };
+
+    enabledInput.addEventListener('change', () => {
+      toggleVisibility();
+      // Auto-save when toggled off to disable header/footer links immediately
+      if (!enabledInput.checked) {
+        saveSettings(true);
+      }
+    });
+
+    if (typeSelect) {
+      typeSelect.addEventListener('change', toggleVisibility);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await saveSettings(false);
+    });
+
+    // Run once at start to match initial state
+    toggleVisibility();
+  }
+
+  function init() {
+    if (document.getElementById('settings-form')) {
+      setupSettings();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
+</script>

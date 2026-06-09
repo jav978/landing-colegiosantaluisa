@@ -102,4 +102,24 @@ CREATE TABLE IF NOT EXISTS docentes (
 
 ALTER TABLE docentes DISABLE ROW LEVEL SECURITY;
 
+-- Table for system settings
+CREATE TABLE IF NOT EXISTS system_settings (
+  key VARCHAR(100) PRIMARY KEY,
+  value JSONB NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE system_settings DISABLE ROW LEVEL SECURITY;
+
+-- Table for gallery albums
+CREATE TABLE IF NOT EXISTS gallery_albums (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  description TEXT,
+  images TEXT[] NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE gallery_albums DISABLE ROW LEVEL SECURITY;
+
 

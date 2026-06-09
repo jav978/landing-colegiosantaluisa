@@ -12,12 +12,17 @@ const links = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/admin/posts', label: 'Posts', icon: '📝' },
   { href: '/admin/testimonios', label: 'Testimonios', icon: '💬' },
+  { href: '/admin/galeria', label: 'Galería', icon: '🖼️' },
   { href: '/admin/docentes', label: 'Docentes', icon: '👨‍🏫' },
   { href: '/admin/mensajes', label: 'Mensajes', icon: '📥' },
   { href: '/admin/pre-inscripciones', label: 'Pre-inscripciones', icon: '📋' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: '👥' },
   { href: '/admin/sesiones', label: 'Sesiones', icon: '🔐' },
 ];
+
+if (userRol === 'admin') {
+  links.push({ href: '/admin/configuracion', label: 'Configuración', icon: '⚙️' });
+}
 
 function isActive(href: string) {
   return currentPath === href || currentPath.startsWith(href + '/');

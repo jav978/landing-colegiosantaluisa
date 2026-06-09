@@ -12,6 +12,7 @@ interface Director {
   name: string;
   period: string;
   image?: string;
+  bio: string;
 }
 
 interface SisterServant {
@@ -103,12 +104,41 @@ const milestones: Milestone[] = [
 ];
 
 const directors: Director[] = [
-  { name: 'Sor Libia Echeverri', period: 'Fundación (1953) - 1957' },
-  { name: 'Sor Ana Derly Silva', period: '1957 – 1968 y 1983 – 1993', image: '/images/directoras/soranaderlysilva.webp' },
-  { name: 'Sor Lilia Acevedo', period: '1968 – 1979', image: '/images/directoras/sorliliaacevedo.webp' },
-  { name: 'Sor Dolores Amaya', period: '1979 – 1982', image: '/images/directoras/sordoloresamaya.webp' },
-  { name: 'Sor Rosario Daza', period: '1982 – 1983 y desde 1993', image: '/images/directoras/sorrosariodaza.webp' },
-  { name: 'Graciela Inatty', period: 'Directora Técnica / Docente', image: '/images/directoras/gracielainatty.webp' }
+  { 
+    name: 'Sor Libia Echeverri', 
+    period: 'Fundación (1953) - 1957',
+    bio: 'Primera Directora y Hermana Sirviente fundadora del plantel. Lideró al grupo de 5 hermanas que iniciaron las clases con 150 alumnas en la Calle La Saleya, sentando las bases de la educación académica y la caridad vicenciana en nuestra institución.'
+  },
+  { 
+    name: 'Sor Ana Derly Silva', 
+    period: '1957 – 1968 y 1983 – 1993', 
+    image: '/images/directoras/soranaderlysilva.webp',
+    bio: 'Destacada educadora vicenciana que dirigió el plantel en dos períodos históricos cruciales. Promovió la ampliación hacia el Ciclo Básico y la consolidación definitiva de la actual sede moderna en Prado de María.'
+  },
+  { 
+    name: 'Sor Lilia Acevedo', 
+    period: '1968 – 1979', 
+    image: '/images/directoras/sorliliaacevedo.webp',
+    bio: 'Lideró la institución en la etapa de culminación del nuevo edificio en la década de los 70. Fortaleció el proyecto social de internado y fomentó una estrecha integración comunitaria con la Parroquia La Milagrosa.'
+  },
+  { 
+    name: 'Sor Dolores Amaya', 
+    period: '1979 – 1982', 
+    image: '/images/directoras/sordoloresamaya.webp',
+    bio: 'Impulsó el desarrollo organizativo y pedagógico del colegio. Gestionó de manera dedicada la transición educativa enfocada primordialmente en Educación Primaria de excelencia.'
+  },
+  { 
+    name: 'Sor Rosario Daza', 
+    period: '1982 – 1983 y desde 1993', 
+    image: '/images/directoras/sorrosariodaza.webp',
+    bio: 'Directora emblemática del colegio. Bajo su liderazgo se firmó el Convenio AVEC en 1990 y se restituyó la 3ª etapa de Educación Básica, consolidando un proyecto educativo gratuito y de altísima calidad.'
+  },
+  { 
+    name: 'Graciela Inatty', 
+    period: 'Directora Técnica / Docente', 
+    image: '/images/directoras/gracielainatty.webp',
+    bio: 'Pilar fundamental de la institución en el área laica y técnica. Con más de 40 años de entrega docente e incansable labor de coordinación y enlace con el Ministerio de Educación, marcó la formación de múltiples generaciones de estudiantes.'
+  }
 ];
 
 const sisterServants: SisterServant[] = [
@@ -338,23 +368,34 @@ function getDirectorInitial(name: string) {
 
       <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 mb-16">
         {directors.map((d) => (
-          <div class="group relative overflow-hidden rounded-2xl border border-primary/5 dark:border-slate-800 bg-white/50 dark:bg-[#1b1145]/40 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-primary/10 text-center">
-            <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-primary/10 dark:border-slate-700/60 shadow-sm relative bg-primary/5 flex items-center justify-center group-hover:border-accent transition duration-300">
-              {d.image ? (
-                <img
-                  src={d.image}
-                  alt={d.name}
-                  class="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                  loading="lazy"
-                />
-              ) : (
-                <div class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary-light/20 dark:to-primary-light/10 text-primary dark:text-accent font-bold text-xl">
-                  {getDirectorInitial(d.name)}
-                </div>
-              )}
+          <div class="group relative overflow-hidden rounded-2xl border border-primary/5 dark:border-slate-800 bg-white/50 dark:bg-[#1b1145]/40 p-4 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md hover:border-primary/10 text-center flex flex-col justify-between items-center">
+            <div class="w-full flex flex-col items-center">
+              <div class="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-primary/10 dark:border-slate-700/60 shadow-sm relative bg-primary/5 flex items-center justify-center group-hover:border-accent transition duration-300">
+                {d.image ? (
+                  <img
+                    src={d.image}
+                    alt={d.name}
+                    class="h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary/20 to-primary/40 dark:from-[#281470]/60 dark:to-[#1b1145]/60 text-primary dark:text-accent font-extrabold text-2xl shadow-inner">
+                    {getDirectorInitial(d.name)}
+                  </div>
+                )}
+              </div>
+              <h4 class="text-sm font-bold text-gray-800 dark:text-slate-200 line-clamp-1">{d.name}</h4>
+              <span class="mt-1 block text-[11px] font-semibold text-accent dark:text-accent-light leading-snug">{d.period}</span>
             </div>
-            <h4 class="text-sm font-bold text-gray-800 dark:text-slate-200 line-clamp-1">{d.name}</h4>
-            <span class="mt-1 block text-xs font-semibold text-accent dark:text-accent-light">{d.period}</span>
+            
+            <button class="open-bio-btn mt-4 inline-flex items-center gap-1 rounded-full bg-primary/5 hover:bg-primary hover:text-white dark:bg-accent/10 dark:hover:bg-accent dark:hover:text-primary px-3.5 py-1.5 text-[11px] font-bold text-primary dark:text-accent transition duration-250 cursor-pointer shadow-sm"
+              data-name={d.name}
+              data-period={d.period}
+              data-image={d.image || ''}
+              data-bio={d.bio}
+            >
+              Ver Bio
+            </button>
           </div>
         ))}
       </div>
@@ -419,6 +460,34 @@ function getDirectorInitial(name: string) {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biography Modal -->
+    <div id="director-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+      <div id="director-modal-card" class="bg-white dark:bg-[#150d36] rounded-3xl border border-gray-100 dark:border-slate-800/80 shadow-2xl p-6 sm:p-8 max-w-md w-full relative transform translate-y-8 scale-95 transition-all duration-300 flex flex-col items-center text-center">
+        
+        <!-- Close Button -->
+        <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white transition cursor-pointer text-base p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800" aria-label="Cerrar modal">
+          ✕
+        </button>
+        
+        <!-- Director Photo Frame -->
+        <div class="mb-5 h-28 w-28 overflow-hidden rounded-full border-4 border-accent shadow-lg bg-primary/5 flex items-center justify-center">
+          <img id="modal-director-img" src="" alt="" class="h-full w-full object-cover hidden" />
+          <div id="modal-director-placeholder" class="flex items-center justify-center h-full w-full bg-gradient-to-br from-primary/20 to-primary/40 dark:from-[#281470]/60 dark:to-[#1b1145]/60 text-primary dark:text-accent font-extrabold text-3xl hidden">
+            L
+          </div>
+        </div>
+        
+        <!-- Info -->
+        <h3 id="modal-director-name" class="text-lg font-bold text-gray-900 dark:text-white mb-1"></h3>
+        <span id="modal-director-period" class="text-xs font-semibold text-accent dark:text-accent-light mb-4 block"></span>
+        
+        <!-- Bio Text -->
+        <div class="w-full border-t border-gray-100 dark:border-slate-800 pt-4 mt-2">
+          <p id="modal-director-bio" class="text-xs leading-relaxed text-gray-600 dark:text-slate-200 text-left sm:text-center font-normal"></p>
         </div>
       </div>
     </div>
@@ -659,6 +728,61 @@ function getDirectorInitial(name: string) {
             }
           }
         });
+      });
+    }
+
+    // Biography Modal for Directors
+    const modal = document.getElementById('director-modal');
+    const modalCard = document.getElementById('director-modal-card');
+    const openBtns = document.querySelectorAll('.open-bio-btn');
+    const closeBtn = document.getElementById('close-modal-btn');
+    const modalImg = document.getElementById('modal-director-img') as HTMLImageElement | null;
+    const modalPlaceholder = document.getElementById('modal-director-placeholder') as HTMLDivElement | null;
+    const modalName = document.getElementById('modal-director-name');
+    const modalPeriod = document.getElementById('modal-director-period');
+    const modalBio = document.getElementById('modal-director-bio');
+
+    if (modal && modalCard && openBtns.length > 0 && closeBtn) {
+      openBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const name = btn.getAttribute('data-name') || '';
+          const period = btn.getAttribute('data-period') || '';
+          const image = btn.getAttribute('data-image') || '';
+          const bio = btn.getAttribute('data-bio') || '';
+
+          if (modalName) modalName.textContent = name;
+          if (modalPeriod) modalPeriod.textContent = period;
+          if (modalBio) modalBio.textContent = bio;
+
+          if (image && modalImg) {
+            modalImg.src = image;
+            modalImg.alt = name;
+            modalImg.classList.remove('hidden');
+            if (modalPlaceholder) modalPlaceholder.classList.add('hidden');
+          } else {
+            if (modalImg) modalImg.classList.add('hidden');
+            if (modalPlaceholder) {
+              const cleanName = name.replace(/^Sor\s+/i, '');
+              modalPlaceholder.textContent = cleanName.charAt(0).toUpperCase();
+              modalPlaceholder.classList.remove('hidden');
+            }
+          }
+
+          modal.classList.remove('opacity-0', 'pointer-events-none');
+          modalCard.classList.remove('translate-y-8', 'scale-95');
+        });
+      });
+
+      const closeModal = () => {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modalCard.classList.add('translate-y-8', 'scale-95');
+      };
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
       });
     }
   }

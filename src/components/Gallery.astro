@@ -1,12 +1,70 @@
 ---
-const imagenes = [
-  { src: '/images/hero/hero1.jpg', alt: 'Patio principal con decoraciones escolares', label: 'Nuestras Instalaciones' },
-  { src: '/images/hero/hero2.jpg', alt: 'Estudiantes alineados en el patio cívico', label: 'Vida Estudiantil' },
-  { src: '/images/hero/hero3.jpg', alt: 'Formación de estudiantes en actividades recreativas', label: 'Deportes y Recreación' },
-  { src: '/images/hero/hero4.jpg', alt: 'Niños participando en proyectos y dinámicas escolares', label: 'Actividades Pedagógicas' },
-  { src: '/images/hero/hero5.jpg', alt: 'Estudiantes en la capilla en actividades de fe', label: 'Formación en Valores' },
-  { src: '/images/hero/hero6.jpg', alt: 'Estudiantes realizando actividades de escritura en el aula', label: 'Aulas y Aprendizaje' },
-];
+import { supabase } from '../lib/db';
+
+// Fetch gallery albums from database
+const { data: dbAlbums } = await supabase
+  .from('gallery_albums')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+// Fallback: If DB is empty, use the static array
+let albums = [];
+if (dbAlbums && dbAlbums.length > 0) {
+  albums = dbAlbums.map((al) => ({
+    src: al.images[0] || '/images/hero/hero1.jpg',
+    alt: al.title,
+    label: al.title,
+    desc: al.description || al.title,
+    images: al.images,
+  }));
+} else {
+  // Static fallback
+  const fallbackAlbums = [
+    { 
+      src: '/images/hero/hero1.jpg', 
+      alt: 'Patio principal con decoraciones escolares y áreas de recreación', 
+      label: 'Nuestras Instalaciones', 
+      desc: 'Vista del patio cívico central del colegio, adaptado para múltiples actividades recreativas y actos cívicos.',
+      images: ['/images/hero/hero1.jpg', '/images/hero/hero2.jpg', '/images/hero/hero3.jpg']
+    },
+    { 
+      src: '/images/hero/hero2.jpg', 
+      alt: 'Estudiantes alineados en el patio cívico durante acto protocolar', 
+      label: 'Vida Estudiantil', 
+      desc: 'Nuestros estudiantes participando de manera respetuosa en las actividades y efemérides patrias en el patio.',
+      images: ['/images/hero/hero2.jpg', '/images/hero/hero1.jpg', '/images/hero/hero3.jpg']
+    },
+    { 
+      src: '/images/hero/hero3.jpg', 
+      alt: 'Formación de estudiantes en actividades recreativas y dinámicas de grupo', 
+      label: 'Deportes y Recreación', 
+      desc: 'Práctica deportiva y dinámicas grupales al aire libre que fomentan la integración física y social.',
+      images: ['/images/hero/hero3.jpg', '/images/hero/hero4.jpg', '/images/hero/hero5.jpg']
+    },
+    { 
+      src: '/images/hero/hero4.jpg', 
+      alt: 'Niños participando en proyectos científicos y dinámicas escolares', 
+      label: 'Actividades Pedagógicas', 
+      desc: 'Desarrollo de proyectos educativos interactivos y dinámicas en el aula que refuerzan el aprendizaje.',
+      images: ['/images/hero/hero4.jpg', '/images/hero/hero6.jpg']
+    },
+    { 
+      src: '/images/hero/hero5.jpg', 
+      alt: 'Estudiantes en la capilla durante momentos de reflexión y oración', 
+      label: 'Formación en Valores', 
+      desc: 'Espacios litúrgicos y de reflexión donde se promueve la espiritualidad y los valores cristianos vicencianos.',
+      images: ['/images/hero/hero5.jpg', '/images/hero/hero2.jpg']
+    },
+    { 
+      src: '/images/hero/hero6.jpg', 
+      alt: 'Estudiantes realizando actividades de escritura y lectura en el aula', 
+      label: 'Aulas y Aprendizaje', 
+      desc: 'Salones de clase equipados y diseñados para propiciar una atención enfocada y participativa.',
+      images: ['/images/hero/hero6.jpg', '/images/hero/hero4.jpg']
+    },
+  ];
+  albums = fallbackAlbums;
+}
 ---
 
 <section id="galeria" class="reveal-on-scroll section-padding bg-stone-50 dark:bg-[#140b37]">
@@ -21,22 +79,293 @@ const imagenes = [
       <div class="mx-auto mt-4 h-1 w-20 rounded-full bg-accent"></div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {imagenes.map((img) => (
-        <div class="group relative overflow-hidden rounded-2xl shadow-sm">
+    <!-- Gallery Grid -->
+    <div id="gallery-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {albums.map((al, index) => (
+        <div 
+          class="gallery-item group relative overflow-hidden rounded-2xl shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hidden"
+          data-index={index}
+          data-title={al.label}
+          data-desc={al.desc}
+          data-images={JSON.stringify(al.images)}
+        >
           <img
-            src={img.src}
-            alt={img.alt}
+            src={al.src}
+            alt={al.alt}
             class="h-72 w-full object-cover transition duration-500 group-hover:scale-110"
             loading="lazy"
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition group-hover:opacity-100">
-            <div class="absolute bottom-0 left-0 right-0 p-6">
-              <span class="text-sm font-semibold text-white">{img.label}</span>
-            </div>
+          
+          <!-- Image count float badge -->
+          <div class="absolute top-4 right-4 z-10 rounded-full bg-black/60 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+            📷 {al.images.length}
+          </div>
+
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition duration-300 group-hover:opacity-100 flex flex-col justify-end p-6">
+            <span class="text-xs font-bold text-accent uppercase tracking-widest mb-1.5">{al.label}</span>
+            <span class="text-sm font-semibold text-white leading-tight line-clamp-2">{al.alt}</span>
+            <span class="mt-3 inline-flex self-start items-center justify-center h-8 w-8 rounded-full bg-accent text-primary text-base font-bold shadow-md transform translate-y-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              🔍
+            </span>
           </div>
         </div>
       ))}
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="mt-12 flex items-center justify-center gap-2">
+      <button id="prev-page-btn" class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer">
+        ←
+      </button>
+      <div id="page-numbers-container" class="flex items-center gap-2">
+        <!-- Renders dynamically -->
+      </div>
+      <button id="next-page-btn" class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer">
+        →
+      </button>
+    </div>
+  </div>
+
+  <!-- Lightbox/Carousel Modal -->
+  <div id="gallery-lightbox" class="fixed inset-0 z-[150] flex flex-col justify-between bg-black/95 p-4 sm:p-8 opacity-0 pointer-events-none transition-all duration-300 select-none">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between w-full z-10">
+      <span class="text-xs font-bold text-accent uppercase tracking-widest font-mono">Visor de Galería</span>
+      <button id="close-lightbox-btn" class="text-white hover:text-accent transition text-2xl p-2 cursor-pointer rounded-full hover:bg-white/10" aria-label="Cerrar visor">
+        ✕
+      </button>
+    </div>
+
+    <!-- Main Active Image Container -->
+    <div class="flex-1 flex items-center justify-center relative w-full my-4 max-h-[60vh] sm:max-h-[70vh]">
+      <button id="lightbox-prev-btn" class="absolute left-2 sm:left-4 z-10 text-white hover:text-accent text-3xl p-3 cursor-pointer bg-black/40 hover:bg-black/70 rounded-full transition shadow-lg" aria-label="Anterior">
+        ‹
+      </button>
+      
+      <img id="lightbox-active-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl transition duration-300 transform scale-95 opacity-0" />
+      
+      <button id="lightbox-next-btn" class="absolute right-2 sm:right-4 z-10 text-white hover:text-accent text-3xl p-3 cursor-pointer bg-black/40 hover:bg-black/70 rounded-full transition shadow-lg" aria-label="Siguiente">
+        ›
+      </button>
+    </div>
+
+    <!-- Info & Thumbnails Panel -->
+    <div class="w-full flex flex-col items-center gap-6 z-10">
+      <!-- Title & Description -->
+      <div class="text-center max-w-2xl px-4">
+        <h4 id="lightbox-title" class="text-base sm:text-lg font-bold text-white mb-1.5"></h4>
+        <p id="lightbox-desc" class="text-[11px] sm:text-xs text-gray-400 font-normal leading-relaxed"></p>
+      </div>
+
+      <!-- Thumbnail Strip -->
+      <div class="w-full max-w-3xl overflow-x-auto pb-2 scrollbar-thin px-4">
+        <div id="lightbox-thumbnails-container" class="flex gap-2.5 justify-start sm:justify-center min-w-max py-1">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<script>
+  function setupGallery() {
+    const items = document.querySelectorAll('.gallery-item') as NodeListOf<HTMLElement>;
+    const prevPageBtn = document.getElementById('prev-page-btn') as HTMLButtonElement | null;
+    const nextPageBtn = document.getElementById('next-page-btn') as HTMLButtonElement | null;
+    const pageNumbersContainer = document.getElementById('page-numbers-container');
+    
+    // Lightbox selectors
+    const lightbox = document.getElementById('gallery-lightbox');
+    const lightboxImg = document.getElementById('lightbox-active-img') as HTMLImageElement | null;
+    const lightboxTitle = document.getElementById('lightbox-title');
+    const lightboxDesc = document.getElementById('lightbox-desc');
+    const closeBtn = document.getElementById('close-lightbox-btn');
+    const lPrevBtn = document.getElementById('lightbox-prev-btn');
+    const lNextBtn = document.getElementById('lightbox-next-btn');
+    const thumbsContainer = document.getElementById('lightbox-thumbnails-container');
+
+    if (items.length === 0) return;
+
+    // PAGINATION LOGIC
+    const itemsPerPage = 6;
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    let currentPage = 1;
+
+    function renderPage(page: number) {
+      currentPage = page;
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+
+      items.forEach((item, index) => {
+        if (index >= start && index < end) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      if (prevPageBtn) prevPageBtn.disabled = page === 1;
+      if (nextPageBtn) nextPageBtn.disabled = page === totalPages;
+
+      const pageBtns = document.querySelectorAll('.page-num-btn');
+      pageBtns.forEach((btn) => {
+        const pNum = Number(btn.getAttribute('data-page'));
+        if (pNum === page) {
+          btn.classList.add('bg-primary', 'text-white', 'border-primary', 'dark:bg-accent', 'dark:text-primary', 'dark:border-accent');
+          btn.classList.remove('text-gray-700', 'hover:bg-gray-100', 'dark:text-slate-300', 'dark:hover:bg-slate-800');
+        } else {
+          btn.classList.remove('bg-primary', 'text-white', 'border-primary', 'dark:bg-accent', 'dark:text-primary', 'dark:border-accent');
+          btn.classList.add('text-gray-700', 'hover:bg-gray-100', 'dark:text-slate-300', 'dark:hover:bg-slate-800');
+        }
+      });
+    }
+
+    if (pageNumbersContainer) {
+      pageNumbersContainer.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'page-num-btn flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-800 text-xs font-bold transition cursor-pointer';
+        btn.textContent = i.toString();
+        btn.setAttribute('data-page', i.toString());
+        btn.addEventListener('click', () => renderPage(i));
+        pageNumbersContainer.appendChild(btn);
+      }
+    }
+
+    if (prevPageBtn) {
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) renderPage(currentPage - 1);
+      });
+    }
+
+    if (nextPageBtn) {
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) renderPage(currentPage + 1);
+      });
+    }
+
+    renderPage(1);
+
+    // LIGHTBOX / CAROUSEL LOGIC
+    let activeImages: string[] = [];
+    let activeIndex = 0;
+    let activeTitle = '';
+    let activeDesc = '';
+
+    function openLightbox(images: string[], index: number, title: string, desc: string) {
+      activeImages = images;
+      activeIndex = index;
+      activeTitle = title;
+      activeDesc = desc;
+
+      // Render thumbnail strip dynamically
+      if (thumbsContainer) {
+        thumbsContainer.innerHTML = '';
+        activeImages.forEach((imgSrc, idx) => {
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          img.className = 'lightbox-thumb h-10 w-14 sm:h-14 sm:w-20 object-cover rounded-lg border-2 border-transparent opacity-50 hover:opacity-100 transition duration-200 cursor-pointer';
+          img.setAttribute('data-index', idx.toString());
+          img.addEventListener('click', () => {
+            activeIndex = idx;
+            updateLightboxContent();
+          });
+          thumbsContainer.appendChild(img);
+        });
+      }
+
+      updateLightboxContent();
+
+      if (lightbox && lightboxImg) {
+        lightbox.classList.remove('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          lightboxImg.classList.remove('scale-95', 'opacity-0');
+          lightboxImg.classList.add('scale-100', 'opacity-100');
+        }, 50);
+      }
+    }
+
+    function closeLightbox() {
+      if (lightbox && lightboxImg) {
+        lightboxImg.classList.remove('scale-100', 'opacity-100');
+        lightboxImg.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+          lightbox.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+      }
+    }
+
+    function updateLightboxContent() {
+      const src = activeImages[activeIndex] || '';
+      if (lightboxImg) {
+        lightboxImg.src = src;
+        lightboxImg.alt = activeTitle;
+      }
+      if (lightboxTitle) lightboxTitle.textContent = `${activeTitle} (${activeIndex + 1}/${activeImages.length})`;
+      if (lightboxDesc) lightboxDesc.textContent = activeDesc;
+
+      // Update thumbnails active state
+      const thumbs = document.querySelectorAll('.lightbox-thumb') as NodeListOf<HTMLImageElement>;
+      thumbs.forEach((thumb, index) => {
+        if (index === activeIndex) {
+          thumb.classList.add('border-accent', 'opacity-100', 'scale-105');
+          thumb.classList.remove('opacity-50', 'border-transparent');
+          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          thumb.classList.remove('border-accent', 'opacity-100', 'scale-105');
+          thumb.classList.add('opacity-50', 'border-transparent');
+        }
+      });
+    }
+
+    function showPrev() {
+      if (activeImages.length <= 1) return;
+      activeIndex = activeIndex > 0 ? activeIndex - 1 : activeImages.length - 1;
+      updateLightboxContent();
+    }
+
+    // Auto-advance or slide on click next
+    function showNext() {
+      if (activeImages.length <= 1) return;
+      activeIndex = activeIndex < activeImages.length - 1 ? activeIndex + 1 : 0;
+      updateLightboxContent();
+    }
+
+    // Attach click listeners to gallery items
+    items.forEach((item) => {
+      item.addEventListener('click', () => {
+        try {
+          const images = JSON.parse(item.getAttribute('data-images') || '[]');
+          const title = item.getAttribute('data-title') || '';
+          const desc = item.getAttribute('data-desc') || '';
+          openLightbox(images, 0, title, desc);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    if (lPrevBtn) lPrevBtn.addEventListener('click', showPrev);
+    if (lNextBtn) lNextBtn.addEventListener('click', showNext);
+
+    if (lightbox) {
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+          closeLightbox();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox && !lightbox.classList.contains('opacity-0')) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupGallery);
+</script>

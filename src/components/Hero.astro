@@ -46,6 +46,12 @@ const slides: HeroSlide[] = [
         data-slide-index={index}
         data-active={index === 0 ? 'true' : 'false'}
       >
+        <!-- Base Background Image to prevent subpixel clip-path gaps/lines -->
+        <div 
+          class="hero-base-bg absolute inset-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-700 pointer-events-none"
+          style={`background-image: url('${slide.src}');`}
+        ></div>
+
         <!-- Fragment 1: Top Triangle -->
         <div 
           class="hero-fragment absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1400 ease-out transform"
@@ -98,7 +104,7 @@ const slides: HeroSlide[] = [
             }`}
             data-text-index={index}
           >
-            <h1 class="mb-4 text-3xl xs:text-4xl sm:text-5xl md:text-6.5xl lg:text-7xl font-extrabold leading-tight text-white tracking-tight select-none drop-shadow-md">
+            <h1 class="mb-4 text-3xl xs:text-4xl sm:text-5xl md:text-5.5xl lg:text-6.2xl xl:text-7xl font-extrabold leading-tight text-white tracking-tight select-none drop-shadow-md">
               {firstWord} <span class="text-accent">{restWords}</span>
             </h1>
 
@@ -150,7 +156,7 @@ const slides: HeroSlide[] = [
   </button>
 
   <!-- Slide Indicators (Moved up to prevent overlap with scroll arrow) -->
-  <div class="absolute bottom-20 md:bottom-28 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
+  <div class="absolute bottom-14 md:bottom-16 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
     {slides.map((_, index) => (
       <button
         class={`slide-indicator h-2.5 rounded-full transition-all duration-300 cursor-pointer ${index === 0 ? 'bg-accent w-8 shadow-sm' : 'bg-white/45 w-2.5 hover:bg-white/70'}`}
@@ -169,6 +175,16 @@ const slides: HeroSlide[] = [
 </section>
 
 <style is:global>
+  /* Base background transitions to cover subpixel gap lines */
+  .hero-slide[data-active="true"] .hero-base-bg {
+    opacity: 1;
+    transition-delay: 1400ms;
+  }
+  .hero-slide[data-active="false"] .hero-base-bg {
+    opacity: 0;
+    transition-delay: 0ms;
+  }
+
   /* Base state for all fragments */
   .hero-fragment {
     transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.4s ease-in-out;
@@ -211,6 +227,61 @@ const slides: HeroSlide[] = [
   }
   .hero-slide[data-active="true"] [data-fragment="left"] {
     transition-delay: 360ms;
+  }
+
+  /* Optimización para pantallas con poca altura vertical (como laptops o navegadores con muchas barras de herramientas) */
+  @media (max-height: 780px) {
+    #inicio {
+      padding-top: 80px; /* Compensar la altura del Header fijo */
+    }
+    
+    #inicio .relative.z-10 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    #inicio .inline-flex.items-center.gap-2 {
+      margin-bottom: 0.5rem !important; /* Reducir margen del badge */
+      font-size: 0.75rem !important;
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+    }
+
+    #inicio h1 {
+      font-size: 2.25rem !important; /* ~text-4xl */
+      margin-bottom: 0.35rem !important;
+      line-height: 1.15 !important;
+    }
+    
+    @media (min-width: 640px) {
+      #inicio h1 {
+        font-size: 3rem !important; /* ~text-5xl */
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      #inicio h1 {
+        font-size: 3.5rem !important; /* ~text-6xl */
+      }
+    }
+
+    #inicio p {
+      font-size: 0.875rem !important; /* ~text-sm */
+      margin-top: 0.25rem !important;
+      line-height: 1.4 !important;
+    }
+
+    #inicio .grid {
+      margin-bottom: 1rem !important; /* Reducir espacio entre textos y botones */
+    }
+
+    #inicio .flex-col.items-center.gap-3 {
+      gap: 0.5rem !important;
+    }
+
+    #inicio .slide-indicator {
+      bottom: 4rem !important; /* Subir o ajustar la posición de los indicadores */
+    }
   }
 </style>
 

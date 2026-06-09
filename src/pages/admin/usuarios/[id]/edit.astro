@@ -1,0 +1,148 @@
+---
+import AdminLayout from '../../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../../lib/auth';
+import { supabase } from '../../../../lib/db';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
+const id = Number(Astro.params.id);
+if (isNaN(id)) {
+  return Astro.redirect('/admin/usuarios');
+}
+
+const { data: dbUser } = await supabase
+  .from('usuarios')
+  .select('id, email, nombre, rol')
+  .eq('id', id)
+  .single();
+
+if (!dbUser) {
+  return Astro.redirect('/admin/usuarios');
+}
+
+const user = dbUser;
+---
+
+<AdminLayout
+  title="Editar Usuario"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath="/admin/usuarios"
+>
+  <div class="mx-auto max-w-lg">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <form id="edit-user-form" class="space-y-5">
+        <input type="hidden" id="user-id" value={user.id} />
+        <div>
+          <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700">Nombre completo</label>
+          <input type="text" id="nombre" name="nombre" value={user.nombre} required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Nombre del usuario" />
+        </div>
+
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-gray-400">Correo electrónico (No modificable)</label>
+          <input type="email" value={user.email} disabled readonly
+            class="w-full rounded-xl border border-gray-150 bg-gray-50 px-4 py-3 text-sm text-gray-500 cursor-not-allowed outline-none" />
+        </div>
+
+        <div>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Nueva contraseña (Opcional)</label>
+          <input type="password" id="password" name="password" minlength="6"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Dejar en blanco para no cambiar" />
+        </div>
+
+        <div>
+          <label for="rol" class="mb-1.5 block text-sm font-medium text-gray-700">Rol</label>
+          <select id="rol" name="rol"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <option value="editor" selected={user.rol === 'editor'}>Editor</option>
+            <option value="admin" selected={user.rol === 'admin'}>Admin</option>
+          </select>
+        </div>
+
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+        <div class="flex gap-3">
+          <button type="submit" id="submit-btn"
+            class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
+            Guardar cambios
+          </button>
+          <a href="/admin/usuarios"
+            class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  function setupEditUser() {
+    const form = document.getElementById('edit-user-form') as HTMLFormElement | null;
+    const userIdInput = document.getElementById('user-id') as HTMLInputElement | null;
+
+    if (form && userIdInput) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const errorMsg = document.getElementById('error-msg');
+        const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+        if (!errorMsg || !submitBtn) return;
+
+        errorMsg.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        const id = userIdInput.value;
+        const formData = new FormData(form);
+        const payload: any = {
+          nombre: formData.get('nombre'),
+          rol: formData.get('rol'),
+        };
+
+        const password = formData.get('password') as string;
+        if (password && password.trim().length > 0) {
+          payload.password = password;
+        }
+
+        const res = await fetch(`/api/usuarios/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          navigate('/admin/usuarios');
+        } else {
+          errorMsg.textContent = data.error || 'Error al actualizar usuario';
+          errorMsg.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar cambios';
+        }
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('edit-user-form')) {
+      setupEditUser();
+    }
+  });
+</script>

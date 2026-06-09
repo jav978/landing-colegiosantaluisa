@@ -1,9 +1,20 @@
 import type { APIRoute } from 'astro';
 import { supabase } from '../../lib/db';
 import { sendPreRegistrationEmail } from '../../lib/email';
+import { isPreRegistrationActive } from '../../lib/settings';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    if (!(await isPreRegistrationActive())) {
+      return new Response(
+        JSON.stringify({ error: 'El proceso de pre-inscripción online no se encuentra activo actualmente.' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const body = await request.json();
     const {
       studentName,

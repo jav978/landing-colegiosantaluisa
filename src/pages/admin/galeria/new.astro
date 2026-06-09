@@ -1,0 +1,284 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import { getSessionToken, validateSession } from '../../../lib/auth';
+
+const token = getSessionToken(Astro.request);
+const session = token ? await validateSession(token) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout
+  title="Nuevo Álbum de Galería"
+  userNombre={session.nombre}
+  userEmail={session.email}
+  userRol={session.rol}
+  currentPath="/admin/galeria"
+>
+  <div class="mx-auto max-w-3xl">
+    <div class="rounded-xl border bg-white p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-gray-900 mb-6">Crear Nuevo Álbum de Fotos</h2>
+
+      <form id="gallery-form" class="space-y-6">
+        <div>
+          <label for="title" class="mb-1.5 block text-sm font-semibold text-gray-700">Título del Álbum / Evento <span class="text-red-500">*</span></label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            required
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Ej: Celebración del Día del Padre 2026"
+          />
+        </div>
+
+        <div>
+          <label for="description" class="mb-1.5 block text-sm font-semibold text-gray-700">Reseña o Descripción del Evento (Opcional)</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            placeholder="Escribe una pequeña descripción para contextualizar las fotos del evento..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-gray-700">Cargar Fotos (Máx. 10 fotos) <span class="text-red-500">*</span></label>
+          <p class="text-xs text-gray-400 mb-3">Las fotos se optimizarán automáticamente. El tamaño máximo recomendado es de 1MB por archivo.</p>
+          
+          <div class="flex items-center justify-center w-full">
+            <label for="image_files" class="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <span class="text-3xl mb-2">📸</span>
+                <p class="mb-1 text-sm text-gray-500 font-medium">Haz clic para buscar fotos o arrástralas aquí</p>
+                <p class="text-xs text-gray-400">Puedes seleccionar varias fotos a la vez (Formatos: JPG, PNG, WEBP)</p>
+              </div>
+              <input type="file" id="image_files" accept="image/*" multiple class="hidden" />
+            </label>
+          </div>
+
+          <!-- Previews grid -->
+          <div id="previews-container" class="hidden mt-6">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Vista Previa de Fotos (<span id="photo-count">0</span>/10)</h4>
+            <div id="previews-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+              <!-- Rendered dynamically by script -->
+            </div>
+          </div>
+        </div>
+
+        <div id="alert-msg" class="hidden rounded-lg px-4 py-3 text-sm font-medium"></div>
+
+        <div class="flex gap-3 pt-4 border-t border-gray-100">
+          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
+            Guardar Álbum
+          </button>
+          <a href="/admin/galeria" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  // Compression helper
+  function compressImage(file: File, maxWidth = 600, maxHeight = 600, quality = 0.85): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith('image/')) {
+        reject(new Error('El archivo no es una imagen.'));
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Proportional scaling
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(event.target?.result as string);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedDataUrl);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  }
+
+  function setupNewGallery() {
+    const form = document.getElementById('gallery-form') as HTMLFormElement | null;
+    const fileInput = document.getElementById('image_files') as HTMLInputElement | null;
+    const previewsContainer = document.getElementById('previews-container');
+    const previewsGrid = document.getElementById('previews-grid');
+    const photoCountSpan = document.getElementById('photo-count');
+    const alertMsg = document.getElementById('alert-msg') as HTMLDivElement | null;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+    if (!form || !fileInput || !previewsContainer || !previewsGrid || !photoCountSpan || !alertMsg || !submitBtn) return;
+
+    let loadedImages: string[] = [];
+
+    function renderPreviews() {
+      if (!previewsGrid || !photoCountSpan || !previewsContainer) return;
+      previewsGrid.innerHTML = '';
+      photoCountSpan.textContent = loadedImages.length.toString();
+
+      if (loadedImages.length === 0) {
+        previewsContainer.classList.add('hidden');
+        return;
+      }
+      previewsContainer.classList.remove('hidden');
+
+      loadedImages.forEach((src, index) => {
+        const container = document.createElement('div');
+        container.className = 'relative group h-24 rounded-xl overflow-hidden border shadow-sm';
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'w-full h-full object-cover';
+        img.alt = `Preview ${index + 1}`;
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 hover:bg-rose-600 text-white text-xs font-bold transition cursor-pointer';
+        delBtn.innerHTML = '✕';
+        delBtn.addEventListener('click', () => {
+          loadedImages.splice(index, 1);
+          renderPreviews();
+        });
+
+        container.appendChild(img);
+        container.appendChild(delBtn);
+        previewsGrid.appendChild(container);
+      });
+    }
+
+    fileInput.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (files.length === 0) return;
+
+      const remainingSlots = 10 - loadedImages.length;
+      const filesToProcess = files.slice(0, remainingSlots);
+
+      if (files.length > remainingSlots) {
+        alert(`Límite excedido. Solo puedes agregar hasta 10 fotos. Se procesaron las primeras ${remainingSlots} fotos seleccionadas.`);
+      }
+
+      for (const file of filesToProcess) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert(`El archivo "${file.name}" supera los 2MB. Por favor selecciona fotos más livianas.`);
+          continue;
+        }
+
+        try {
+          const compressed = await compressImage(file);
+          loadedImages.push(compressed);
+        } catch (err) {
+          console.error('Error compressing image:', err);
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            if (e.target?.result) loadedImages.push(e.target.result as string);
+            renderPreviews();
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      renderPreviews();
+      fileInput.value = ''; // Reset file input
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      alertMsg.className = 'hidden rounded-lg px-4 py-3 text-sm font-medium';
+      alertMsg.textContent = '';
+
+      if (loadedImages.length === 0) {
+        alertMsg.classList.remove('hidden');
+        alertMsg.classList.add('bg-red-50', 'text-red-800');
+        alertMsg.textContent = 'Debe cargar al menos una foto para crear el álbum de la galería.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+
+      const title = (document.getElementById('title') as HTMLInputElement).value.trim();
+      const description = (document.getElementById('description') as HTMLTextAreaElement).value.trim();
+
+      try {
+        const res = await fetch('/api/admin/gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            description,
+            images: loadedImages,
+          }),
+        });
+
+        const data = await res.json();
+
+        alertMsg.classList.remove('hidden');
+        if (res.ok && data.success) {
+          alertMsg.classList.add('bg-green-50', 'text-green-800');
+          alertMsg.textContent = 'Registro realizado con éxito. Redirigiendo...';
+          setTimeout(() => {
+            navigate('/admin/galeria');
+          }, 1500);
+        } else {
+          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.textContent = data.error || 'Ocurrió un error al guardar el álbum.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Guardar Álbum';
+        }
+      } catch (err) {
+        console.error(err);
+        alertMsg.classList.remove('hidden');
+        alertMsg.classList.add('bg-red-50', 'text-red-800');
+        alertMsg.textContent = 'Error de conexión con el servidor.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar Álbum';
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('gallery-form')) {
+      setupNewGallery();
+    }
+  });
+</script>
