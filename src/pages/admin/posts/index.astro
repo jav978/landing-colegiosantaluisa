@@ -29,57 +29,80 @@ const posts = postsData || [];
   userRol={session.rol}
   currentPath={Astro.url.pathname}
 >
-  <div class="mb-6 flex items-center justify-between">
-    <div class="flex gap-2">
-      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary" data-filter="">Todos</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="blog">Blog</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200" data-filter="anuncio">Anuncios</button>
+  <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-2">
+      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary cursor-pointer dark:bg-primary dark:text-white dark:border-primary" data-filter="">Todos</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="blog">Blog</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="anuncio">Anuncios</button>
+      
+      <!-- Search Input -->
+      <div class="relative w-full sm:w-64">
+        <input
+          type="text"
+          id="post-search"
+          class="w-full text-xs rounded-lg border border-gray-200 px-3 py-1.5 pl-8 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:focus:border-primary"
+          placeholder="Buscar por título, autor o estado..."
+        />
+        <span class="absolute left-2.5 top-2 text-gray-400 text-xs">🔍</span>
+      </div>
     </div>
-    <a href="/admin/posts/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+    <a href="/admin/posts/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90 text-center dark:bg-primary dark:hover:bg-primary-light">
       + Nuevo
     </a>
   </div>
 
-  <div class="rounded-xl border bg-white shadow-sm">
+  <div class="rounded-xl border bg-white shadow-sm dark:bg-gray-900 dark:border-gray-800">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead>
-          <tr class="border-b bg-gray-50">
-            <th class="px-5 py-3 font-semibold text-gray-600">Título</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Tipo</th>
-            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Autor</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Estado</th>
-            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Fecha</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Acción</th>
+          <tr class="border-b bg-gray-50 dark:bg-gray-800/50 dark:border-gray-800">
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Título</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Tipo</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 max-md:hidden">Autor</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Estado</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 max-md:hidden">Fecha</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Acción</th>
           </tr>
         </thead>
         <tbody id="posts-table-body">
           {posts.length === 0 ? (
-            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay contenido</td></tr>
+            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400 dark:text-gray-500">No hay contenido</td></tr>
           ) : (
             posts.map((p) => {
               const typeLabel = p.type === 'anuncio' ? 'Anuncio' : 'Blog';
-              const typeClass = p.type === 'anuncio' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700';
+              const typeClass = p.type === 'anuncio' 
+                ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' 
+                : 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
               const statusLabel = p.published ? 'Publicado' : 'Borrador';
-              const statusClass = p.published ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600';
+              const statusClass = p.published 
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' 
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300';
               const date = p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE') : '—';
               return (
-                <tr class="border-b last:border-0 hover:bg-gray-50 transition duration-150" data-type={p.type} data-post-row>
-                  <td class="max-w-xs truncate px-5 py-4 font-medium text-gray-900" title={p.title}>{p.title}</td>
+                <tr 
+                  class="border-b last:border-0 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 transition duration-150" 
+                  data-type={p.type} 
+                  data-title={p.title.toLowerCase()}
+                  data-status={statusLabel.toLowerCase()}
+                  data-date={date}
+                  data-author={(p.usuarios?.nombre || '').toLowerCase()}
+                  data-post-row
+                >
+                  <td class="max-w-xs truncate px-5 py-4 font-medium text-gray-900 dark:text-white" title={p.title}>{p.title}</td>
                   <td class="px-5 py-4">
                     <span class={`rounded-full ${typeClass} px-2.5 py-0.5 text-xs font-medium`}>{typeLabel}</span>
                   </td>
-                  <td class="px-5 py-4 text-gray-600 max-md:hidden">{p.usuarios?.nombre || '—'}</td>
+                  <td class="px-5 py-4 text-gray-600 dark:text-gray-300 max-md:hidden">{p.usuarios?.nombre || '—'}</td>
                   <td class="px-5 py-4">
                     <span class={`rounded-full ${statusClass} px-2.5 py-0.5 text-xs font-medium`}>{statusLabel}</span>
                   </td>
-                  <td class="px-5 py-4 text-gray-500 max-md:hidden">{date}</td>
+                  <td class="px-5 py-4 text-gray-500 dark:text-gray-400 max-md:hidden">{date}</td>
                   <td class="px-5 py-4">
                     <div class="flex items-center gap-2">
                       <a
                         href={`/admin/posts/${p.id}/edit`}
                         data-astro-prefetch
-                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-700 border border-slate-200 transition hover:bg-slate-100 hover:text-slate-900"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-700 border border-slate-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 transition hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-gray-700 dark:hover:text-white"
                         title="Editar"
                       >
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -87,7 +110,7 @@ const posts = postsData || [];
                         </svg>
                       </a>
                       <button
-                        class="delete-post-btn inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-700 border border-rose-100 transition hover:bg-rose-100 hover:text-rose-900 cursor-pointer"
+                        class="delete-post-btn inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-700 border border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/30 transition hover:bg-rose-100 hover:text-rose-900 dark:hover:bg-rose-900/40 dark:hover:text-rose-300 cursor-pointer"
                         data-id={p.id}
                         data-title={p.title}
                         title="Eliminar"
@@ -105,40 +128,211 @@ const posts = postsData || [];
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div id="posts-pagination" class="flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-xl dark:border-gray-800 dark:bg-gray-800/30">
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        Mostrando <span id="showing-start">0</span> a <span id="showing-end">0</span> de <span id="total-matching">0</span> publicaciones
+      </span>
+      <div class="flex items-center gap-2">
+        <button id="prev-btn" class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-850 dark:disabled:hover:bg-transparent">
+          Anterior
+        </button>
+        <div id="page-numbers" class="flex items-center gap-1">
+          <!-- Page numbers -->
+        </div>
+        <button id="next-btn" class="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-850 dark:disabled:hover:bg-transparent">
+          Siguiente
+        </button>
+      </div>
+    </div>
   </div>
 </AdminLayout>
 
 <script>
-  function setupFiltering() {
+  function setupFilteringAndPagination() {
     const buttons = document.querySelectorAll('.filter-btn');
-    const rows = document.querySelectorAll('[data-post-row]');
+    const searchInput = document.getElementById('post-search') as HTMLInputElement | null;
+    const rows = document.querySelectorAll('[data-post-row]') as NodeListOf<HTMLElement>;
+    const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement | null;
+    const nextBtn = document.getElementById('next-btn') as HTMLButtonElement | null;
+    const pageNumbers = document.getElementById('page-numbers');
+    const showingStart = document.getElementById('showing-start');
+    const showingEnd = document.getElementById('showing-end');
+    const totalMatching = document.getElementById('total-matching');
 
+    if (rows.length === 0) {
+      if (showingStart) showingStart.textContent = '0';
+      if (showingEnd) showingEnd.textContent = '0';
+      if (totalMatching) totalMatching.textContent = '0';
+      return;
+    }
+
+    let activeFilter = '';
+    let searchQuery = '';
+    let currentPage = 1;
+    const itemsPerPage = 8;
+
+    function normalizeText(text: string): string {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function updateView() {
+      // 1. Filter rows based on tab and search query
+      const matchingRows: HTMLElement[] = [];
+      rows.forEach((row) => {
+        const type = row.dataset.type || '';
+        const title = row.dataset.title || '';
+        const author = row.dataset.author || '';
+        const status = row.dataset.status || '';
+        const date = row.dataset.date || '';
+
+        const normalizedTitle = normalizeText(title);
+        const normalizedAuthor = normalizeText(author);
+        const normalizedStatus = normalizeText(status);
+
+        const matchesTab = activeFilter === '' || type === activeFilter;
+        const matchesSearch = searchQuery === '' || 
+          normalizedTitle.includes(searchQuery) || 
+          normalizedAuthor.includes(searchQuery) || 
+          normalizedStatus.includes(searchQuery) ||
+          date.includes(searchQuery);
+
+        if (matchesTab && matchesSearch) {
+          matchingRows.push(row);
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+
+      // 2. Calculate pagination parameters
+      const totalCount = matchingRows.length;
+      const totalPages = Math.ceil(totalCount / itemsPerPage) || 1;
+      
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIdx = (currentPage - 1) * itemsPerPage;
+      const endIdx = Math.min(startIdx + itemsPerPage, totalCount);
+
+      // 3. Render rows for active page
+      matchingRows.forEach((row, index) => {
+        if (index >= startIdx && index < endIdx) {
+          row.classList.remove('hidden');
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+
+      // 4. Update status labels
+      if (showingStart) showingStart.textContent = totalCount === 0 ? '0' : (startIdx + 1).toString();
+      if (showingEnd) showingEnd.textContent = endIdx.toString();
+      if (totalMatching) totalMatching.textContent = totalCount.toString();
+
+      // 5. Update pagination buttons
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+      // 6. Render page numbers
+      if (pageNumbers) {
+        pageNumbers.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement('button');
+          btn.className = `flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-semibold transition cursor-pointer ${
+            i === currentPage
+              ? 'bg-primary text-white border-primary dark:bg-primary dark:border-primary'
+              : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-850'
+          }`;
+          btn.textContent = i.toString();
+          btn.addEventListener('click', () => {
+            currentPage = i;
+            updateView();
+          });
+          pageNumbers.appendChild(btn);
+        }
+      }
+    }
+
+    // Attach tab click listeners
     buttons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        const filter = (btn as HTMLButtonElement).dataset.filter || '';
+        activeFilter = (btn as HTMLButtonElement).dataset.filter || '';
 
-        // Actualizar estados visuales de los botones
+        // Sync buttons styles
         buttons.forEach((b) => {
-          const isTarget = (b as HTMLButtonElement).dataset.filter === filter;
+          const isTarget = (b as HTMLButtonElement).dataset.filter === activeFilter;
           b.classList.toggle('active', isTarget);
           b.classList.toggle('bg-primary', isTarget);
           b.classList.toggle('text-white', isTarget);
           b.classList.toggle('border-primary', isTarget);
           b.classList.toggle('text-gray-600', !isTarget);
           b.classList.toggle('border-gray-200', !isTarget);
+          // Dark classes
+          b.classList.toggle('dark:bg-primary', isTarget);
+          b.classList.toggle('dark:text-white', isTarget);
+          b.classList.toggle('dark:border-primary', isTarget);
+          b.classList.toggle('dark:text-gray-400', !isTarget);
+          b.classList.toggle('dark:border-gray-800', !isTarget);
         });
 
-        // Mostrar / Ocultar filas correspondientes
-        rows.forEach((row) => {
-          const type = (row as HTMLElement).dataset.type || '';
-          if (filter === '' || type === filter) {
-            row.classList.remove('hidden');
-          } else {
-            row.classList.add('hidden');
-          }
-        });
+        currentPage = 1;
+        updateView();
       });
     });
+
+    // Attach search input listener
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = normalizeText((e.target as HTMLInputElement).value);
+        currentPage = 1;
+        updateView();
+      });
+    }
+
+    // Attach navigation click listeners
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateView();
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const totalCount = Array.from(rows).filter(r => {
+          const type = r.dataset.type || '';
+          const title = r.dataset.title || '';
+          const author = r.dataset.author || '';
+          const status = r.dataset.status || '';
+          const date = r.dataset.date || '';
+
+          const normalizedTitle = normalizeText(title);
+          const normalizedAuthor = normalizeText(author);
+          const normalizedStatus = normalizeText(status);
+
+          const matchesTab = activeFilter === '' || type === activeFilter;
+          const matchesSearch = searchQuery === '' || 
+            normalizedTitle.includes(searchQuery) || 
+            normalizedAuthor.includes(searchQuery) || 
+            normalizedStatus.includes(searchQuery) ||
+            date.includes(searchQuery);
+
+          return matchesTab && matchesSearch;
+        }).length;
+
+        const totalPages = Math.ceil(totalCount / itemsPerPage) || 1;
+
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateView();
+        }
+      });
+    }
+
+    // Run first render
+    updateView();
   }
 
   function setupDeletion() {
@@ -169,11 +363,17 @@ const posts = postsData || [];
     });
   }
 
-  // Inicializar en la carga inicial y después de cada navegación SPA de Astro
-  document.addEventListener('astro:page-load', () => {
+  function init() {
     if (document.querySelector('.filter-btn')) {
-      setupFiltering();
+      setupFilteringAndPagination();
       setupDeletion();
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
 </script>

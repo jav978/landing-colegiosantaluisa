@@ -36,60 +36,60 @@ const categoryLabels: Record<string, string> = {
 >
   <div class="mb-6 flex flex-wrap gap-4 items-center justify-between">
     <div class="flex flex-wrap gap-1.5">
-      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary cursor-pointer" data-filter="">Todos</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="coordinacion">Coordinación</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="inicial">Inicial</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="primaria">Primaria</button>
-      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer" data-filter="media">Media General</button>
+      <button class="filter-btn active rounded-lg border px-3 py-1.5 text-xs font-medium transition bg-primary text-white border-primary cursor-pointer dark:bg-primary dark:text-white dark:border-primary" data-filter="">Todos</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="coordinacion">Coordinación</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="inicial">Inicial</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="primaria">Primaria</button>
+      <button class="filter-btn rounded-lg border px-3 py-1.5 text-xs font-medium transition text-gray-600 border-gray-200 cursor-pointer dark:text-gray-400 dark:border-gray-800 dark:hover:bg-gray-800" data-filter="media">Media General</button>
     </div>
-    <a href="/admin/docentes/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90">
+    <a href="/admin/docentes/new" data-astro-prefetch class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary-light">
       + Nuevo Docente
     </a>
   </div>
 
-  <div class="rounded-xl border bg-white shadow-sm">
+  <div class="rounded-xl border bg-white shadow-sm dark:bg-gray-900 dark:border-gray-800">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead>
-          <tr class="border-b bg-gray-50">
-            <th class="px-5 py-3 font-semibold text-gray-600">Nombre</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Cargo / Rol</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Categoría</th>
-            <th class="px-5 py-3 font-semibold text-gray-600 max-md:hidden">Cátedra / Grado</th>
-            <th class="px-5 py-3 font-semibold text-gray-600 text-center max-md:hidden">Orden</th>
-            <th class="px-5 py-3 font-semibold text-gray-600">Acción</th>
+          <tr class="border-b bg-gray-50 dark:bg-gray-800/50 dark:border-gray-800">
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Nombre</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Cargo / Rol</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Categoría</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 max-md:hidden">Cátedra / Grado</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300 text-center max-md:hidden">Orden</th>
+            <th class="px-5 py-3 font-semibold text-gray-600 dark:text-gray-300">Acción</th>
           </tr>
         </thead>
         <tbody id="docentes-table-body">
           {docentes.length === 0 ? (
-            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No hay docentes registrados en la base de datos</td></tr>
+            <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400 dark:text-gray-500">No hay docentes registrados en la base de datos</td></tr>
           ) : (
             docentes.map((d) => {
               const categoryName = categoryLabels[d.category] || d.category;
               return (
-                <tr class="border-b last:border-0 hover:bg-gray-50 transition duration-150" data-category={d.category} data-row>
-                  <td class="px-5 py-4 font-medium text-gray-900 flex items-center gap-3">
+                <tr class="border-b last:border-0 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 transition duration-150" data-category={d.category} data-row>
+                  <td class="px-5 py-4 font-medium text-gray-900 dark:text-white flex items-center gap-3">
                     {d.image_url ? (
-                      <img src={d.image_url} alt={d.name} class="h-9 w-9 rounded-full object-cover border" />
+                      <img src={d.image_url} alt={d.name} class="h-9 w-9 rounded-full object-cover border dark:border-gray-700" />
                     ) : (
-                      <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold text-xs">
+                      <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-bold text-xs">
                         {d.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <span>{d.name}</span>
                   </td>
-                  <td class="px-5 py-4 text-gray-700">{d.role}</td>
+                  <td class="px-5 py-4 text-gray-700 dark:text-gray-300">{d.role}</td>
                   <td class="px-5 py-4">
-                    <span class="rounded-full bg-slate-100 text-slate-700 px-2.5 py-0.5 text-xs font-medium border border-slate-200/50">{categoryName}</span>
+                    <span class="rounded-full bg-slate-100 text-slate-700 px-2.5 py-0.5 text-xs font-medium border border-slate-200/50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">{categoryName}</span>
                   </td>
-                  <td class="px-5 py-4 text-gray-500 max-md:hidden">{d.grade}</td>
-                  <td class="px-5 py-4 text-gray-600 text-center max-md:hidden font-mono">{d.orden}</td>
+                  <td class="px-5 py-4 text-gray-500 dark:text-gray-400 max-md:hidden">{d.grade}</td>
+                  <td class="px-5 py-4 text-gray-600 dark:text-gray-300 text-center max-md:hidden font-mono">{d.orden}</td>
                   <td class="px-5 py-4">
                     <div class="flex items-center gap-2">
                       <a
                         href={`/admin/docentes/${d.id}/edit`}
                         data-astro-prefetch
-                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-700 border border-slate-200 transition hover:bg-slate-100 hover:text-slate-900"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-700 border border-slate-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 transition hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-gray-700 dark:hover:text-white"
                         title="Editar"
                       >
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -97,7 +97,7 @@ const categoryLabels: Record<string, string> = {
                         </svg>
                       </a>
                       <button 
-                        class="delete-btn inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-700 border border-rose-100 transition hover:bg-rose-100 hover:text-rose-900 cursor-pointer"
+                        class="delete-btn inline-flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-700 border border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/30 transition hover:bg-rose-100 hover:text-rose-900 dark:hover:bg-rose-900/40 dark:hover:text-rose-300 cursor-pointer"
                         data-id={d.id}
                         data-name={d.name}
                         title="Eliminar"
@@ -136,6 +136,12 @@ const categoryLabels: Record<string, string> = {
           b.classList.toggle('border-primary', isTarget);
           b.classList.toggle('text-gray-600', !isTarget);
           b.classList.toggle('border-gray-200', !isTarget);
+          // Dark classes
+          b.classList.toggle('dark:bg-primary', isTarget);
+          b.classList.toggle('dark:text-white', isTarget);
+          b.classList.toggle('dark:border-primary', isTarget);
+          b.classList.toggle('dark:text-gray-400', !isTarget);
+          b.classList.toggle('dark:border-gray-800', !isTarget);
         });
 
         // Hide/Show rows depending on the category match
@@ -179,10 +185,17 @@ const categoryLabels: Record<string, string> = {
     });
   }
 
-  document.addEventListener('astro:page-load', () => {
+  function init() {
     if (document.querySelector('.filter-btn')) {
       setupFiltering();
       setupDeletion();
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('astro:page-load', init);
 </script>
