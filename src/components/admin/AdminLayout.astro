@@ -22,6 +22,7 @@ const { title, userNombre, userEmail, userRol, currentPath } = Astro.props;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>{title} — Admin Santa Luisa</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script is:inline>
       (() => {
         const theme = localStorage.getItem('theme') || 
@@ -31,6 +32,54 @@ const { title, userNombre, userEmail, userRol, currentPath } = Astro.props;
         } else {
           document.documentElement.classList.remove('dark');
         }
+
+        // Global SweetAlert2 toast helper
+        window.showToast = (title, icon = 'success') => {
+          const isDark = document.documentElement.classList.contains('dark');
+          Swal.fire({
+            title,
+            icon,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: isDark ? '#0f172a' : '#ffffff',
+            color: isDark ? '#f1f5f9' : '#0f172a',
+          });
+        };
+
+        // Global SweetAlert2 confirmation dialog helper
+        window.showConfirm = async (title, text, confirmButtonText = 'Confirmar') => {
+          const isDark = document.documentElement.classList.contains('dark');
+          const result = await Swal.fire({
+            title,
+            text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#4f46e5',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText,
+            cancelButtonText: 'Cancelar',
+            background: isDark ? '#0f172a' : '#ffffff',
+            color: isDark ? '#f1f5f9' : '#0f172a',
+          });
+          return result.isConfirmed;
+        };
+
+        // Auto-show toast from sessionStorage after transitions/navigation
+        document.addEventListener('astro:page-load', () => {
+          try {
+            const flash = sessionStorage.getItem('flash_message');
+            if (flash) {
+              const { title, icon } = JSON.parse(flash);
+              window.showToast(title, icon);
+              sessionStorage.removeItem('flash_message');
+            }
+          } catch (e) {
+            console.error('Error parsing flash message:', e);
+          }
+        });
       })();
     </script>
   </head>

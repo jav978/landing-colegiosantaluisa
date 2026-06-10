@@ -10,6 +10,10 @@ if (!session) {
   return Astro.redirect('/admin/login');
 }
 
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
 // Fetch all teachers ordered by order weight and created date
 const { data: dbDocentes } = await supabase
   .from('docentes')

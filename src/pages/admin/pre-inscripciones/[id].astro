@@ -10,6 +10,10 @@ if (!session) {
   return Astro.redirect('/admin/login');
 }
 
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
 const id = Number(Astro.params.id);
 if (isNaN(id)) {
   return Astro.redirect('/admin/pre-inscripciones');
@@ -80,37 +84,37 @@ function calculateAge(birthDateStr: string) {
   currentPath={Astro.url.pathname}
 >
   <div class="mb-6">
-    <a href="/admin/pre-inscripciones" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
+    <a href="/admin/pre-inscripciones" class="text-sm font-semibold text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline flex items-center gap-1">
       ← Volver al listado de pre-inscripciones
     </a>
   </div>
 
   {queryError ? (
-    <div class="rounded-xl border bg-white p-6 shadow-sm text-center text-rose-600">
+    <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm text-center text-rose-600 dark:bg-slate-900 dark:border-slate-800 dark:text-rose-455">
       <p class="font-semibold">Error al cargar el detalle de la pre-inscripción</p>
-      <p class="text-xs mt-1 text-gray-500">{queryError.message}</p>
+      <p class="text-xs mt-1 text-gray-500 dark:text-slate-400">{queryError.message}</p>
     </div>
   ) : preRegistration && (
     <div class="grid gap-6 lg:grid-cols-3">
       <!-- Details Columns -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Student & Parent Information -->
-        <div class="rounded-xl border bg-white shadow-sm overflow-hidden">
-          <div class="border-b bg-gray-50 px-6 py-4 flex items-center justify-between">
+        <div class="rounded-xl border border-gray-150 bg-white shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <div class="border-b border-gray-150 bg-gray-50 px-6 py-4 flex items-center justify-between dark:bg-slate-800/40 dark:border-slate-800">
             <div>
-              <h2 class="text-md font-bold text-gray-900">Ficha del Estudiante</h2>
-              <p class="text-xs text-gray-500">Recibida el {formatDate(preRegistration.created_at)}</p>
+              <h2 class="text-md font-bold text-gray-900 dark:text-white">Ficha del Estudiante</h2>
+              <p class="text-xs text-gray-500 dark:text-slate-400">Recibida el {formatDate(preRegistration.created_at)}</p>
             </div>
             <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
               preRegistration.status === 'pending'
-                ? 'bg-amber-50 text-amber-700 border border-amber-100'
+                ? 'bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-950/30 dark:text-amber-350 dark:border-amber-900/30'
                 : preRegistration.status === 'contacted'
-                ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                ? 'bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-900/30'
                 : preRegistration.status === 'scheduled_interview'
-                ? 'bg-purple-50 text-purple-700 border border-purple-100'
+                ? 'bg-purple-50 text-purple-700 border border-purple-100 dark:bg-purple-950/30 dark:text-purple-350 dark:border-purple-900/30'
                 : preRegistration.status === 'accepted'
-                ? 'bg-green-50 text-green-700 border border-green-100'
-                : 'bg-rose-50 text-rose-700 border border-rose-100'
+                ? 'bg-green-50 text-green-700 border border-green-100 dark:bg-green-950/30 dark:text-green-300 dark:border-green-900/30'
+                : 'bg-rose-50 text-rose-700 border border-rose-100 dark:bg-rose-950/30 dark:text-rose-355 dark:border-rose-900/30'
             }`}>
               {preRegistration.status === 'pending' 
                 ? 'Pendiente' 
@@ -127,44 +131,44 @@ function calculateAge(birthDateStr: string) {
           <div class="p-6 space-y-6">
             <!-- Student Details Grid -->
             <div>
-              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Datos Académicos y Personales</h3>
+              <h3 class="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">Datos Académicos y Personales</h3>
               <div class="grid gap-4 sm:grid-cols-3 text-sm">
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Nombre completo</p>
-                  <p class="mt-1 font-semibold text-gray-800">{preRegistration.student_name}</p>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Nombre completo</p>
+                  <p class="mt-1 font-semibold text-gray-800 dark:text-slate-200">{preRegistration.student_name}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Grado solicitado</p>
-                  <p class="mt-1 font-semibold text-primary">{preRegistration.grade_requested}</p>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Grado solicitado</p>
+                  <p class="mt-1 font-semibold text-primary dark:text-indigo-400">{preRegistration.grade_requested}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Fecha de nacimiento / Edad</p>
-                  <p class="mt-1 font-semibold text-gray-800">
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Fecha de nacimiento / Edad</p>
+                  <p class="mt-1 font-semibold text-gray-800 dark:text-slate-200">
                     {formatBirthDate(preRegistration.student_birth_date)} 
-                    <span class="text-xs font-normal text-gray-500">({calculateAge(preRegistration.student_birth_date)})</span>
+                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400">({calculateAge(preRegistration.student_birth_date)})</span>
                   </p>
                 </div>
               </div>
             </div>
 
             <!-- Parent Details Grid -->
-            <div class="pt-6 border-t">
-              <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Datos del Representante</h3>
+            <div class="pt-6 border-t border-gray-150 dark:border-slate-800">
+              <h3 class="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-3">Datos del Representante</h3>
               <div class="grid gap-4 sm:grid-cols-3 text-sm">
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Nombre completo</p>
-                  <p class="mt-1 font-semibold text-gray-800">{preRegistration.parent_name}</p>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Nombre completo</p>
+                  <p class="mt-1 font-semibold text-gray-800 dark:text-slate-200">{preRegistration.parent_name}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Correo electrónico</p>
-                  <p class="mt-1 font-semibold text-gray-800">
-                    <a href={`mailto:${preRegistration.parent_email}`} class="text-primary hover:underline">{preRegistration.parent_email}</a>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Correo electrónico</p>
+                  <p class="mt-1 font-semibold text-gray-800 dark:text-slate-200">
+                    <a href={`mailto:${preRegistration.parent_email}`} class="text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline">{preRegistration.parent_email}</a>
                   </p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-400 font-medium uppercase">Teléfono de contacto</p>
-                  <p class="mt-1 font-semibold text-gray-800">
-                    <a href={`tel:${preRegistration.parent_phone}`} class="text-primary hover:underline">{preRegistration.parent_phone}</a>
+                  <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Teléfono de contacto</p>
+                  <p class="mt-1 font-semibold text-gray-800 dark:text-slate-200">
+                    <a href={`tel:${preRegistration.parent_phone}`} class="text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline">{preRegistration.parent_phone}</a>
                   </p>
                 </div>
               </div>
@@ -172,9 +176,9 @@ function calculateAge(birthDateStr: string) {
 
             <!-- Pre-registration comments -->
             {preRegistration.notes && (
-              <div class="pt-6 border-t">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Comentarios del Representante</h3>
-                <p class="text-sm text-gray-700 bg-stone-50 p-4 rounded-xl border border-dashed whitespace-pre-wrap">
+              <div class="pt-6 border-t border-gray-150 dark:border-slate-800">
+                <h3 class="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Comentarios del Representante</h3>
+                <p class="text-sm text-gray-700 bg-stone-50 p-4 rounded-xl border border-dashed border-gray-200 dark:bg-slate-950 dark:text-slate-300 dark:border-slate-800 whitespace-pre-wrap">
                   "{preRegistration.notes}"
                 </p>
               </div>
@@ -185,16 +189,16 @@ function calculateAge(birthDateStr: string) {
 
       <!-- CRM Tracking Form -->
       <div>
-        <div class="rounded-xl border bg-white p-6 shadow-sm">
-          <h3 class="mb-4 text-sm font-bold text-gray-900 uppercase tracking-wider">Control de Admisión</h3>
+        <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          <h3 class="mb-4 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Control de Admisión</h3>
           
           <form id="crm-prereg-form" class="space-y-4">
             <div>
-              <label for="status" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Estado de Admisión</label>
+              <label for="status" class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Estado de Admisión</label>
               <select
                 id="status"
                 name="status"
-                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
               >
                 <option value="pending" selected={preRegistration.status === 'pending'}>Pendiente por revisar</option>
                 <option value="contacted" selected={preRegistration.status === 'contacted'}>Representante contactado</option>
@@ -205,12 +209,12 @@ function calculateAge(birthDateStr: string) {
             </div>
 
             <div>
-              <label for="notes" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Notas Administrativas</label>
+              <label for="notes" class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Notas Administrativas</label>
               <textarea
                 id="notes"
                 name="notes"
                 rows="6"
-                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
                 placeholder="Escribe comentarios internos sobre el seguimiento (ej. 'Agendada cita para el 15/06', 'Falta partida de nacimiento')"
               >{preRegistration.notes || ''}</textarea>
             </div>
@@ -220,7 +224,7 @@ function calculateAge(birthDateStr: string) {
             <button
               type="submit"
               id="save-btn"
-              class="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-white shadow transition hover:bg-primary-light"
+              class="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-white shadow transition hover:bg-primary-light cursor-pointer"
             >
               Guardar Cambios
             </button>
@@ -264,7 +268,7 @@ function calculateAge(birthDateStr: string) {
         const data = await res.json();
         if (res.ok && data.success) {
           alertBox.classList.remove('hidden');
-          alertBox.classList.add('bg-green-50', 'text-green-800');
+          alertBox.classList.add('bg-green-50', 'text-green-800', 'dark:bg-green-950/30', 'dark:text-green-300');
           alertBox.textContent = '¡Ficha de admisión actualizada!';
           
           setTimeout(() => {
@@ -276,7 +280,7 @@ function calculateAge(birthDateStr: string) {
       } catch (err: any) {
         console.error('CRM save error:', err);
         alertBox.classList.remove('hidden');
-        alertBox.classList.add('bg-red-50', 'text-red-800');
+        alertBox.classList.add('bg-red-50', 'text-red-800', 'dark:bg-red-950/30', 'dark:text-red-300');
         alertBox.textContent = err.message || 'Error al guardar. Inténtalo de nuevo.';
       } finally {
         saveBtn.disabled = false;

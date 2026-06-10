@@ -8,6 +8,10 @@ const session = token ? await validateSession(token) : null;
 if (!session) {
   return Astro.redirect('/admin/login');
 }
+
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
 ---
 
 <AdminLayout
@@ -18,43 +22,43 @@ if (!session) {
   currentPath="/admin/galeria"
 >
   <div class="mx-auto max-w-3xl">
-    <div class="rounded-xl border bg-white p-6 shadow-sm">
-      <h2 class="text-lg font-bold text-gray-900 mb-6">Crear Nuevo Álbum de Fotos</h2>
+    <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+      <h2 class="text-lg font-bold text-gray-900 mb-6 dark:text-white">Crear Nuevo Álbum de Fotos</h2>
 
       <form id="gallery-form" class="space-y-6">
         <div>
-          <label for="title" class="mb-1.5 block text-sm font-semibold text-gray-700">Título del Álbum / Evento <span class="text-red-500">*</span></label>
+          <label for="title" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Título del Álbum / Evento <span class="text-red-500">*</span></label>
           <input
             type="text"
             id="title"
             name="title"
             required
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
             placeholder="Ej: Celebración del Día del Padre 2026"
           />
         </div>
 
         <div>
-          <label for="description" class="mb-1.5 block text-sm font-semibold text-gray-700">Reseña o Descripción del Evento (Opcional)</label>
+          <label for="description" class="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-slate-300">Reseña o Descripción del Evento (Opcional)</label>
           <textarea
             id="description"
             name="description"
             rows="3"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
             placeholder="Escribe una pequeña descripción para contextualizar las fotos del evento..."
           ></textarea>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-semibold text-gray-700">Cargar Fotos (Máx. 10 fotos) <span class="text-red-500">*</span></label>
-          <p class="text-xs text-gray-400 mb-3">Las fotos se optimizarán automáticamente. El tamaño máximo recomendado es de 1MB por archivo.</p>
+          <label class="mb-2 block text-sm font-semibold text-gray-700 dark:text-slate-300">Cargar Fotos (Máx. 10 fotos) <span class="text-red-500">*</span></label>
+          <p class="text-xs text-gray-400 dark:text-slate-400 mb-3">Las fotos se optimizarán automáticamente. El tamaño máximo recomendado es de 1MB por archivo.</p>
           
           <div class="flex items-center justify-center w-full">
-            <label for="image_files" class="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300">
+            <label for="image_files" class="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300 dark:bg-slate-955 dark:bg-slate-950 dark:border-slate-800 dark:hover:bg-slate-900/40">
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
                 <span class="text-3xl mb-2">📸</span>
-                <p class="mb-1 text-sm text-gray-500 font-medium">Haz clic para buscar fotos o arrástralas aquí</p>
-                <p class="text-xs text-gray-400">Puedes seleccionar varias fotos a la vez (Formatos: JPG, PNG, WEBP)</p>
+                <p class="mb-1 text-sm text-gray-500 dark:text-slate-400 font-medium">Haz clic para buscar fotos o arrástralas aquí</p>
+                <p class="text-xs text-gray-400 dark:text-slate-550">Puedes seleccionar varias fotos a la vez (Formatos: JPG, PNG, WEBP)</p>
               </div>
               <input type="file" id="image_files" accept="image/*" multiple class="hidden" />
             </label>
@@ -62,20 +66,20 @@ if (!session) {
 
           <!-- Previews grid -->
           <div id="previews-container" class="hidden mt-6">
-            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Vista Previa de Fotos (<span id="photo-count">0</span>/10)</h4>
+            <h4 class="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider mb-3">Vista Previa de Fotos (<span id="photo-count">0</span>/10)</h4>
             <div id="previews-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
               <!-- Rendered dynamically by script -->
             </div>
           </div>
         </div>
 
-        <div id="alert-msg" class="hidden rounded-lg px-4 py-3 text-sm font-medium"></div>
+        <div id="alert-msg" class="hidden rounded-lg px-4 py-3 text-sm font-medium dark:bg-slate-950"></div>
 
-        <div class="flex gap-3 pt-4 border-t border-gray-100">
+        <div class="flex gap-3 pt-4 border-t border-gray-100 dark:border-slate-800">
           <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
             Guardar Álbum
           </button>
-          <a href="/admin/galeria" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+          <a href="/admin/galeria" class="rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700/80">
             Cancelar
           </a>
         </div>
@@ -163,7 +167,7 @@ if (!session) {
 
       loadedImages.forEach((src, index) => {
         const container = document.createElement('div');
-        container.className = 'relative group h-24 rounded-xl overflow-hidden border shadow-sm';
+        container.className = 'relative group h-24 rounded-xl overflow-hidden border border-gray-150 dark:border-slate-800 shadow-sm';
 
         const img = document.createElement('img');
         img.src = src;
@@ -193,12 +197,12 @@ if (!session) {
       const filesToProcess = files.slice(0, remainingSlots);
 
       if (files.length > remainingSlots) {
-        alert(`Límite excedido. Solo puedes agregar hasta 10 fotos. Se procesaron las primeras ${remainingSlots} fotos seleccionadas.`);
+        (window as any).showToast(`Límite excedido. Solo puedes agregar hasta 10 fotos. Se procesaron las primeras ${remainingSlots}.`, 'warning');
       }
 
       for (const file of filesToProcess) {
         if (file.size > 2 * 1024 * 1024) {
-          alert(`El archivo "${file.name}" supera los 2MB. Por favor selecciona fotos más livianas.`);
+          (window as any).showToast(`El archivo "${file.name}" supera los 2MB. Selecciona fotos más livianas.`, 'warning');
           continue;
         }
 
@@ -228,7 +232,7 @@ if (!session) {
 
       if (loadedImages.length === 0) {
         alertMsg.classList.remove('hidden');
-        alertMsg.classList.add('bg-red-50', 'text-red-800');
+        alertMsg.classList.add('bg-red-50', 'text-red-800', 'dark:bg-rose-950/30', 'dark:text-rose-400');
         alertMsg.textContent = 'Debe cargar al menos una foto para crear el álbum de la galería.';
         return;
       }
@@ -254,13 +258,10 @@ if (!session) {
 
         alertMsg.classList.remove('hidden');
         if (res.ok && data.success) {
-          alertMsg.classList.add('bg-green-50', 'text-green-800');
-          alertMsg.textContent = 'Registro realizado con éxito. Redirigiendo...';
-          setTimeout(() => {
-            navigate('/admin/galeria');
-          }, 1500);
+          sessionStorage.setItem('flash_message', JSON.stringify({ title: 'Álbum de galería creado con éxito', icon: 'success' }));
+          navigate('/admin/galeria');
         } else {
-          alertMsg.classList.add('bg-red-50', 'text-red-800');
+          alertMsg.classList.add('bg-red-50', 'text-red-800', 'dark:bg-rose-950/30', 'dark:text-rose-400');
           alertMsg.textContent = data.error || 'Ocurrió un error al guardar el álbum.';
           submitBtn.disabled = false;
           submitBtn.textContent = 'Guardar Álbum';
@@ -268,7 +269,7 @@ if (!session) {
       } catch (err) {
         console.error(err);
         alertMsg.classList.remove('hidden');
-        alertMsg.classList.add('bg-red-50', 'text-red-800');
+        alertMsg.classList.add('bg-red-50', 'text-red-800', 'dark:bg-rose-950/30', 'dark:text-rose-400');
         alertMsg.textContent = 'Error de conexión con el servidor.';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Guardar Álbum';

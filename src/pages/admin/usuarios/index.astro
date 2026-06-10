@@ -110,15 +110,22 @@ const users = usersData || [];
   import { navigate } from 'astro:transitions/client';
 
   async function eliminarUser(id: number, nombre: string) {
-    if (!confirm(`¿Eliminar a "${nombre}"? Esta acción no se puede deshacer.`)) return;
+    const confirmed = await (window as any).showConfirm(
+      '¿Eliminar usuario?',
+      `¿Deseas eliminar a "${nombre}"? Esta acción no se puede deshacer.`,
+      'Eliminar'
+    );
+    if (!confirmed) return;
 
     const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
     if (res.ok) {
-      // Recargar la página reactivamente para obtener la lista actualizada del servidor
-      navigate(window.location.pathname);
+      (window as any).showToast('Usuario eliminado con éxito');
+      setTimeout(() => {
+        navigate(window.location.pathname);
+      }, 1000);
     } else {
       const data = await res.json();
-      alert(data.error || 'Error al eliminar usuario');
+      (window as any).showToast(data.error || 'Error al eliminar usuario', 'error');
     }
   }
 

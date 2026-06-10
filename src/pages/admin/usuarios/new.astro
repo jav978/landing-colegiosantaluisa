@@ -22,47 +22,47 @@ if (session.rol !== 'admin') {
   currentPath={Astro.url.pathname}
 >
   <div class="mx-auto max-w-lg">
-    <div class="rounded-xl border bg-white p-6 shadow-sm">
+    <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
       <form id="user-form" class="space-y-5">
         <div>
-          <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700">Nombre completo</label>
+          <label for="nombre" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Nombre completo</label>
           <input type="text" id="nombre" name="nombre" required
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
             placeholder="Nombre del usuario" />
         </div>
 
         <div>
-          <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Correo electrónico</label>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Correo electrónico</label>
           <input type="email" id="email" name="email" required
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
             placeholder="usuario@colegio.com" />
         </div>
 
         <div>
-          <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Contraseña</label>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Contraseña</label>
           <input type="password" id="password" name="password" required minlength="6"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
             placeholder="Mínimo 6 caracteres" />
         </div>
 
         <div>
-          <label for="rol" class="mb-1.5 block text-sm font-medium text-gray-700">Rol</label>
+          <label for="rol" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Rol</label>
           <select id="rol" name="rol"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20">
             <option value="editor">Editor</option>
             <option value="admin">Admin</option>
           </select>
         </div>
 
-        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-rose-950/30 dark:text-rose-400"></div>
 
         <div class="flex gap-3">
           <button type="submit" id="submit-btn"
-            class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
+            class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
             Crear usuario
           </button>
           <a href="/admin/usuarios"
-            class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+            class="rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700/80">
             Cancelar
           </a>
         </div>

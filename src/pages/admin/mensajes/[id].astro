@@ -10,6 +10,10 @@ if (!session) {
   return Astro.redirect('/admin/login');
 }
 
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
 const id = Number(Astro.params.id);
 if (isNaN(id)) {
   return Astro.redirect('/admin/mensajes');
@@ -67,33 +71,33 @@ function formatDate(dateStr: string) {
   currentPath={Astro.url.pathname}
 >
   <div class="mb-6">
-    <a href="/admin/mensajes" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
+    <a href="/admin/mensajes" class="text-sm font-semibold text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline flex items-center gap-1">
       ← Volver al listado de mensajes
     </a>
   </div>
 
   {queryError ? (
-    <div class="rounded-xl border bg-white p-6 shadow-sm text-center text-rose-600">
+    <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm text-center text-rose-600 dark:bg-slate-900 dark:border-slate-800 dark:text-rose-455">
       <p class="font-semibold">Error al cargar el detalle del mensaje</p>
-      <p class="text-xs mt-1 text-gray-500">{queryError.message}</p>
+      <p class="text-xs mt-1 text-gray-500 dark:text-slate-400">{queryError.message}</p>
     </div>
   ) : message && (
     <div class="grid gap-6 lg:grid-cols-3">
       <!-- Message Card and Info -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Main Message Card -->
-        <div class="rounded-xl border bg-white shadow-sm overflow-hidden">
-          <div class="border-b bg-gray-50 px-6 py-4 flex items-center justify-between">
+        <div class="rounded-xl border border-gray-150 bg-white shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <div class="border-b border-gray-150 bg-gray-50 px-6 py-4 flex items-center justify-between dark:bg-slate-800/40 dark:border-slate-800">
             <div>
-              <h2 class="text-md font-bold text-gray-900">Contenido del Mensaje</h2>
-              <p class="text-xs text-gray-500">Recibido el {formatDate(message.created_at)}</p>
+              <h2 class="text-md font-bold text-gray-900 dark:text-white">Contenido del Mensaje</h2>
+              <p class="text-xs text-gray-500 dark:text-slate-400">Recibido el {formatDate(message.created_at)}</p>
             </div>
             <span class={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
               message.status === 'unread' 
-                ? 'bg-rose-50 text-rose-700 border border-rose-100'
+                ? 'bg-rose-50 text-rose-700 border border-rose-100 dark:bg-rose-950/30 dark:text-rose-350 dark:border-rose-900/30'
                 : message.status === 'in_progress'
-                ? 'bg-amber-50 text-amber-700 border border-amber-100'
-                : 'bg-green-50 text-green-700 border border-green-100'
+                ? 'bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-950/30 dark:text-amber-350 dark:border-amber-900/30'
+                : 'bg-green-50 text-green-700 border border-green-100 dark:bg-green-950/30 dark:text-green-350 dark:border-green-900/30'
             }`}>
               {message.status === 'unread' ? 'Sin leer' : message.status === 'in_progress' ? 'En proceso' : message.status === 'read' ? 'Leído' : 'Resuelto'}
             </span>
@@ -101,31 +105,31 @@ function formatDate(dateStr: string) {
           
           <div class="p-6">
             <!-- Message Body -->
-            <p class="text-sm leading-relaxed text-gray-800 whitespace-pre-wrap font-serif bg-stone-50 p-6 rounded-xl border border-dashed">
+            <p class="text-sm leading-relaxed text-gray-800 dark:text-slate-200 whitespace-pre-wrap font-serif bg-stone-50 dark:bg-slate-950 p-6 rounded-xl border border-dashed border-gray-200 dark:border-slate-800">
               "{message.message}"
             </p>
           </div>
         </div>
 
         <!-- Contact details -->
-        <div class="rounded-xl border bg-white p-6 shadow-sm">
-          <h3 class="mb-4 text-sm font-bold text-gray-900 uppercase tracking-wider">Datos de Contacto</h3>
+        <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          <h3 class="mb-4 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Datos de Contacto</h3>
           <div class="grid gap-4 sm:grid-cols-3 text-sm">
             <div>
-              <p class="text-xs text-gray-400 font-medium uppercase">Nombre</p>
-              <p class="mt-1 font-semibold text-gray-800">{message.name}</p>
+              <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Nombre</p>
+              <p class="mt-1 font-semibold text-gray-800 dark:text-slate-205">{message.name}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-400 font-medium uppercase">Email</p>
-              <p class="mt-1 font-semibold text-gray-800">
-                <a href={`mailto:${message.email}`} class="text-primary hover:underline">{message.email}</a>
+              <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Email</p>
+              <p class="mt-1 font-semibold text-gray-800 dark:text-slate-205">
+                <a href={`mailto:${message.email}`} class="text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline">{message.email}</a>
               </p>
             </div>
             <div>
-              <p class="text-xs text-gray-400 font-medium uppercase">Teléfono</p>
-              <p class="mt-1 font-semibold text-gray-800">
+              <p class="text-xs text-gray-400 dark:text-slate-500 font-medium uppercase">Teléfono</p>
+              <p class="mt-1 font-semibold text-gray-800 dark:text-slate-205">
                 {message.phone ? (
-                  <a href={`tel:${message.phone}`} class="text-primary hover:underline">{message.phone}</a>
+                  <a href={`tel:${message.phone}`} class="text-primary dark:text-indigo-400 hover:text-primary-light dark:hover:text-indigo-300 hover:underline">{message.phone}</a>
                 ) : '—'}
               </p>
             </div>
@@ -135,16 +139,16 @@ function formatDate(dateStr: string) {
 
       <!-- CRM Tracking & Notes -->
       <div class="space-y-6">
-        <div class="rounded-xl border bg-white p-6 shadow-sm">
-          <h3 class="mb-4 text-sm font-bold text-gray-900 uppercase tracking-wider">Seguimiento CRM</h3>
+        <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
+          <h3 class="mb-4 text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Seguimiento CRM</h3>
           
           <form id="crm-update-form" class="space-y-4">
             <div>
-              <label for="status" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Estado del Mensaje</label>
+              <label for="status" class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Estado del Mensaje</label>
               <select
                 id="status"
                 name="status"
-                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
               >
                 <option value="read" selected={message.status === 'read'}>Leído</option>
                 <option value="in_progress" selected={message.status === 'in_progress'}>En proceso / Contactado</option>
@@ -153,12 +157,12 @@ function formatDate(dateStr: string) {
             </div>
 
             <div>
-              <label for="notes" class="mb-1.5 block text-xs font-semibold text-gray-500 uppercase">Notas de Seguimiento</label>
+              <label for="notes" class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">Notas de Seguimiento</label>
               <textarea
                 id="notes"
                 name="notes"
                 rows="6"
-                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
                 placeholder="Escribe comentarios internos sobre el contacto (ej. 'Llamé el 04/06, están interesados en inscribir a 2 niños.')"
               >{message.notes || ''}</textarea>
             </div>
@@ -168,7 +172,7 @@ function formatDate(dateStr: string) {
             <button
               type="submit"
               id="save-btn"
-              class="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-white shadow transition hover:bg-primary-light"
+              class="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-white shadow transition hover:bg-primary-light cursor-pointer"
             >
               Guardar Cambios
             </button>
@@ -212,7 +216,7 @@ function formatDate(dateStr: string) {
         const data = await res.json();
         if (res.ok && data.success) {
           alertBox.classList.remove('hidden');
-          alertBox.classList.add('bg-green-50', 'text-green-800');
+          alertBox.classList.add('bg-green-50', 'text-green-800', 'dark:bg-green-950/30', 'dark:text-green-300');
           alertBox.textContent = '¡Cambios guardados con éxito!';
           
           // Small reload delay to update page states reactively
@@ -225,7 +229,7 @@ function formatDate(dateStr: string) {
       } catch (err: any) {
         console.error('CRM save error:', err);
         alertBox.classList.remove('hidden');
-        alertBox.classList.add('bg-red-50', 'text-red-800');
+        alertBox.classList.add('bg-red-50', 'text-red-800', 'dark:bg-red-950/30', 'dark:text-red-300');
         alertBox.textContent = err.message || 'Error al guardar. Inténtalo de nuevo.';
       } finally {
         saveBtn.disabled = false;

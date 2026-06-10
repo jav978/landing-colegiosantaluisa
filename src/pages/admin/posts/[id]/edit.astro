@@ -31,47 +31,47 @@ if (!post) {
   currentPath={Astro.url.pathname}
 >
   <div class="mx-auto max-w-3xl">
-    <div class="rounded-xl border bg-white p-6 shadow-sm">
+    <div class="rounded-xl border border-gray-150 bg-white p-6 shadow-sm dark:bg-slate-900 dark:border-slate-800">
       <form id="post-form" data-id={post.id} class="space-y-5">
         <div class="flex gap-4">
           <div class="flex-1">
-            <label for="type" class="mb-1.5 block text-sm font-medium text-gray-700">Tipo</label>
-            <select id="type" name="type" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <label for="type" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Tipo</label>
+            <select id="type" name="type" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20">
               <option value="blog" selected={post.type === 'blog'}>Blog</option>
               <option value="anuncio" selected={post.type === 'anuncio'}>Anuncio</option>
             </select>
           </div>
           <div class="flex-1">
-            <label for="category" class="mb-1.5 block text-sm font-medium text-gray-700">Categoría</label>
-            <input type="text" id="category" name="category" value={post.category || ''} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Ej: Académico, Evento" />
+            <label for="category" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Categoría</label>
+            <input type="text" id="category" name="category" value={post.category || ''} class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20" placeholder="Ej: Académico, Evento" />
           </div>
         </div>
 
         <div>
-          <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700">Título</label>
-          <input type="text" id="title" name="title" required value={post.title} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" />
+          <label for="title" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Título</label>
+          <input type="text" id="title" name="title" required value={post.title} class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20" />
         </div>
 
         <div>
-          <label for="excerpt" class="mb-1.5 block text-sm font-medium text-gray-700">Extracto / Resumen</label>
-          <textarea id="excerpt" name="excerpt" rows="2" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20">{post.excerpt || ''}</textarea>
+          <label for="excerpt" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Extracto / Resumen</label>
+          <textarea id="excerpt" name="excerpt" rows="2" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20">{post.excerpt || ''}</textarea>
         </div>
 
         <div>
-          <label for="content" class="mb-1.5 block text-sm font-medium text-gray-700">Contenido</label>
-          <textarea id="content" name="content" required rows="12" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono">{post.content}</textarea>
+          <label for="content" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-slate-300">Contenido</label>
+          <textarea id="content" name="content" required rows="12" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20">{post.content}</textarea>
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-medium text-gray-700">Imágenes destacadas (Máx. 10) <span class="text-red-500">*</span></label>
-          <p class="text-xs text-gray-400 mb-3">Sube hasta 10 imágenes. Cada archivo debe pesar menos de 1MB.</p>
+          <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">Imágenes destacadas (Máx. 10) <span class="text-red-500">*</span></label>
+          <p class="text-xs text-gray-400 dark:text-slate-400 mb-3">Sube hasta 10 imágenes. Cada archivo debe pesar menos de 1MB.</p>
           
           <!-- Botones de pestaña / Toggle de opciones -->
-          <div class="mb-4 flex rounded-xl bg-gray-100 p-1 border border-gray-200/80">
-            <button type="button" id="tab-upload" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 bg-white text-gray-800 shadow-sm border border-gray-100">
+          <div class="mb-4 flex rounded-xl bg-gray-100 p-1 border border-gray-200/80 dark:bg-slate-955 dark:bg-slate-950 dark:border-slate-800">
+            <button type="button" id="tab-upload" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 bg-white text-gray-800 shadow-sm border border-gray-100 dark:bg-slate-800 dark:text-white dark:border-slate-700">
               Subir Archivos
             </button>
-            <button type="button" id="tab-url" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 text-gray-500 hover:text-gray-800">
+            <button type="button" id="tab-url" class="flex-1 rounded-lg py-2 text-center text-xs font-semibold transition duration-200 text-gray-500 hover:text-gray-800 dark:text-slate-400 dark:hover:text-white">
               Agregar Direcciones URL
             </button>
           </div>
@@ -79,11 +79,11 @@ if (!post) {
           <!-- Opción 1: Carga Manual -->
           <div id="upload-container" class="space-y-3">
             <div class="flex items-center justify-center w-full">
-              <label for="image_file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300">
+              <label for="image_file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-primary/50 transition duration-300 dark:bg-slate-955 dark:bg-slate-950 dark:border-slate-800 dark:hover:bg-slate-900/40">
                 <div class="flex flex-col items-center justify-center pt-4 pb-4">
                   <span class="text-2xl mb-1.5">📸</span>
-                  <p class="mb-1 text-sm text-gray-500 font-medium">Haz clic para buscar imágenes</p>
-                  <p class="text-xs text-gray-400">Puedes seleccionar varios archivos (máx. 10)</p>
+                  <p class="mb-1 text-sm text-gray-500 dark:text-slate-400 font-medium">Haz clic para buscar imágenes</p>
+                  <p class="text-xs text-gray-400 dark:text-slate-550">Puedes seleccionar varios archivos (máx. 10)</p>
                 </div>
                 <input type="file" id="image_file" accept="image/*" multiple class="hidden" />
               </label>
@@ -93,8 +93,8 @@ if (!post) {
           <!-- Opción 2: URL de Imagen -->
           <div id="url-container" class="hidden space-y-2">
             <div class="flex gap-2">
-              <input type="url" id="image_url_input" class="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="https://ejemplo.com/imagen.jpg" />
-              <button type="button" id="add-url-btn" class="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition">
+              <input type="url" id="image_url_input" class="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20" placeholder="https://ejemplo.com/imagen.jpg" />
+              <button type="button" id="add-url-btn" class="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800 transition dark:bg-slate-800 dark:hover:bg-slate-700">
                 Añadir
               </button>
             </div>
@@ -105,7 +105,7 @@ if (!post) {
 
           <!-- Vista previa de las imágenes en cuadrícula -->
           <div id="image-preview-container" class="hidden mt-4">
-            <p class="text-xs font-semibold text-gray-500 mb-2">Imágenes seleccionadas (<span id="image-count">0</span>/10):</p>
+            <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">Imágenes seleccionadas (<span id="image-count">0</span>/10):</p>
             <div id="image-preview-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               <!-- Los elementos se agregarán dinámicamente aquí -->
             </div>
@@ -113,20 +113,20 @@ if (!post) {
         </div>
 
         <div class="flex items-center gap-2">
-          <input type="checkbox" id="published" name="published" value="true" checked={post.published} class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
-          <label for="published" class="text-sm text-gray-700">Publicado</label>
+          <input type="checkbox" id="published" name="published" value="true" checked={post.published} class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700" />
+          <label for="published" class="text-sm text-gray-700 dark:text-slate-300">Publicado</label>
         </div>
 
-        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+        <div id="error-msg" class="hidden rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-rose-950/30 dark:text-rose-400"></div>
 
         <div class="flex items-center gap-3">
-          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
+          <button type="submit" id="submit-btn" class="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 cursor-pointer">
             Guardar cambios
           </button>
-          <a href="/admin/posts" class="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+          <a href="/admin/posts" class="rounded-lg border border-gray-200 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700/80">
             Cancelar
           </a>
-          <button type="button" id="delete-btn" class="ml-auto rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100">
+          <button type="button" id="delete-btn" class="ml-auto rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-900/40 cursor-pointer">
             Eliminar
           </button>
         </div>
@@ -248,7 +248,7 @@ if (!post) {
 
       imagesList.forEach((src, idx) => {
         const wrapper = document.createElement('div');
-        wrapper.className = 'relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50 p-1';
+        wrapper.className = 'relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50 p-1 dark:border-slate-800 dark:bg-slate-950';
 
         const img = document.createElement('img');
         img.src = src;
@@ -299,13 +299,13 @@ if (!post) {
         const file = files[i];
         
         if (imagesList.length >= 10) {
-          alert('Has alcanzado el límite máximo de 10 imágenes.');
+          (window as any).showToast('Has alcanzado el límite máximo de 10 imágenes.', 'warning');
           break;
         }
 
         // Validación de tamaño (menos de 1MB)
         if (file.size >= 1024 * 1024) {
-          alert(`El archivo "${file.name}" supera el límite de 1MB. Por favor selecciona una imagen de menor tamaño.`);
+          (window as any).showToast(`El archivo "${file.name}" supera el límite de 1MB. Selecciona una imagen de menor tamaño.`, 'warning');
           continue;
         }
 
@@ -335,7 +335,7 @@ if (!post) {
       if (!url) return;
 
       if (imagesList.length >= 10) {
-        alert('Has alcanzado el límite máximo de 10 imágenes.');
+        (window as any).showToast('Has alcanzado el límite máximo de 10 imágenes.', 'warning');
         return;
       }
 
@@ -382,6 +382,7 @@ if (!post) {
       const data = await res.json();
 
       if (res.ok) {
+        sessionStorage.setItem('flash_message', JSON.stringify({ title: 'Post actualizado con éxito', icon: 'success' }));
         navigate('/admin/posts');
       } else {
         errorMsg.textContent = data.error || 'Error al guardar';
@@ -391,21 +392,26 @@ if (!post) {
       }
     });
 
-    const deleteBtn = document.getElementById('delete-btn');
     if (deleteBtn) {
       const newDeleteBtn = deleteBtn.cloneNode(true);
       deleteBtn.parentNode?.replaceChild(newDeleteBtn, deleteBtn);
 
       newDeleteBtn.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar este post definitivamente?')) return;
+        const confirmed = await (window as any).showConfirm(
+          '¿Eliminar post?',
+          '¿Eliminar este post definitivamente?',
+          'Eliminar'
+        );
+        if (!confirmed) return;
 
         const postId = form.dataset.id;
         const res = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
 
         if (res.ok) {
+          sessionStorage.setItem('flash_message', JSON.stringify({ title: 'Post eliminado con éxito', icon: 'success' }));
           navigate('/admin/posts');
         } else {
-          alert('Error al eliminar');
+          (window as any).showToast('Error al eliminar', 'error');
         }
       });
     }

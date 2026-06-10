@@ -10,6 +10,10 @@ if (!session) {
   return Astro.redirect('/admin/login');
 }
 
+if (session.rol !== 'admin') {
+  return Astro.redirect('/admin/dashboard');
+}
+
 const statusFilter = Astro.url.searchParams.get('status') || '';
 
 let messages = [];
@@ -48,83 +52,83 @@ function formatDate(dateStr: string) {
 >
   <!-- Header with Description -->
   <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-    <p class="text-sm text-gray-500">Buzón de entrada y gestión de prospectos de contacto</p>
+    <p class="text-sm text-gray-500 dark:text-slate-400">Buzón de entrada y gestión de prospectos de contacto</p>
     
     <!-- Filter Badges/Tabs -->
     <div class="flex flex-wrap gap-2 text-xs font-semibold">
-      <a href="/admin/mensajes" class={`rounded-lg px-3 py-1.5 transition ${!statusFilter ? 'bg-primary text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+      <a href="/admin/mensajes" class={`rounded-lg px-3 py-1.5 transition duration-150 ${!statusFilter ? 'bg-primary text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800 dark:hover:bg-slate-800'}`}>
         Todos
       </a>
-      <a href="/admin/mensajes?status=unread" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'unread' ? 'bg-rose-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+      <a href="/admin/mensajes?status=unread" class={`rounded-lg px-3 py-1.5 transition duration-150 ${statusFilter === 'unread' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-350 dark:border-slate-800 dark:hover:bg-slate-800'}`}>
         Sin leer
       </a>
-      <a href="/admin/mensajes?status=in_progress" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'in_progress' ? 'bg-amber-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+      <a href="/admin/mensajes?status=in_progress" class={`rounded-lg px-3 py-1.5 transition duration-150 ${statusFilter === 'in_progress' ? 'bg-amber-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-350 dark:border-slate-800 dark:hover:bg-slate-800'}`}>
         En proceso
       </a>
-      <a href="/admin/mensajes?status=resolved" class={`rounded-lg px-3 py-1.5 transition ${statusFilter === 'resolved' ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+      <a href="/admin/mensajes?status=resolved" class={`rounded-lg px-3 py-1.5 transition duration-150 ${statusFilter === 'resolved' ? 'bg-green-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-slate-900 dark:text-slate-350 dark:border-slate-800 dark:hover:bg-slate-800'}`}>
         Resueltos
       </a>
     </div>
   </div>
 
   <!-- Messages Table -->
-  <div class="rounded-xl border bg-white shadow-sm overflow-hidden">
+  <div class="rounded-xl border border-gray-150 bg-white shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
     {queryError ? (
-      <div class="p-8 text-center text-rose-600">
+      <div class="p-8 text-center text-rose-600 dark:text-rose-400">
         <p class="font-semibold">Error al cargar mensajes</p>
-        <p class="text-xs mt-1 text-gray-500">Asegúrate de haber ejecutado los scripts de base de datos en Supabase.</p>
+        <p class="text-xs mt-1 text-gray-500 dark:text-slate-400">Asegúrate de haber ejecutado los scripts de base de datos en Supabase.</p>
       </div>
     ) : (
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm">
           <thead>
-            <tr class="border-b bg-gray-50">
-              <th class="px-5 py-3.5 font-semibold text-gray-600">Remitente</th>
-              <th class="px-5 py-3.5 font-semibold text-gray-600">Contacto</th>
-              <th class="px-5 py-3.5 font-semibold text-gray-600">Estado</th>
-              <th class="px-5 py-3.5 font-semibold text-gray-600 max-md:hidden">Fecha</th>
-              <th class="px-5 py-3.5 font-semibold text-gray-600 text-right">Acción</th>
+            <tr class="border-b bg-gray-50 border-gray-150 dark:bg-slate-800/50 dark:border-slate-800">
+              <th class="px-5 py-3.5 font-semibold text-gray-600 dark:text-slate-300">Remitente</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 dark:text-slate-300">Contacto</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 dark:text-slate-300">Estado</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 dark:text-slate-300 max-md:hidden">Fecha</th>
+              <th class="px-5 py-3.5 font-semibold text-gray-600 dark:text-slate-300 text-right">Acción</th>
             </tr>
           </thead>
           <tbody id="mensajes-table-body">
             {messages.length === 0 ? (
               <tr>
-                <td colspan="5" class="px-5 py-12 text-center text-gray-400">
+                <td colspan="5" class="px-5 py-12 text-center text-gray-400 dark:text-slate-500">
                   No hay mensajes registrados {statusFilter && `con el estado "${statusFilter}"`}
                 </td>
               </tr>
             ) : (
               messages.map((m) => {
                 const statusBadge = m.status === 'unread' 
-                  ? 'bg-rose-50 text-rose-700 border border-rose-100'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-100 dark:bg-rose-950/30 dark:text-rose-350 dark:border-rose-900/30'
                   : m.status === 'in_progress'
-                  ? 'bg-amber-50 text-amber-700 border border-amber-100'
-                  : 'bg-green-50 text-green-700 border border-green-100';
-
+                  ? 'bg-amber-50 text-amber-700 border border-amber-100 dark:bg-amber-950/30 dark:text-amber-350 dark:border-amber-900/30'
+                  : 'bg-green-50 text-green-700 border border-green-100 dark:bg-green-950/30 dark:text-green-350 dark:border-green-900/30';
+ 
                 const statusLabel = m.status === 'unread' ? 'Sin leer' : m.status === 'in_progress' ? 'En proceso' : 'Resuelto';
-
+ 
                 return (
-                  <tr class="border-b last:border-0 hover:bg-gray-50/50 transition duration-150">
-                    <td class="px-5 py-4 font-semibold text-gray-900 truncate max-w-[150px]" title={m.name}>
+                  <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 dark:border-slate-800 dark:hover:bg-slate-800/40 transition duration-150">
+                    <td class="px-5 py-4 font-semibold text-gray-900 dark:text-white truncate max-w-[150px]" title={m.name}>
                       {m.name}
                     </td>
                     <td class="px-5 py-4">
-                      <div class="text-gray-800 font-medium truncate max-w-[180px]" title={m.email}>{m.email}</div>
-                      {m.phone && <div class="text-xs text-gray-500">{m.phone}</div>}
+                      <div class="text-gray-800 dark:text-slate-200 font-medium truncate max-w-[180px]" title={m.email}>{m.email}</div>
+                      {m.phone && <div class="text-xs text-gray-500 dark:text-slate-400">{m.phone}</div>}
                     </td>
                     <td class="px-5 py-4">
                       <span class={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadge}`}>
                         {statusLabel}
                       </span>
                     </td>
-                    <td class="px-5 py-4 text-gray-500 max-md:hidden text-xs">
+                    <td class="px-5 py-4 text-gray-500 dark:text-slate-400 max-md:hidden text-xs">
                       {formatDate(m.created_at)}
                     </td>
                     <td class="px-5 py-4 text-right">
                       <div class="flex items-center justify-end gap-2">
                         <a
                           href={`/admin/mensajes/${m.id}`}
-                          class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-700 border border-gray-200 transition hover:bg-gray-100"
+                          class="rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-700 border border-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700 transition hover:bg-gray-100"
                         >
                           Detalle
                         </a>
@@ -132,7 +136,7 @@ function formatDate(dateStr: string) {
                           <button
                             data-id={m.id}
                             data-name={m.name}
-                            class="eliminar-msg-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100"
+                            class="eliminar-msg-btn rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-900/40 dark:border-rose-900/30 cursor-pointer"
                           >
                             Eliminar
                           </button>

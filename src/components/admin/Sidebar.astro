@@ -8,9 +8,12 @@ interface Props {
 
 const { currentPath, userNombre, userEmail, userRol } = Astro.props;
 
-const links = [
+const baseLinks = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/admin/posts', label: 'Posts', icon: '📝' },
+];
+
+const adminLinks = [
   { href: '/admin/testimonios', label: 'Testimonios', icon: '💬' },
   { href: '/admin/galeria', label: 'Galería', icon: '🖼️' },
   { href: '/admin/docentes', label: 'Docentes', icon: '👨‍🏫' },
@@ -18,56 +21,59 @@ const links = [
   { href: '/admin/pre-inscripciones', label: 'Pre-inscripciones', icon: '📋' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: '👥' },
   { href: '/admin/sesiones', label: 'Sesiones', icon: '🔐' },
+  { href: '/admin/configuracion', label: 'Configuración', icon: '⚙️' },
 ];
 
-if (userRol === 'admin') {
-  links.push({ href: '/admin/configuracion', label: 'Configuración', icon: '⚙️' });
-}
+// Deduplicate and filter links based on user role
+const links = userRol === 'admin' ? [...baseLinks, ...adminLinks] : baseLinks;
 
 function isActive(href: string) {
   return currentPath === href || currentPath.startsWith(href + '/');
 }
 ---
 
-<aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-gray-900 text-white max-md:-translate-x-full max-md:transition-transform">
-  <div class="flex items-center gap-3 border-b border-gray-800 px-6 py-5">
-    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold">
+<aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-900 text-slate-100 max-md:-translate-x-full max-md:transition-transform border-r border-slate-800">
+  <div class="flex items-center gap-3 border-b border-slate-800 px-6 py-5 bg-slate-950/40">
+    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-slate-950 text-sm font-bold shadow-sm shadow-accent/20">
       SL
     </div>
     <div>
-      <p class="text-sm font-bold">Colegio Santa Luisa</p>
-      <p class="text-xs text-gray-400">Panel Admin</p>
+      <p class="text-sm font-bold text-white tracking-wide">Colegio Santa Luisa</p>
+      <p class="text-xs text-slate-400">Panel Admin</p>
     </div>
   </div>
 
-  <nav class="flex-1 space-y-1 px-3 py-4">
-    {links.map((link) => (
-      <a
-        href={link.href}
-        data-astro-prefetch
-        class={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-          isActive(link.href)
-            ? 'bg-primary/20 text-primary-light'
-            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-        }`}
-      >
-        <span>{link.icon}</span>
-        {link.label}
-      </a>
-    ))}
+  <nav class="flex-1 space-y-1.5 px-3 py-4 overflow-y-auto">
+    {links.map((link) => {
+      const active = isActive(link.href);
+      return (
+        <a
+          href={link.href}
+          data-astro-prefetch
+          class={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition duration-150 ${
+            active
+              ? 'bg-white/10 text-white border-l-2 border-accent pl-2.5 shadow-sm'
+              : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+          }`}
+        >
+          <span class="text-lg opacity-90">{link.icon}</span>
+          {link.label}
+        </a>
+      );
+    })}
   </nav>
 
-  <div class="border-t border-gray-800 px-6 py-4">
+  <div class="border-t border-slate-800 px-6 py-4 bg-slate-950/20">
     <div class="flex items-center gap-3">
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-sm">
         {userNombre.charAt(0).toUpperCase()}
       </div>
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-medium text-white" title={userNombre}>{userNombre}</p>
-        <p class="truncate text-xs text-gray-400" title={userEmail}>{userEmail}</p>
+        <p class="truncate text-xs text-slate-400" title={userEmail}>{userEmail}</p>
       </div>
       <form method="POST" action="/api/logout" class="shrink-0">
-        <button type="submit" class="text-xs text-gray-400 transition hover:text-red-400" title="Cerrar sesión">
+        <button type="submit" class="text-xs text-slate-400 transition hover:text-rose-400 cursor-pointer p-1 rounded hover:bg-slate-800" title="Cerrar sesión">
           ✕
         </button>
       </form>
